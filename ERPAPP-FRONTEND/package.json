@@ -1,0 +1,29 @@
+{
+  "name": "erpapp-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@cloudinary/url-gen": "^1.10.2",
+    "@cloudinary/vue": "^1.11.2",
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-brands-svg-icons": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/vue-fontawesome": "^3.0.3",
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "jquery": "^3.7.0",
+    "vue": "^3.2.47",
+    "vue-cookies": "^1.8.3",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite": "^4.1.4"
+  }
+}

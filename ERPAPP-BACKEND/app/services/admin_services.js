@@ -55,11 +55,17 @@ class Admin_Services {
         const query_account = `INSERT INTO taikhoan (msnv, sdt, email, matkhau) VALUES ('${usr.msnv}','${usr.sdt}','${usr.email}','${usr.matkhau}')`;
         const query_userinfo = `INSERT INTO thongtincanhan (msnv, hoten) VALUES ('${usr.msnv}','${usr.hoten}')`;
         const query_avt = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${usr.msnv}', '${usr.avt_secure_url}', '${usr.avt_public_id}', '${usr.avt_format}')`;
-        const query_workinfo = `INSERT INTO thongtincongviec (msnv, ngaybatdau, sohdld, ngaykyhopdong, loaihopdong, luongcoban, luongcoban1h, loaihinhcongviec, chinhanh, bophan, chucvu) VALUES ('${usr.msnv}', '${usr.ngaybatdau}', '${usr.sohdld}', '${usr.ngaykyhopdong}', '${usr.loaihopdong}', ${usr.luongcoban}, ${usr.luongcoban1h}, ${usr.loaihinhcongviec}, ${usr.chinhanh}, ${usr.bophan}, ${usr.chucvu})`;
+        const query_workinfo = `INSERT INTO thongtincongviec (msnv, ngaybatdau, sohdld, ngaykyhopdong, loaihopdong, luongcoban, luongcoban1h, loaihinhcongviec) VALUES ('${usr.msnv}', '${usr.ngaybatdau}', '${usr.sohdld}', '${usr.ngaykyhopdong}', '${usr.loaihopdong}', ${usr.luongcoban}, ${usr.luongcoban1h}, ${usr.loaihinhcongviec})`;
+        const query_agency = `INSERT INTO chinhanh (msnv, id_chinhanh, ngaybatdaulamviec) VALUES ('${usr.msnv}', ${usr.chinhanh}, '${usr.ngaybatdau}')`;
+        const query_department = `INSERT INTO bophan (msnv, id_bophan, ngaybatdaulamviec) VALUES ('${usr.msnv}',${usr.bophan},'${usr.ngaybatdau}')`;
+        const query_position = `INSERT INTO chucvu (msnv, id_chucvu, ngaybatdaulamviec) VALUES ('${usr.msnv}', ${usr.chucvu}, '${usr.ngaybatdau}')`;
         (await db).query(query_account);
         (await db).query(query_userinfo);
         (await db).query(query_avt);
         (await db).query(query_workinfo);
+        (await db).query(query_agency);
+        (await db).query(query_department);
+        (await db).query(query_position);
         const data = (await db).execute(`SELECT thongtincanhan.hoten, taikhoan.msnv FROM taikhoan join thongtincanhan on taikhoan.msnv = thongtincanhan.msnv WHERE sdt = '${usr.sdt}'`);
         return (data.then((data) => {return data[0][0]}));
     }

@@ -15,7 +15,7 @@ exports.Login = async(req, res, next) => {
                     res.cookie('loggedin','true');
                     res.cookie('msnv', account.msnv);
                     res.cookie('isAdmin', account.isAdmin);
-                    res.send(account);
+                    res.send(`Welcome back ${account.hoten}`);
                 } else return next(new ApiErr(500, 'Your password is incorrect.'));
             })
         }

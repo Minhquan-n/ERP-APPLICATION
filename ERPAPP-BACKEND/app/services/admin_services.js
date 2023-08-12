@@ -73,7 +73,7 @@ class Admin_Services {
     // Lay danh sach nhan vien
     async showStaff () {
         const db = this.connection();
-        const query = 'SELECT tk.msnv, ttcn.hoten, dscn.tenchinhanh FROM ((taikhoan tk LEFT JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN thongtincongviec ttcv ON tk.msnv = ttcv.msnv) JOIN danhsachchinhanh dscn ON ttcv.chinhanh = dscn.id_chinhanh;'
+        const query = 'SELECT tk.msnv, ttcn.hoten, dscn.tenchinhanh FROM ((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN chinhanh cn ON tk.msnv = cn.msnv) JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh WHERE cn.trangthai = 1'
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});
     }
@@ -98,10 +98,34 @@ class Admin_Services {
     // Lay thong tin cong viec
     async getUserWorkInfo (msnv) {
         const db = this.connection();
-        const info = 'ttcv.ngaybatdau, ttcv.sohdld, ttcv.ngaykyhopdong, ttcv.loaihopdong, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.tyledongbaohiem, ttcv.luongcoban, lhcv.tenloaihinhcongviec, cn.tenchinhanh, bp.tenbophan, cv.tenchucvu';
-        const selectfrom = '(((thongtincongviec ttcv JOIN loaihinhcongviec lhcv ON ttcv.loaihinhcongviec = lhcv.id_loaihinhcongviec) JOIN danhsachchinhanh cn ON ttcv.chinhanh = cn.id_chinhanh) JOIN danhsachbophan bp ON ttcv.bophan = bp.id_bophan) JOIN danhsachchucvu cv ON ttcv.chucvu = cv.id_chucvu';
+        const info = 'ttcv.ngaybatdau, ttcv.sohdld, ttcv.ngaykyhopdong, ttcv.loaihopdong, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.tyledongbaohiem, ttcv.luongcoban, lhcv.tenloaihinhcongviec';
+        const selectfrom = 'thongtincongviec ttcv JOIN loaihinhcongviec lhcv ON ttcv.loaihinhcongviec = lhcv.id_loaihinhcongviec';
         const query = `SELECT ${info} FROM ${selectfrom} WHERE ttcv.msnv = '${msnv}'`;
         const data =  (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
+    }
+
+    // Lay thong tin chi nhanh lam viec hien tai
+    async getUserAgency (msnv) {
+        const db = this.connection();
+        const query = `SELECT dscn.tenchinhanh FROM chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh WHERE cn.trangthai = 1 AND cn.msnv = '${msnv}'`
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
+    }
+
+    // Lay thong tin bo phan lam viec hien tai
+    async getUserDepartment (msnv) {
+        const db = this.connection();
+        const query = `SELECT dsbp.tenbophan FROM bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan WHERE bp.trangthai = 1 AND bp.msnv = '${msnv}'`
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
+    }
+
+    // Lay thong tin chuc vu hien tai
+    async getUserPosition (msnv) {
+        const db = this.connection();
+        const query = `SELECT dscv.tenchucvu FROM chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu WHERE cv.trangthai = 1 AND cv.msnv = '${msnv}'`
+        const data = (await db).execute(query);
         return data.then((data) => {return data[0][0]});
     }
 }

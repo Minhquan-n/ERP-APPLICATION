@@ -22,7 +22,6 @@ exports.CreateUser = async (req, res, next) => {
                         const msnv = 'NV0' + newAmount;
                         const workinghours = await Staff_services.getWorkingHours(req.body.loaihinhcongviec);
                         const salaryOn1H = (req.body.luongcoban / workinghours);
-                        const avt_id = 1;
                         const payload = {
                             msnv: msnv,
                             sdt: req.body.sdt,
@@ -55,12 +54,20 @@ exports.CreateUser = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while create new user.'));}
 }
 
+// Hien thi thong tin nguoi dung
 exports.ShowUserInfo = async (req, res, next) => {
     try {
         const acc = await Admin_services.getUserAccountInfo(req.params.id);
         const usr_info = await Admin_services.getUserPersonalInfo(req.params.id);
         const work_info = await Admin_services.getUserWorkInfo(req.params.id);
-        const user = Object.assign(acc, usr_info, work_info);
+        const agency_info = await Admin_services.getUserAgency(req.params.id);
+        const department_info = await Admin_services.getUserDepartment(req.params.id);
+        const position_info = await Admin_services.getUserPosition(req.params.id);
+        const user = Object.assign(acc, usr_info, work_info, agency_info, department_info, position_info);
+        const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
+        const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
+        user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
+        user.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
         res.send(user);
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
 }

@@ -76,8 +76,49 @@ exports.ShowUserInfo = async (req, res, next) => {
 
 // Cap nhat thong tin cong viec cho nhan vien
 exports.UpdateUser = async (req, res, next) => {
+    if (!req.body) return next(new ApiErr(400, 'Please provide user information to update.'));
     try {
-        res.send('ok');
+        const workinghours = await Staff_services.getWorkingHours(req.body.loaihinhcongviec);
+        const salaryOn1H = (req.body.luongcoban / workinghours);
+        const payload = {
+            soBHXH: req.body.soBHXH,
+            soBHYT: req.body.soBHYT,
+            noidkkcb: req.body.noidkkcb,
+            tyledongbaohiem: req.body.tyledongbaohiem,
+            luongcoban: req.body.luongcoban,
+            luongcoban1h: salaryOn1H,
+            phepnam: req.body.phepnam,
+            loaihinhcongviec: req.body.loaihinhcongviec,
+            sohdld: req.body.sohdld,
+            ngaykyhopdong: req.body.ngaykyhopdong,
+            loaihopdong: req.body.loaihopdong,
+            id_chinhanh: req.body.chinhanh,
+            id_bophan: req.body.bophan,
+            id_chucvu: req.body.chucvu,
+            ngaybatdaulamviec: req.body.ngaybatdaulamviec
+        }
+        const oldLaborContract = await Admin_services.getUserLaborContract(req.params.id);
+        const oldAgency = await Admin_services.getUserAgency(req.params.id);
+        const oldDepartment = await Admin_services.getUserDepartment(req.params.id);
+        const oldPosition = await Admin_services.getUserPosition(req.params.id);
+        if (payload.sohdld !== oldLaborContract.sohdld) {
+            const laborcontract = await Admin_services.updateUserLaborContract(req.params.id, payload);
+            if (laborcontract !== 'Success') return next(new ApiErr(500, "An error orcurred while update labor contract."));
+        }
+        if (payload.id_chinhanh !== oldAgency.id_chinhanh) {
+            const agency = await Admin_services.updateUserAgency(req.params.id, payload);
+            if (agency !== 'Succes') return next(new ApiErr(500, "An error orcurred while update agency."));
+        }
+        if (payload.id_bophan !== oldDepartment.id_bophan) {
+            const department = await Admin_services.updateUserDepartment(req.params.id, payload);
+            if (department !== 'Succes') return next(new ApiErr(500, "An error orcurred while update depatment."));
+        }
+        if (payload.id_chucvu !== oldPosition.id_chucvu) {
+            const position = await Admin_services.updateUserPosition(req.params.id, payload);
+            if (position !== 'Succes') return next(new ApiErr(500, "An error orcurred while update position."));
+        }
+        const result_workinfo = await Admin_services.updateUserWorkInfo(req.params.id, payload);
+        if (result_workinfo === 'Success') res.send('Update success.');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while update user.'));}
 }
 

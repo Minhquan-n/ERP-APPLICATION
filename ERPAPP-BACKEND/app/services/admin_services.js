@@ -70,6 +70,16 @@ class Admin_Services {
         return (data.then((data) => {return data[0][0]}));
     }
 
+    // Cap nhat trang thai admin cho tai khoan quan tri vien
+    async updateIsAdmin (msnv) {
+        const db = this.connection();
+        const query = `UPDATE taikhoan SET isAdmin = 1 WHERE msnv = '${msnv}'`;
+        (await db).query(query);
+        // const data = (await db).execute(`SELECT isAdmin FROM taikhoan WHERE msnv = '${msnv}'`);
+        // return data.then((data) => {return data[0][0]});
+        return 1;
+    }
+
     // Lay danh sach nhan vien
     async showStaff () {
         const db = this.connection();

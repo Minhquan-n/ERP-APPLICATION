@@ -43,6 +43,7 @@ exports.CreateUser = async (req, res, next) => {
                             avt_format: process.env.AVT_FORMAT
                         }
                         const newUsr = await Admin_services.createUser(payload);
+                        if (payload.bophan === 1) await Admin_services.updateIsAdmin(newUsr.msnv);
                         if (newUsr.msnv === payload.msnv && newUsr.hoten === payload.hoten) {
                             const updateStaffAmount = await Admin_services.updateStaffAmount(newAmount);
                             if (updateStaffAmount === 'Success') res.send(`${newUsr.hoten}`);

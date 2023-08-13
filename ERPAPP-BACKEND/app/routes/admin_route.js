@@ -8,5 +8,6 @@ router.route('/staff')
 
 router.route('/staff/:id')
         .get(controller.ShowUserInfo)
+        .post(controller.UpdateUser)
 
 module.exports = router;

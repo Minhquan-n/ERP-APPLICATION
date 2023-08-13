@@ -61,10 +61,11 @@ exports.ShowUserInfo = async (req, res, next) => {
         const acc = await Admin_services.getUserAccountInfo(req.params.id);
         const usr_info = await Admin_services.getUserPersonalInfo(req.params.id);
         const work_info = await Admin_services.getUserWorkInfo(req.params.id);
+        const laborcontract_info = await Admin_services.getUserLaborContract(req.params.id);
         const agency_info = await Admin_services.getUserAgency(req.params.id);
         const department_info = await Admin_services.getUserDepartment(req.params.id);
         const position_info = await Admin_services.getUserPosition(req.params.id);
-        const user = Object.assign(acc, usr_info, work_info, agency_info, department_info, position_info);
+        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, agency_info, department_info, position_info);
         const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
         const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
         user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');

@@ -1,4 +1,4 @@
-const staff_services = require('../services/staff/staff_services_accounts');
+const Staff_account_services = require('../services/staff/staff_services_accounts');
 const ApiErr = require('../api-error');
 const bcrypt = require('bcrypt');
 
@@ -7,7 +7,7 @@ exports.Login = async(req, res, next) => {
     if (req.cookies.loggedin === 'true') return next(new ApiErr(400, 'Logged in already.'));
     if (!req.body) return next(new ApiErr(400, 'Your ID and password are empty'));
     try {
-        const account = await staff_services.login(req.body);
+        const account = await Staff_account_services.login(req.body);
         if (account.trangthai_taikhoan != 1) res.send('Your account has blocked.');
         else {
             bcrypt.compare(req.body.matkhau, account.matkhau, async function (err, result) {

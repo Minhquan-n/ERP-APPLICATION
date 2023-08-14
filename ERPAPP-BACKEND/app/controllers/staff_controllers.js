@@ -14,7 +14,7 @@ exports.Login = async(req, res, next) => {
                 if (result) {
                     res.cookie('loggedin','true');
                     res.cookie('msnv', account.msnv);
-                    res.cookie('isAdmin', account.isAdmin);
+                    res.cookie('position', account.id_bophan);
                     res.send(`Welcome back ${account.hoten}`);
                 } else return next(new ApiErr(500, 'Your password is incorrect.'));
             })
@@ -28,7 +28,7 @@ exports.Logout = async (req, res, next) => {
     try {
         res.cookie('loggedin','false');
         res.cookie('msnv', '');
-        res.cookie('isAdmin', '');
+        res.cookie('position', '');
         res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while logout.'));}
 }

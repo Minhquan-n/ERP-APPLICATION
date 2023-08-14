@@ -44,8 +44,8 @@ class Staff_Servieces {
     async login (payload) {
         const db = this.connection();
         const usr = this.extractpayload_login(payload);
-        const info = 'tk.msnv, tk.matkhau, tk.isAdmin, tk.trangthai_taikhoan, ttcn.hoten';
-        const query = `SELECT ${info} FROM taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv WHERE tk.msnv = '${usr.msnv}'`;
+        const info = 'tk.msnv, tk.matkhau, tk.trangthai_taikhoan, ttcn.hoten, bp.id_bophan';
+        const query = `SELECT ${info} FROM (taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN bophan bp ON tk.msnv = bp.msnv WHERE tk.msnv = '${usr.msnv}'`;
         const data = (await db).execute(query);
         return (data.then((data) => {return data[0][0]}));
     }

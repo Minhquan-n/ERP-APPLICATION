@@ -59,13 +59,13 @@ exports.CreateUser = async (req, res, next) => {
 exports.ShowUserInfo = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
-        const acc = await Admin_account_services.getUserAccountInfo(req.params.id);
-        const usr_info = await Admin_account_services.getUserPersonalInfo(req.params.id);
-        const work_info = await Admin_account_services.getUserWorkInfo(req.params.id);
-        const laborcontract_info = await Admin_account_services.getUserLaborContract(req.params.id);
-        const agency_info = await Admin_account_services.getUserAgency(req.params.id);
-        const department_info = await Admin_account_services.getUserDepartment(req.params.id);
-        const position_info = await Admin_account_services.getUserPosition(req.params.id);
+        const acc = await Staff_account_services.getUserAccountInfo(req.params.id);
+        const usr_info = await Staff_account_services.getUserPersonalInfo(req.params.id);
+        const work_info = await Staff_account_services.getUserWorkInfo(req.params.id);
+        const laborcontract_info = await Staff_account_services.getUserLaborContract(req.params.id);
+        const agency_info = await Staff_account_services.getUserAgency(req.params.id);
+        const department_info = await Staff_account_services.getUserDepartment(req.params.id);
+        const position_info = await Staff_account_services.getUserPosition(req.params.id);
         const user = Object.assign(acc, usr_info, work_info, laborcontract_info, agency_info, department_info, position_info);
         const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
         const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);

@@ -24,7 +24,7 @@ exports.Login = async(req, res, next) => {
 
 // Dang xuat
 exports.Logout = async (req, res, next) => {
-    if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(400, 'No account are logging in.'));
+    if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
     try {
         res.cookie('loggedin','false');
         res.cookie('msnv', '');
@@ -35,8 +35,23 @@ exports.Logout = async (req, res, next) => {
 
 // Hien thi thong tin nhan vien
 exports.ShowUserInfo = async (req, res, next) => {
+    if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
+    if (!req.cookies.msnv) return next(new ApiErr(401, 'Unknow MSNV.'));
     try {
-        res.send('ok');
+        const msnv = req.cookies.msnv;
+        const acc = await Staff_account_services.getUserAccountInfo(msnv);
+        const usr_info = await Staff_account_services.getUserPersonalInfo(msnv);
+        const work_info = await Staff_account_services.getUserWorkInfo(msnv);
+        const laborcontract_info = await Staff_account_services.getUserLaborContract(msnv);
+        const agency_info = await Staff_account_services.getUserAgency(msnv);
+        const department_info = await Staff_account_services.getUserDepartment(msnv);
+        const position_info = await Staff_account_services.getUserPosition(msnv);
+        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, agency_info, department_info, position_info);
+        const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
+        const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
+        user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
+        user.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
+        res.send(user);
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
 }
 

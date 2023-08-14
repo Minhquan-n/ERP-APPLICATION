@@ -1,5 +1,5 @@
-const Admin_services = require('../services/admin_services');
-const Staff_services = require('../services/staff_services');
+const Admin_services = require('../services/admin/admin_services');
+const Staff_services = require('../services/staff/staff_services');
 const ApiErr = require('../api-error');
 const bcrypt = require('bcrypt');
 require('dotenv').config();

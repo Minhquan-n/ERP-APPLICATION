@@ -1,4 +1,4 @@
-const staff_services = require('../services/staff_services');
+const staff_services = require('../services/staff/staff_services');
 const ApiErr = require('../api-error');
 const bcrypt = require('bcrypt');
 
@@ -29,7 +29,7 @@ exports.Logout = async (req, res, next) => {
         res.cookie('loggedin','false');
         res.cookie('msnv', '');
         res.cookie('position', '');
-        res.send('Success');
+        res.send('Logout success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while logout.'));}
 }
 

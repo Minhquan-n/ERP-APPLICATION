@@ -1,5 +1,5 @@
-const Admin_services = require('../services/admin/admin_services');
-const Staff_services = require('../services/staff/staff_services');
+const Admin_services = require('../services/admin/admin_services_accounts');
+const Staff_services = require('../services/staff/staff_services_accounts');
 const ApiErr = require('../api-error');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
@@ -54,7 +54,7 @@ exports.CreateUser = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while create new user.'));}
 }
 
-// Hien thi thong tin nguoi dung
+// Hien thi thong tin nhan vien
 exports.ShowUserInfo = async (req, res, next) => {
     try {
         const acc = await Admin_services.getUserAccountInfo(req.params.id);

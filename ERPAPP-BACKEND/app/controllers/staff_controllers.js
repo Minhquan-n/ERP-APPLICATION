@@ -1,4 +1,4 @@
-const staff_services = require('../services/staff/staff_services');
+const staff_services = require('../services/staff/staff_services_accounts');
 const ApiErr = require('../api-error');
 const bcrypt = require('bcrypt');
 

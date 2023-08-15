@@ -54,7 +54,7 @@ class Admin_Services {
         const usr = this.extractpayload_createUser(payload);
         const db = this.connection();
         const query_account = `INSERT INTO taikhoan (msnv, sdt, email, matkhau) VALUES ('${usr.msnv}','${usr.sdt}','${usr.email}','${usr.matkhau}')`;
-        const query_userinfo = `INSERT INTO thongtincanhan (msnv, hoten) VALUES ('${usr.msnv}','${usr.hoten}')`;
+        const query_userinfo = `INSERT INTO thongtincanhan (msnv, hoten, dantoc, dclh_tinhthanh, dclh_quanhuyen, dclh_phuongxa) VALUES ('${usr.msnv}','${usr.hoten}', 0, '000', '000', 0)`;
         const query_avt = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${usr.msnv}', '${usr.avt_secure_url}', '${usr.avt_public_id}', '${usr.avt_format}')`;
         const query_workinfo = `INSERT INTO thongtincongviec (msnv, ngaybatdau, luongcoban, luongcoban1h, loaihinhcongviec) VALUES ('${usr.msnv}', '${usr.ngaybatdau}', ${usr.luongcoban}, ${usr.luongcoban1h}, ${usr.loaihinhcongviec})`;
         const query_laborcontract = `INSERT INTO hopdonglaodong (msnv, sohdld, ngaykyhopdong, loaihopdong) VALUES ('${usr.msnv}', '${usr.sohdld}', '${usr.ngaykyhopdong}', '${usr.loaihopdong}')`;
@@ -76,7 +76,8 @@ class Admin_Services {
     // Lay danh sach nhan vien
     async showStaff () {
         const db = this.connection();
-        const query = 'SELECT tk.msnv, ttcn.hoten, dscn.tenchinhanh FROM ((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN chinhanh cn ON tk.msnv = cn.msnv) JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh WHERE cn.trangthai = 1'
+        const table = '(((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN chinhanh cn ON tk.msnv = cn.msnv) JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) JOIN anhdaidien avt ON tk.msnv = avt.msnv';
+        const query = `SELECT tk.msnv, ttcn.hoten, dscn.tenchinhanh, avt.avt_secure_url FROM ${table} WHERE cn.trangthai = 1 and avt.avt_status = 1`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});
     }

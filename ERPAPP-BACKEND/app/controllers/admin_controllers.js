@@ -66,7 +66,8 @@ exports.ShowUserInfo = async (req, res, next) => {
         const agency_info = await Staff_account_services.getUserAgency(req.params.id);
         const department_info = await Staff_account_services.getUserDepartment(req.params.id);
         const position_info = await Staff_account_services.getUserPosition(req.params.id);
-        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, agency_info, department_info, position_info);
+        const avt = await Staff_account_services.getUserAvt(req.params.id);
+        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, agency_info, department_info, position_info, avt);
         const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
         const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
         user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
@@ -99,10 +100,10 @@ exports.UpdateUser = async (req, res, next) => {
             id_chucvu: req.body.chucvu,
             ngaybatdaulamviec: req.body.ngaybatdaulamviec
         }
-        const oldLaborContract = await Admin_account_services.getUserLaborContract(req.params.id);
-        const oldAgency = await Admin_account_services.getUserAgency(req.params.id);
-        const oldDepartment = await Admin_account_services.getUserDepartment(req.params.id);
-        const oldPosition = await Admin_account_services.getUserPosition(req.params.id);
+        const oldLaborContract = await Staff_account_services.getUserLaborContract(req.params.id);
+        const oldAgency = await Staff_account_services.getUserAgency(req.params.id);
+        const oldDepartment = await Staff_account_services.getUserDepartment(req.params.id);
+        const oldPosition = await Staff_account_services.getUserPosition(req.params.id);
         if (payload.sohdld !== oldLaborContract.sohdld) {
             const laborcontract = await Admin_account_services.updateUserLaborContract(req.params.id, payload);
             if (laborcontract !== 'Success') return next(new ApiErr(500, "An error orcurred while update labor contract."));

@@ -108,6 +108,64 @@ class Staff_Servieces {
         const data = (await db).execute(query);
         return data.then((data) => {return data[0][0]});
     }
+
+    // Lay thong tin anh dai dien cua nguoi dung
+    async getUserAvt (msnv) {
+        const db = this.connection();
+        const query = `SELECT avt_secure_url, avt_public_id, avt_format FROM anhdaidien WHERE msnv = '${msnv}' AND avt_status = 1`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
+    }
+
+    // Tong hop thong tin cap nhat tai khoan
+    extractpayload_updateUserInfo (payload) {
+        const info = {
+            sdt: payload.sdt,
+            email: payload.email,
+            hoten: payload.hoten,
+            gioitinh: payload.gioitinh,
+            ngaysinh: payload.ngaysinh,
+            dantoc: payload.dantoc,
+            cccd: payload.cccd,
+            ngaycap_cccd: payload.ngaycap_cccd,
+            noicap_cccd: payload.noicap_cccd,
+            trinhdo: payload.trinhdo,
+            dclh_sonha: payload.dclh_sonha,
+            dclh_tinhthanh: payload.dclh_tinhthanh,
+            dclh_quanhuyen: payload.dclh_quanhuyen,
+            dclh_phuongxa: payload.dclh_phuongxa,
+            hoten_nguoithan: payload.hoten_nguoithan,
+            sdt_nguoithan: payload.sdt_nguoithan,
+            mqh_nguoithan: payload.mqh_nguoithan,
+            avt_secure_url: payload.avt_secure_url,
+            avt_public_id: payload.avt_public_id,
+            avt_format: payload.avt_format
+        }
+        return info;
+    }
+
+    // Cap nhat thong tin ca nhan tai khoan
+    async updateUserInfo (msnv, payload) {
+        const db = this.connection();
+        const data = this.extractpayload_updateUserInfo(payload);
+        const info_account = `sdt = '${data.sdt}', email = '${data.email}'`;
+        const info_user = `hoten = '${data.hoten}', gioitinh = '${data.gioitinh}', ngaysinh = '${data.ngaysinh}', dantoc = '${data.dantoc}', cccd = '${data.cccd}', ngaycap_cccd = '${data.ngaycap_cccd}', noicap_cccd = '${data.noicap_cccd}', trinhdo = '${data.trinhdo}', dclh_sonha = '${data.dclh_sonha}', dclh_tinhthanh = '${data.dclh_tinhthanh}', dclh_quanhuyen = '${data.dclh_quanhuyen}', dclh_phuongxa = '${data.dclh_phuongxa}', hoten_nguoithan = '${data.hoten_nguoithan}', sdt_nguoithan = '${data.sdt_nguoithan}', mqh_nguoithan = '${data.mqh_nguoithan}'`;
+        const query_account = `UPDATE taikhoan SET ${info_account} WHERE msnv = '${msnv}'`;
+        const query_userinfo = `UPDATE thongtincanhan SET ${info_user} WHERE msnv = '${msnv}'`;
+        (await db).query(query_account);
+        (await db).query(query_userinfo);
+        return "Update success.";
+    }
+
+    // Cap nhat anh dai dien tai khoan
+    async updateAvt (msnv, payload) {
+        const db = this.connection();
+        const data = this.extractpayload_updateUserInfo(payload);
+        const query = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${msnv}', '${data.avt_secure_url}', '${data.avt_public_id}', '${data.avt_format}')`;
+        (await db).query(`UPDATE anhdaidien SET avt_status = 0 WHERE msnv = '${msnv}'`);
+        (await db).query(query);
+        return 'Update avatar success.';
+    }
 }
 
 module.exports = new Staff_Servieces;

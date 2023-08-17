@@ -7,7 +7,7 @@ require('dotenv').config();
 // Tao tai khoan nhan vien moi
 exports.CreateUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body) return next(new ApiErr(400, 'Please provide user information.'));
+    if (!req.body?.sdt) return next(new ApiErr(400, 'Please provide user information.'));
     else if (!req.body.hoten) return next(new ApiErr(400, 'Please provide user fullname'));
     try {
         const phoneCheck = await Staff_account_services.verify_phone(req.body.sdt);
@@ -79,7 +79,6 @@ exports.ShowUserInfo = async (req, res, next) => {
 // Cap nhat thong tin cong viec cho nhan vien
 exports.UpdateUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body) return next(new ApiErr(400, 'Please provide user information to update.'));
     try {
         const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
         const salaryOn1H = (req.body.luongcoban / workinghours);

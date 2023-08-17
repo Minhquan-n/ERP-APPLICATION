@@ -117,7 +117,7 @@ class Staff_Servieces {
         return data.then((data) => {return data[0][0]});
     }
 
-    // Tong hop thong tin cap nhat tai khoan
+    // Tach thong tin cap nhat tai khoan
     extractpayload_updateUserInfo (payload) {
         const info = {
             sdt: payload.sdt,
@@ -136,12 +136,17 @@ class Staff_Servieces {
             dclh_phuongxa: payload.dclh_phuongxa,
             hoten_nguoithan: payload.hoten_nguoithan,
             sdt_nguoithan: payload.sdt_nguoithan,
-            mqh_nguoithan: payload.mqh_nguoithan,
+            mqh_nguoithan: payload.mqh_nguoithan
+        }
+        return info;
+    }
+
+    extractpayload_update_avt (paylaod) {
+        const avt = {
             avt_secure_url: payload.avt_secure_url,
             avt_public_id: payload.avt_public_id,
             avt_format: payload.avt_format
         }
-        return info;
     }
 
     // Cap nhat thong tin ca nhan tai khoan
@@ -160,11 +165,19 @@ class Staff_Servieces {
     // Cap nhat anh dai dien tai khoan
     async updateAvt (msnv, payload) {
         const db = this.connection();
-        const data = this.extractpayload_updateUserInfo(payload);
+        const data = this.extractpayload_update_avt(payload);
         const query = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${msnv}', '${data.avt_secure_url}', '${data.avt_public_id}', '${data.avt_format}')`;
         (await db).query(`UPDATE anhdaidien SET avt_status = 0 WHERE msnv = '${msnv}'`);
         (await db).query(query);
         return 'Update avatar success.';
+    }
+
+    // Doi mat khau tai khoan
+    async changePass (payload) {
+        const db = this.connection();
+        const query = `UPDATE taikhoan SET matkhau = '${payload.matkhaumoi}' WHERE msnv = '${payload.msnv}'`;
+        (await db).query(query);
+        return 'Success';
     }
 }
 

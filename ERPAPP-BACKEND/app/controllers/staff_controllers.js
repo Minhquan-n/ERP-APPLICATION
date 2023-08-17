@@ -91,7 +91,7 @@ exports.ChangePassword = async (req, res, next) => {
                     if (!err) {
                         payload.matkhaumoi = hash;
                         const change = await Staff_account_services.changePass(payload);
-                        res.send(change);
+                        if (change === 'Success') res.send(change);
                     }
                 })
             } else {res.send('Your password are incorrect.');}

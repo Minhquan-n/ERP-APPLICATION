@@ -149,6 +149,20 @@ exports.DisableUser = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
 }
 
+// Reset mat khau tai khoan cho nhan vien
+exports.ResetPass = async (req, res, next) => {
+    if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    if (!req.body?.msnv) return next(new ApiErr(400, 'Provide ID to reset password.'));
+    try {
+        bcrypt.hash('12345678', 10, async (err, hash) => {
+            if (!err) {
+                const reset = await Admin_account_services.resetPass(req.body.msnv, hash);
+                if (reset === 'Success') res.send(reset);
+            }
+        }) 
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
+}
+
 // Tao bang cham cong moi
 exports.CreateTimesheet = async (req, res, next) => {
     try {

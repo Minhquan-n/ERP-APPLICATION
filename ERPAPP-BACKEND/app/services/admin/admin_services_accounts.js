@@ -156,6 +156,14 @@ class Admin_Services {
         (await db).query(query);
         return 'Success';
     }
+
+    // Reset mat khau cho tai khoan nhan vien
+    async resetPass (msnv, matkhau) {
+        const db = this.connection();
+        const query = `UPDATE taikhoan SET matkhau = '${matkhau}' WHERE msnv = '${msnv}'`;
+        (await db).query(query);
+        return 'Success';
+    }
 }
 
 module.exports = new Admin_Services;

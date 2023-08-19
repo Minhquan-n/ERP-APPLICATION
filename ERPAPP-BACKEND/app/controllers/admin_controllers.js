@@ -128,7 +128,7 @@ exports.UpdateUser = async (req, res, next) => {
 exports.ShowStaff = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
-        const staff = await Admin_account_services.showStaff();
+        const staff = await Admin_account_services.getUserList();
         res.send(staff);
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
 }

@@ -125,7 +125,7 @@ class Admin_Services {
     }
 
     // Cap nhat thong tin chi nhanh lam viec cua nhan vien
-    async updateUserAgency (msnv, payload) {
+    async updateUserOffice (msnv, payload) {
         const db = this.connection();
         const info = this.extractpayload_UpdateUser(payload);
         const query_updateStatus = `UPDATE chinhanh SET trangthai = 0 WHERE msnv = '${msnv}'`;
@@ -136,7 +136,7 @@ class Admin_Services {
     }
 
     // Cap nhat thong tin bo phan lam viec cua nhan vien
-    async updateUserDepartment (msnv, payload) {
+    async updateUserArea (msnv, payload) {
         const db = this.connection();
         const info = this.extractpayload_UpdateUser(payload);
         const query_updateStatus = `UPDATE bophan SET trangthai = 0 WHERE msnv = '${msnv}'`;

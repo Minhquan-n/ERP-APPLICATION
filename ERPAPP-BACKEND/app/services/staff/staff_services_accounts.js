@@ -86,7 +86,7 @@ class Staff_Servieces {
     }
 
     // Lay thong tin chi nhanh lam viec hien tai
-    async getUserAgency (msnv) {
+    async getUserOffice (msnv) {
         const db = this.connection();
         const query = `SELECT dscn.tenchinhanh, cn.id_chinhanh FROM chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh WHERE cn.trangthai = 1 AND cn.msnv = '${msnv}'`
         const data = (await db).execute(query);
@@ -94,7 +94,7 @@ class Staff_Servieces {
     }
 
     // Lay thong tin bo phan lam viec hien tai
-    async getUserDepartment (msnv) {
+    async getUserArea (msnv) {
         const db = this.connection();
         const query = `SELECT dsbp.tenbophan, bp.id_bophan FROM bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan WHERE bp.trangthai = 1 AND bp.msnv = '${msnv}'`
         const data = (await db).execute(query);

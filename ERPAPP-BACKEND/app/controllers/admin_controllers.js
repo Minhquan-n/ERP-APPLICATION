@@ -7,7 +7,7 @@ require('dotenv').config();
 // Tao tai khoan nhan vien moi
 exports.CreateUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body?.sdt) return next(new ApiErr(400, 'Please provide user information.'));
+    if (!req.body.sdt) return next(new ApiErr(400, 'Provide user information.'));
     else if (!req.body.hoten) return next(new ApiErr(400, 'Please provide user fullname'));
     try {
         const phoneCheck = await Staff_account_services.verify_phone(req.body.sdt);
@@ -20,7 +20,7 @@ exports.CreateUser = async (req, res, next) => {
                     if (!err) {
                         const staffamount = await Admin_account_services.getStaffAmount();
                         const newAmount = staffamount + 1;
-                        const msnv = 'NV0' + newAmount;
+                        const msnv = 'NV-0' + newAmount;
                         const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
                         const salaryOn1H = (req.body.luongcoban / workinghours);
                         const payload = {
@@ -63,11 +63,11 @@ exports.ShowUserInfo = async (req, res, next) => {
         const usr_info = await Staff_account_services.getUserPersonalInfo(req.params.id);
         const work_info = await Staff_account_services.getUserWorkInfo(req.params.id);
         const laborcontract_info = await Staff_account_services.getUserLaborContract(req.params.id);
-        const agency_info = await Staff_account_services.getUserAgency(req.params.id);
-        const department_info = await Staff_account_services.getUserDepartment(req.params.id);
+        const office_info = await Staff_account_services.getUserOffice(req.params.id);
+        const area_info = await Staff_account_services.getUserArea(req.params.id);
         const position_info = await Staff_account_services.getUserPosition(req.params.id);
         const avt = await Staff_account_services.getUserAvt(req.params.id);
-        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, agency_info, department_info, position_info, avt);
+        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, office_info, area_info, position_info, avt);
         const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
         const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
         user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
@@ -100,20 +100,20 @@ exports.UpdateUser = async (req, res, next) => {
             ngaybatdaulamviec: req.body.ngaybatdaulamviec
         }
         const oldLaborContract = await Staff_account_services.getUserLaborContract(req.params.id);
-        const oldAgency = await Staff_account_services.getUserAgency(req.params.id);
-        const oldDepartment = await Staff_account_services.getUserDepartment(req.params.id);
+        const oldoffice = await Staff_account_services.getUserOffice(req.params.id);
+        const oldarea = await Staff_account_services.getUserArea(req.params.id);
         const oldPosition = await Staff_account_services.getUserPosition(req.params.id);
         if (payload.sohdld !== oldLaborContract.sohdld) {
             const laborcontract = await Admin_account_services.updateUserLaborContract(req.params.id, payload);
             if (laborcontract !== 'Success') return next(new ApiErr(500, "An error orcurred while update labor contract."));
         }
-        if (payload.id_chinhanh !== oldAgency.id_chinhanh) {
-            const agency = await Admin_account_services.updateUserAgency(req.params.id, payload);
-            if (agency !== 'Succes') return next(new ApiErr(500, "An error orcurred while update agency."));
+        if (payload.id_chinhanh !== oldoffice.id_chinhanh) {
+            const office = await Admin_account_services.updateUserOffice(req.params.id, payload);
+            if (office !== 'Succes') return next(new ApiErr(500, "An error orcurred while update office."));
         }
-        if (payload.id_bophan !== oldDepartment.id_bophan) {
-            const department = await Admin_account_services.updateUserDepartment(req.params.id, payload);
-            if (department !== 'Succes') return next(new ApiErr(500, "An error orcurred while update depatment."));
+        if (payload.id_bophan !== oldarea.id_bophan) {
+            const area = await Admin_account_services.updateUserArea(req.params.id, payload);
+            if (area !== 'Succes') return next(new ApiErr(500, "An error orcurred while update depatment."));
         }
         if (payload.id_chucvu !== oldPosition.id_chucvu) {
             const position = await Admin_account_services.updateUserPosition(req.params.id, payload);
@@ -144,6 +144,7 @@ exports.SearchUser = async (req, res, next) => {
 // Khoa tai khoan nhan vien
 exports.DisableUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    if (!req.body.msnv) return next(new ApiErr(400, "Provide user's code to block user."));
     try {
         res.send('ok');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
@@ -152,7 +153,7 @@ exports.DisableUser = async (req, res, next) => {
 // Reset mat khau tai khoan cho nhan vien
 exports.ResetPass = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body?.msnv) return next(new ApiErr(400, 'Provide ID to reset password.'));
+    if (!req.body.msnv) return next(new ApiErr(400, "Provide user's code to reset password."));
     try {
         bcrypt.hash('12345678', 10, async (err, hash) => {
             if (!err) {

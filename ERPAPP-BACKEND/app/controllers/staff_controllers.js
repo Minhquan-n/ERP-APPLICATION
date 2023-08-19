@@ -46,11 +46,11 @@ exports.ShowUserInfo = async (req, res, next) => {
         const usr_info = await Staff_account_services.getUserPersonalInfo(msnv);
         const work_info = await Staff_account_services.getUserWorkInfo(msnv);
         const laborcontract_info = await Staff_account_services.getUserLaborContract(msnv);
-        const agency_info = await Staff_account_services.getUserAgency(msnv);
-        const department_info = await Staff_account_services.getUserDepartment(msnv);
+        const office_info = await Staff_account_services.getUserOffice(msnv);
+        const area_info = await Staff_account_services.getUserArea(msnv);
         const position_info = await Staff_account_services.getUserPosition(msnv);
         const avt = await Staff_account_services.getUserAvt(msnv);
-        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, agency_info, department_info, position_info, avt);
+        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, office_info, area_info, position_info, avt);
         const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
         const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
         user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');

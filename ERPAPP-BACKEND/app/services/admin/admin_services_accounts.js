@@ -82,6 +82,15 @@ class Admin_Services {
         return data.then((data) => {return data[0]});
     }
 
+    // Lay danh sach nhan vien theo tu khoa tim kiem
+    async getSearch (key) {
+        const db = this.connection();
+        const table = '(((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN chinhanh cn ON tk.msnv = cn.msnv) JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) JOIN anhdaidien avt ON tk.msnv = avt.msnv';
+        const query = `SELECT tk.msnv, ttcn.hoten, dscn.tenchinhanh, avt.avt_secure_url FROM ${table} WHERE cn.trangthai = 1 AND avt.avt_status = 1 AND cn.trangthai = 1 AND ${key} ORDER BY tk.msnv;`
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0]});
+    }
+
     // Tong hop thong tin cap nhat thong tin cong viec cho nhan vien
     extractpayload_UpdateUser (payload) {
         const work_info = {

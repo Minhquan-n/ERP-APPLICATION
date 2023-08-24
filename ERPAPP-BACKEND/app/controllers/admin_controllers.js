@@ -20,7 +20,7 @@ exports.CreateUser = async (req, res, next) => {
                     if (!err) {
                         const staffamount = await Admin_account_services.getStaffAmount();
                         const newAmount = staffamount + 1;
-                        const msnv = 'NV-0' + newAmount;
+                        const msnv = 'MNV-0' + staffamount;
                         const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
                         const salaryOn1H = (req.body.luongcoban / workinghours);
                         const payload = {
@@ -46,7 +46,7 @@ exports.CreateUser = async (req, res, next) => {
                         const newUsr = await Admin_account_services.createUser(payload);
                         if (newUsr.msnv === payload.msnv && newUsr.hoten === payload.hoten) {
                             const updateStaffAmount = await Admin_account_services.updateStaffAmount(newAmount);
-                            if (updateStaffAmount === 'Success') res.send(`${newUsr.hoten}`);
+                            if (updateStaffAmount === 'Success') res.send(newUsr);
                         }
                     }
                 })
@@ -133,11 +133,25 @@ exports.ShowStaff = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
 }
 
-// Tim kiem nhan vien
+// Tim kiem nhan vien theo tu khoa
 exports.SearchUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    if (!req.body.key) return next(new ApiErr(400, "Provide key to search user."));
     try {
-        res.send('ok');
+        const key = req.body.key;
+        const msnv = (key.substr(0, 4)).toUpperCase();
+        if (msnv === 'MNV-') {
+            const key_search = `tk.msnv = '${key}'`
+            const list = await Admin_account_services.getSearch(key_search);
+            if (list.length !== 0) res.send(list);
+            else res.send('No result.');
+        }
+        else {
+            const key_search = `ttcn.hoten LIKE '%${key}%'`
+            const list = await Admin_account_services.getSearch(key_search);
+            if (list.length !== 0) res.send(list);
+            else res.send('No result.');
+        }
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while search user.'));}
 }
 

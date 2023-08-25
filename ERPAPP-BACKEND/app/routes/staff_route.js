@@ -6,7 +6,7 @@ router.route('/login').post(controller.Login)
 
 router.route('/logout').post(controller.Logout)
 
-router.route('/usr').get(controller.ShowUserInfo)
+router.route('/profile').get(controller.ShowUserInfo)
                     .post(controller.ChangePassword)
                     .put(controller.UpdateUserInfo)
 

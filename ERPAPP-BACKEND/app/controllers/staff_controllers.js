@@ -81,7 +81,7 @@ exports.UpdateUserInfo = async (req, res, next) => {
 // Doi mat khau tai khoan
 exports.ChangePassword = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
-    if (!req.body?.matkhau) return next(new ApiErr(400, 'Provide your password.'));
+    if (!req.body.matkhau || !req.body.matkhaumoi) return next(new ApiErr(400, 'Provide your password and new password.'));
     try {
         const payload = {msnv: req.cookies.msnv, matkhau: req.body.matkhau, matkhaumoi: req.body.matkhaumoi};
         const check = await Staff_account_services.login(payload);

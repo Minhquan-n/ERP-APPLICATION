@@ -18,7 +18,7 @@ exports.Login = async(req, res, next) => {
                     res.cookie('position', account.id_bophan);
                     res.cookie('avt_url', avt_url.avt_secure_url);
                     res.send(`Welcome back ${account.hoten}`);
-                } else return next(new ApiErr(500, 'Your password are incorrect.'));
+                } else return next(new ApiErr(500, 'Your password is incorrect.'));
             })
         }
     }catch (err) {return next(new ApiErr(500, 'An error orcurred while login.'));}
@@ -94,7 +94,7 @@ exports.ChangePassword = async (req, res, next) => {
                         if (change === 'Success') res.send(change);
                     }
                 })
-            } else {res.send('Your password are incorrect.');}
+            } else {res.send('Your password is incorrect.');}
         })
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load pay sheet.'));}
 }

@@ -20,7 +20,7 @@ exports.CreateUser = async (req, res, next) => {
                     if (!err) {
                         const staffamount = await Admin_account_services.getStaffAmount();
                         const newAmount = staffamount + 1;
-                        const msnv = 'MNV-0' + staffamount;
+                        const msnv = 'MNV0' + staffamount;
                         const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
                         const salaryOn1H = (req.body.luongcoban / workinghours);
                         const payload = {
@@ -167,11 +167,11 @@ exports.DisableUser = async (req, res, next) => {
 // Reset mat khau tai khoan cho nhan vien
 exports.ResetPass = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body.msnv) return next(new ApiErr(400, "Provide user's code to reset password."));
+    // // if (!req.body.msnv) return next(new ApiErr(400, "Provide user's code to reset password."));
     try {
         bcrypt.hash('12345678', 10, async (err, hash) => {
             if (!err) {
-                const reset = await Admin_account_services.resetPass(req.body.msnv, hash);
+                const reset = await Admin_account_services.resetPass(req.params.id, hash);
                 if (reset === 'Success') res.send(reset);
             }
         }) 

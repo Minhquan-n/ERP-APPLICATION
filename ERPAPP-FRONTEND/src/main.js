@@ -1,7 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import vueCookie from 'vue-cookies'
 
-import './assets/main.css'
+import router from './router'
+
+import './assets/base.css'
 
 // import bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
@@ -19,4 +22,6 @@ library.add(faUserSecret, faTwitter)
 
 createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)
-    .mount('#app')
+    .use(router)
+    .use(vueCookie)
+    .mount('body')

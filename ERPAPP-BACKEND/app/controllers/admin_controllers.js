@@ -7,8 +7,8 @@ require('dotenv').config();
 // Tao tai khoan nhan vien moi
 exports.CreateUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body.sdt) return next(new ApiErr(400, 'Provide user information.'));
-    else if (!req.body.hoten) return next(new ApiErr(400, 'Please provide user fullname'));
+    if (!req.body.sdt) return next(new ApiErr(400, 'Empty phone number'));
+    else if (!req.body.hoten) return next(new ApiErr(400, 'Empty user name'));
     try {
         const phoneCheck = await Staff_account_services.verify_phone(req.body.sdt);
         const emailCheck = await Staff_account_services.verify_email(req.body.email);
@@ -136,7 +136,7 @@ exports.ShowStaff = async (req, res, next) => {
 // Tim kiem nhan vien theo tu khoa
 exports.SearchUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body.key) return next(new ApiErr(400, "Provide key to search user."));
+    if (!req.body.key) return next(new ApiErr(400, "Empty key"));
     try {
         const key = req.body.key;
         const msnv = (key.substr(0, 4)).toUpperCase();
@@ -158,7 +158,7 @@ exports.SearchUser = async (req, res, next) => {
 // Khoa tai khoan nhan vien
 exports.DisableUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body.msnv) return next(new ApiErr(400, "Provide user's code to block user."));
+    if (!req.body.msnv) return next(new ApiErr(400, "Empty user id"));
     try {
         res.send('ok');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
@@ -167,7 +167,6 @@ exports.DisableUser = async (req, res, next) => {
 // Reset mat khau tai khoan cho nhan vien
 exports.ResetPass = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    // // if (!req.body.msnv) return next(new ApiErr(400, "Provide user's code to reset password."));
     try {
         bcrypt.hash('12345678', 10, async (err, hash) => {
             if (!err) {

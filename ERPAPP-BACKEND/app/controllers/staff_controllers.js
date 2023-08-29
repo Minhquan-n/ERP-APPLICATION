@@ -5,10 +5,10 @@ const bcrypt = require('bcrypt');
 // Dang nhap
 exports.Login = async(req, res, next) => {
     if (req.cookies.loggedin === 'true') return next(new ApiErr(400, 'Logged in already.'));
-    if (!req.body?.msnv) return next(new ApiErr(400, 'Your ID and password are empty'));
+    if (!req.body?.msnv) return next(new ApiErr(400, 'Empty id and password'));
     try {
         const account = await Staff_account_services.login(req.body);
-        if (account.trangthai_taikhoan != 1) res.send('Your account has blocked.');
+        if (account.trangthai_taikhoan != 1) res.send('Blocked');
         else {
             bcrypt.compare(req.body.matkhau, account.matkhau, async function (err, result) {
                 if (result) {
@@ -18,7 +18,7 @@ exports.Login = async(req, res, next) => {
                     res.cookie('position', account.id_bophan);
                     res.cookie('avt_url', avt_url.avt_secure_url);
                     res.send(`Welcome back ${account.hoten}`);
-                } else return next(new ApiErr(500, 'Your password is incorrect.'));
+                } else res.send('Your password is incorrect.');
             })
         }
     }catch (err) {return next(new ApiErr(500, 'An error orcurred while login.'));}
@@ -39,7 +39,7 @@ exports.Logout = async (req, res, next) => {
 // Hien thi thong tin nhan vien
 exports.ShowUserInfo = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
-    if (!req.cookies.msnv) return next(new ApiErr(401, 'Unknow MSNV.'));
+    if (!req.cookies.msnv) return next(new ApiErr(401, 'Unknow id'));
     try {
         const msnv = req.cookies.msnv;
         const acc = await Staff_account_services.getUserAccountInfo(msnv);
@@ -81,7 +81,7 @@ exports.UpdateUserInfo = async (req, res, next) => {
 // Doi mat khau tai khoan
 exports.ChangePassword = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
-    if (!req.body.matkhau || !req.body.matkhaumoi) return next(new ApiErr(400, 'Provide your password and new password.'));
+    if (!req.body.matkhau || !req.body.matkhaumoi) return next(new ApiErr(400, 'Empty current password and new password'));
     try {
         const payload = {msnv: req.cookies.msnv, matkhau: req.body.matkhau, matkhaumoi: req.body.matkhaumoi};
         const check = await Staff_account_services.login(payload);

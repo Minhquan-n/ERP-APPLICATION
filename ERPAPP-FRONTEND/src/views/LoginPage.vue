@@ -1,16 +1,8 @@
-<template>
-    <div id="login_page" class="row" :style = "{ height: style + 'px' }">
-        <Form>
-
-        </Form>
-    </div>
-</template>
-
 <script>
-    import $cookie from 'vue-cookies'
-    import Service from '@/services/erpapp.services'
-    import * as yup from 'yup'
-    import {Form, Field, ErrorMessage} from 'vee-validate'
+    import $cookie from 'vue-cookies';
+    import Service from '@/services/erpapp.services';
+    import * as yup from 'yup';
+    import {Form, Field, ErrorMessage} from 'vee-validate';
 
     export default {
         components: {
@@ -26,13 +18,18 @@
             }
 
             const accountSchema = yup.object().shape({
-
+                msnv: yup.string()
+                        .required('! Nhập mã số nhân viên của bạn.'),
+                matkhau: yup.string()
+                        .required('! Nhập mật khẩu đăng nhập của bạn.')
+                        .min(8, '! Mật khẩu phải từ 8 ký tự trở lên')
             })
 
             return {
                 style: 0,
-                sysmessage: '',
-
+                serverMessage: '',
+                account,
+                accountSchema,
             }
         },
 
@@ -48,9 +45,10 @@
 
             async login (data) {
                 try {
-
+                    const login = await Service.login(data);
+                    console.log(login);
                 } catch (error) {
-
+                    console.log(error)
                 }
             }
         },
@@ -62,12 +60,72 @@
     }
 </script>
 
+<template>
+    <div id="login_page" class="row" :style = "{ height: style + 'px' }">
+        <Form 
+            id="login_form"
+            @submit="login"
+            :validation-schema="accountSchema"
+            class="p-5 rounded-4 d-flex flex-column justify-content-center"
+        >
+            <img src="../assets/verticallogo.png" id="logo_app" class="m-auto mb-5">
+            <div class="input-group m-3 d-flex flex-column justify-content-start">
+                <label for="msnv" class="form-lable fw-semibold">Mã số nhân viên:</label>
+                <Field name="msnv" 
+                    type="text" 
+                    class="w-100 form-control" 
+                    placeholder="Mã số nhân viên" 
+                    aria-label="Username" 
+                    aria-describedby="basic-addon1" 
+                    v-model="account.msnv"
+                    model-value=""
+                />
+                <ErrorMessage  name="msnv" class="ms-2 text-danger error_message" />
+            </div>
+            <div class="input-group m-3 d-flex flex-column justify-content-start">
+                <label for="matkhau" class="form-lable fw-semibold">Mật khẩu:</label>
+                <Field name="matkhau" 
+                    type="password" 
+                    id="inputPassword5" 
+                    class="w-100 form-control" 
+                    aria-describedby="passwordHelpBlock" 
+                    placeholder="Nhập mật khẩu"
+                    v-model="account.matkhau"
+                    model-value=""
+                />
+                <ErrorMessage name="matkhau" class="ms-2 text-danger error_message" />
+            </div>
+            <span id="server_message" class="ms-2 text-danger fw-medium">{{ serverMessage }}</span>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary mt-4">Đăng nhập</button>
+            </div>
+        </form>
+    </div>
+</template>
+
 <style>
+@import url('../assets/base.css');
+    
     #login_page {
         width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+    }
+
+    #login_form {
+        width: 35%;
+        background-color: var(--color-white);
+    }
+
+    .error_message {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    #logo_app {
+        height: 25%;
+        width: 80%;
     }
 </style>

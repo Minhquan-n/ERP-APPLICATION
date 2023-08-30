@@ -1,7 +1,7 @@
 import CreateApiService from './api_service'
 
 class Service {
-    constructor (baseUrl = 'api/erpapp') {
+    constructor (baseUrl = '/api/erpapp') {
         this.api = CreateApiService(baseUrl);
     }
 

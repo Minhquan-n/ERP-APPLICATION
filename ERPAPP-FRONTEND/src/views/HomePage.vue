@@ -1,7 +1,3 @@
-<template>
-    <h1>Home Page</h1>
-</template>
-
 <script>
     import $cookie from 'vue-cookies'
 
@@ -17,3 +13,7 @@
         },
     }
 </script>
+
+<template>
+    <h1>Home Page</h1>
+</template>

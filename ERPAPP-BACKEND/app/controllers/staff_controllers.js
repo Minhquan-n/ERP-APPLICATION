@@ -17,7 +17,7 @@ exports.Login = async(req, res, next) => {
                     res.cookie('msnv', account.msnv);
                     res.cookie('position', account.id_bophan);
                     res.cookie('avt_url', avt_url.avt_secure_url);
-                    res.send(`Welcome back ${account.hoten}`);
+                    res.send(`Login success`);
                 } else res.send('Your password is incorrect.');
             })
         }

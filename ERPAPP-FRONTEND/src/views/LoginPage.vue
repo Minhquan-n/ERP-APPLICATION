@@ -3,6 +3,7 @@
     import Service from '@/services/erpapp.services';
     import * as yup from 'yup';
     import {Form, Field, ErrorMessage} from 'vee-validate';
+    import { ref } from 'vue';
 
     export default {
         components: {
@@ -30,6 +31,7 @@
                 serverMessage: '',
                 account,
                 accountSchema,
+                hasError: ref(false),
             }
         },
 
@@ -46,14 +48,23 @@
             async login (data) {
                 try {
                     const login = await Service.login(data);
-                    console.log(login);
+                    if (login !== 'Login success') {
+                        throw new Error(login);
+                    }
+                    this.hasError = ref(false);
+                    this.serverMessage = 'Đăng nhập thành công.';
+                    setTimeout(() => {
+                        this.$router.push({name: 'HomePage'});
+                    }, 500);
                 } catch (error) {
-                    console.log(error)
+                    this.hasError = ref(true);
+                    console.log(error);
+                    this.serverMessage = 'Đăng nhập thất bại. Vui lòng thử lại.'
                 }
             }
         },
 
-        created() {
+        created () {
             this.checkIsAuth();
             this.setStyle();
         },
@@ -68,7 +79,7 @@
             :validation-schema="accountSchema"
             class="p-5 rounded-4 d-flex flex-column justify-content-center"
         >
-            <img src="../assets/verticallogo.png" id="logo_app" class="m-auto mb-5">
+            <img src="../assets/horizontallogo.png" id="logo_app" class="m-auto mb-5">
             <div class="input-group m-3 d-flex flex-column justify-content-start">
                 <label for="msnv" class="form-lable fw-semibold">Mã số nhân viên:</label>
                 <Field name="msnv" 
@@ -95,7 +106,7 @@
                 />
                 <ErrorMessage name="matkhau" class="ms-2 text-danger error_message" />
             </div>
-            <span id="server_message" class="ms-2 text-danger fw-medium">{{ serverMessage }}</span>
+            <span id="server_message" class="ms-2 fw-medium" :class="{'text-danger': hasError, 'text-success': !hasError}">{{ serverMessage }}</span>
             <div class="d-flex justify-content-center">
                 <button class="btn btn-primary mt-4">Đăng nhập</button>
             </div>
@@ -105,7 +116,7 @@
 
 <style>
 @import url('../assets/base.css');
-    
+
     #login_page {
         width: 100%;
         display: flex;
@@ -117,6 +128,7 @@
     #login_form {
         width: 35%;
         background-color: var(--color-white);
+        box-shadow: 0 0 30px 5px var(--color-black-shadow);
     }
 
     .error_message {

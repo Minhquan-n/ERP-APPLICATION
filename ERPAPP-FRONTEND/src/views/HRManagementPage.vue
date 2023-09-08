@@ -3,6 +3,12 @@
     import AppHeader from '@/components/AppHeader.vue';
 
     export default {
+        data () {
+            return {
+                
+            }
+        },
+
         components: {
             AppHeader,
         },
@@ -22,10 +28,6 @@
 <template>
     <AppHeader />
     <main>
-        <h1>Home Page</h1>
+        <h1>Staff List Page</h1>
     </main>
 </template>
-
-<style>
-@import '@/assets/base.css';
-</style>

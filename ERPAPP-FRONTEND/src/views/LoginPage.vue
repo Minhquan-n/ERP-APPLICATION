@@ -115,7 +115,7 @@
 </template>
 
 <style>
-@import url('../assets/base.css');
+    @import '@/assets/base.css';
 
     #login_page {
         width: 100%;

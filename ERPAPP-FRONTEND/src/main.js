@@ -9,16 +9,16 @@ import './assets/base.css'
 // import bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import 'bootstrap/js/dist/modal.js'
+
 
 // import fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faList, faRightFromBracket, faUser, faUserSecret } from '@fortawesome/free-solid-svg-icons'
 import { faTwitter } from '@fortawesome/free-brands-svg-icons'
 
 /* add icons to the library */
-library.add(faUserSecret, faTwitter)
+library.add(faUserSecret, faHouse, faList, faUser, faRightFromBracket)
 
 createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)

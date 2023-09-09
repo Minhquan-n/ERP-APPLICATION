@@ -141,12 +141,13 @@ class Staff_Servieces {
         return info;
     }
 
-    extractpayload_update_avt (paylaod) {
+    extractpayload_update_avt (payload) {
         const avt = {
             avt_secure_url: payload.avt_secure_url,
             avt_public_id: payload.avt_public_id,
             avt_format: payload.avt_format
         }
+        return avt;
     }
 
     // Cap nhat thong tin ca nhan tai khoan

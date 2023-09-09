@@ -16,6 +16,7 @@ exports.Login = async(req, res, next) => {
                     res.cookie('loggedin','true');
                     res.cookie('msnv', account.msnv);
                     res.cookie('position', account.id_bophan);
+                    res.cookie('hoten', account.hoten);
                     res.cookie('avt_url', avt_url.avt_secure_url);
                     res.send(`Login success`);
                 } else res.send('Your password is incorrect.');
@@ -32,6 +33,7 @@ exports.Logout = async (req, res, next) => {
         res.cookie('msnv', '');
         res.cookie('position', '');
         res.cookie('avt_url', '');
+        res.cookie('hoten', '');
         res.send('Logout success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while logout.'));}
 }

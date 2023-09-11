@@ -1,6 +1,6 @@
 <script>
     import $cookie from 'vue-cookies';
-    import AppHeader from '@/components/AppHeader.vue';
+    import AppHeader from '@/components/Layout/AppHeader.vue';
 
     export default {
         data () {

@@ -2,24 +2,24 @@ import { createWebHistory, createRouter } from "vue-router";
 
 const routes = [
     {
-        path: '/',
+        path: '/home',
         name: 'HomePage',
-        component: () => import('@/views/HomePage.vue'),
+        component: () => import('@/views/Admin/HomePage.vue'),
     },
     {
-        path: '/login',
+        path: '/',
         name: 'LoginPage',
         component: () => import('@/views/LoginPage.vue'),
     },
     {
         path: '/catalogues',
         name: 'DataCatalogPage',
-        component: () => import('@/views/DataCatalogPage.vue'),
+        component: () => import('@/views/Admin/DataCatalogPage.vue'),
     },
     {
         path: '/usr',
         name: 'HRPage',
-        component: () => import('@/views/HRManagementPage.vue'),
+        component: () => import('@/views/Admin/HRManagementPage.vue'),
     },
 ];
 

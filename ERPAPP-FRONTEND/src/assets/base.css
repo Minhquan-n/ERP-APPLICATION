@@ -1,15 +1,19 @@
+/* Import font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 /* Khai bao color paletts */
 :root {
   --color-black: #181818;
-  --color-black-shadow: #00000026;
+  --color-black-shadow: #0000000d;
 
   --color-white: #ffffff;
   --color-white-soft: #f4f2f1;
 
-  --color-brown-light: #d1a681;
   --color-brown: #7c3e15;
+  --color-brown-bg: #aa6130;
   --color-brown-shadow: #7c3e1580;
-  --color-brown-light-background: #d1a68133;
+  --color-brown-light: #c19268;
+  --color-brown-light-op: rgba(193, 146, 104, 0.9);
 
   --color-gray: #808080;
   --color-gray-opacity-6: rgba(128, 128, 128,0.6);
@@ -21,7 +25,8 @@
 *::after {
   box-sizing: border-box;
   margin: 0;
-  position: relative;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
   font-weight: normal;
   font-size: 14px;
 }
@@ -30,27 +35,48 @@ body {
   background-color: var(--color-white-soft);
 }
 
-@media (min-width: 1150px) {
+header {
+  width: 250px;
+  height: 100%;
+  box-shadow: 0 0 10px 4px var(--color-black-shadow);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  z-index: 100;
+  overflow-x: hidden;
+  overflow: scroll;
+  transition: all 0.5s ease;
+}
+
+header::-webkit-scrollbar {
+  display: none;
+}
+
+main {
+  width: 100%;
+  padding: 10px 10px 10px 260px;
+  transition: all 0.5s ease;
+}
+
+@media (max-width: 1100px) and (min-width: 801px) {
   header {
-    width: 15%;
-    box-shadow: 0 0 10px 4px var(--color-black-shadow);
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
-    overflow: scroll;
-    overflow-x: hidden;
+    width: 60px;
+    height: 100%;
+    background-color: var(--color-brown-bg);
+    transition: all 0.5s ease;
   }
 
-  header::-webkit-scrollbar{
-    width: 0;
+  header:hover {
+    width: 28%;
+    transition: all 0.5s ease;
   }
 
   main {
-    width: 100%;
-    padding: 10px 10px 10px 16%;
+    padding-left: 70px;
+    transition: all 0.5s ease;
   }
 }

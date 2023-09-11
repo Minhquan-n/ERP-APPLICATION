@@ -18,25 +18,25 @@
                 const position = $cookie.get('position');
                 const navigation_item = [
                     {
-                        path: '/',
+                        path: '/home',
                         routername: 'HomePage',
                         icon: 'house',
                         text: 'Trang chủ',
                         position: [1, 2, 3],
                     },
                     {
-                        path: '/catalogues',
-                        routername: 'DataCatalogPage',
-                        icon: 'list',
-                        text: 'Quản lý danh mục',
-                        position: [1]
-                    },
-                    {
                         path: '/usr',
                         routername: 'HRPage',
                         icon: 'user',
                         text: 'Quản lý nhân sự',
-                        position: [1, 2]
+                        position: [1, 2],
+                    },
+                    {
+                        path: '/catalogues',
+                        routername: 'DataCatalogPage',
+                        icon: 'list',
+                        text: 'Quản lý danh mục',
+                        position: [1],
                     },
                 ];
                 this.height = window.innerHeight;
@@ -71,29 +71,30 @@
 </script>
 
 <template>
-    <header :style="{height: height + 'px'}">
-        <div id="header_logo"><img src="@/assets/horizontallogo.png"></div>
+    <header>
+        <router-link id="header_logo" :to="{name: 'HomePage'}"><img></router-link>
         <div id="header_navigation">
             <ul class="nav">
                 <li class="nav-item w-100" v-for="item in nav_items">
-                    <router-link class="w-100" :class="[path ===  item.path ? 'nav_item_active' : 'nav_item']" :to="{name: item.routername }">
-                        <b class="nav_item_icon"><font-awesome-icon :icon=item.icon /></b>
-                        <p class="nav_item_text">{{ item.text }}</p>
+                    <router-link class="w-100 nav_item" :class="[path ===  item.path ? 'nav_item_active' : '']" :to="{name: item.routername }">
+                        <font-awesome-icon :icon=item.icon class="nav_item_icon"/> {{ item.text }}
                     </router-link>
                 </li>
             </ul>
-            <div id="header_user">
-                <ul class="nav">
-                    <li class="nav-item w-100 nav_item">
-                        <div class="nav_item_icon"><img id="uploadedimage" class="avt" :src="avt" /></div>
-                        <p class="nav_item_text">{{ username }}</p>
-                    </li>
-                    <li class="nav-item w-100 nav_item" @click="logout">
-                        <b class="nav_item_icon"><font-awesome-icon icon="fa-solid fa-right-from-bracket" /></b>
-                        <p class="nav_item_text">Logout</p>
-                    </li>
-                </ul>
-            </div>
+        </div>
+        <div id="header_user">
+            <ul class="nav">
+                <li class="nav-item w-100">
+                    <div class="nav_item">
+                        <img id="uploadedimage" class="nav_avt" :src="avt" /> {{ username }}
+                    </div>
+                </li>
+                <li class="nav-item w-100" @click="logout">
+                    <div class="nav_item">
+                        <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="nav_item_icon"/> Logout
+                    </div>
+                </li>
+            </ul>
         </div>
     </header>
 </template>

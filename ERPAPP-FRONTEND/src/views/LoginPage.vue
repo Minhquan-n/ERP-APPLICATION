@@ -37,7 +37,7 @@
 
         methods: {
             checkIsAuth () {
-                if($cookie.get('loggedin') === 'true') this.$router.push({name: 'HomePage'});
+                if($cookie.get('loggedin') === 'true') this.$router.push({name: 'AdminHomePage'});
             },
 
             setStyle () {
@@ -53,8 +53,11 @@
                     }
                     this.hasError = ref(false);
                     this.serverMessage = 'Đăng nhập thành công.';
+                    const access = $cookie.get('position');
                     setTimeout(() => {
-                        this.$router.push({name: 'HomePage'});
+                        switch (access){
+                            case '1': this.$router.push({name: 'AdminHomePage'}); break;
+                        }
                     }, 500);
                 } catch (error) {
                     this.hasError = ref(true);
@@ -79,7 +82,7 @@
             :validation-schema="accountSchema"
             class="p-5 rounded-4 d-flex flex-column justify-content-center"
         >
-            <img src="../assets/horizontallogo.png" id="logo_app" class="m-auto mb-5">
+            <img src="@/assets/images/horizontallogo.png" id="logo_app" class="m-auto mb-5">
             <div class="input-group m-3 d-flex flex-column justify-content-start">
                 <label for="msnv" class="form-lable fw-semibold">Mã số nhân viên:</label>
                 <Field name="msnv" 
@@ -115,29 +118,5 @@
 </template>
 
 <style>
-    @import '@/assets/base.css';
-
-    #login_page {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #login_form {
-        width: 35%;
-        background-color: var(--color-white);
-        box-shadow: 0 0 30px 5px var(--color-black-shadow);
-    }
-
-    .error_message {
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-
-    #logo_app {
-        height: 25%;
-        width: 80%;
-    }
+    @import '@/assets/loginpage.css'
 </style>

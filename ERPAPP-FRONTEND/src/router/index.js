@@ -3,7 +3,7 @@ import { createWebHistory, createRouter } from "vue-router";
 const routes = [
     {
         path: '/home',
-        name: 'HomePage',
+        name: 'AdminHomePage',
         component: () => import('@/views/Admin/HomePage.vue'),
     },
     {
@@ -13,12 +13,12 @@ const routes = [
     },
     {
         path: '/catalogues',
-        name: 'DataCatalogPage',
+        name: 'AdminDataCatalogPage',
         component: () => import('@/views/Admin/DataCatalogPage.vue'),
     },
     {
         path: '/usr',
-        name: 'HRPage',
+        name: 'AdminHRPage',
         component: () => import('@/views/Admin/HRManagementPage.vue'),
     },
 ];

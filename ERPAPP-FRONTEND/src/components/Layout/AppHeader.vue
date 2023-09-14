@@ -1,5 +1,5 @@
 <script>
-    import Services from '@/services/erpapp.services';
+    import Services from '@/services/staff.services';
     import $cookie from 'vue-cookies';
     import { library } from '@fortawesome/fontawesome-svg-core'
 

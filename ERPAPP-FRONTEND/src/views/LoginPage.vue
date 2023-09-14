@@ -1,6 +1,6 @@
 <script>
     import $cookie from 'vue-cookies';
-    import Service from '@/services/erpapp.services';
+    import Service from '@/services/staff.services';
     import * as yup from 'yup';
     import {Form, Field, ErrorMessage} from 'vee-validate';
     import { ref } from 'vue';

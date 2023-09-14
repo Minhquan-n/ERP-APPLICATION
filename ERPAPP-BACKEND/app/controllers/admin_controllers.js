@@ -140,18 +140,15 @@ exports.SearchUser = async (req, res, next) => {
     try {
         const key = req.body.key;
         const msnv = (key.substr(0, 4)).toUpperCase();
-        if (msnv === 'MNV-') {
+        if (msnv === 'MNV') {
             const key_search = `tk.msnv = '${key}'`
             const list = await Admin_account_services.getSearch(key_search);
-            if (list.length !== 0) res.send(list);
-            else res.send('No result.');
+            list.length !== 0 ? res.send(list) : res.send('No result.');
         }
-        else {
-            const key_search = `ttcn.hoten LIKE '%${key}%'`
-            const list = await Admin_account_services.getSearch(key_search);
-            if (list.length !== 0) res.send(list);
-            else res.send('No result.');
-        }
+        const key_search = `ttcn.hoten LIKE '%${key}%'`
+        const list = await Admin_account_services.getSearch(key_search);
+        if (list.length !== 0) res.send(list);
+        else res.send('No result.');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while search user.'));}
 }
 

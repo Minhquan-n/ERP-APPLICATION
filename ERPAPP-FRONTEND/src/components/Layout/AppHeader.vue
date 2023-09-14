@@ -1,7 +1,6 @@
 <script>
-    import Services from '@/services/staff.services';
+    import Services from '@/services/user.services';
     import $cookie from 'vue-cookies';
-    import { library } from '@fortawesome/fontawesome-svg-core'
 
     export default {
         data () {

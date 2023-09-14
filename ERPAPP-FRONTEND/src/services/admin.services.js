@@ -32,6 +32,44 @@ class Service {
     }
 
     // Cac dich vu thao tac voi cac du lieu danh muc
+    async getEthnicList () {
+        return (await this.api.get('/data/ethniclist')).data;
+    }
+
+    async getProvinceList () {
+        return (await this.api.get('/data/provincelist')).data;
+    }
+
+    async getDistrictList (data) {
+        return (await this.api.get('/data/districtlist', data)).data;
+    }
+
+    async getWardList (data) {
+        return (await this.api.get('/data/wardlist', data)).data;
+    }
+
+    async getOfficeList () {
+        return (await this.api.get('/data/branch')).data;
+    }
+
+    async searchOffice (data) {
+        return (await this.api.put('/data/branch', data)).data;
+    }
+
+    async getAreaList () {
+        return (await this.api.get('/data/department')).data;
+    }
+
+    async searchArea (data) {
+        return (await this.api.put('/data/department', data)).data;
+    }
+    async getPositionList () {
+        return (await this.api.get('/data/position')).data;
+    }
+
+    async searchPosition (data) {
+        return (await this.api.put('/data/position', data)).data;
+    }
 }
 
 export default new Service();

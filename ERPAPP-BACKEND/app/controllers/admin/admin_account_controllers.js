@@ -168,10 +168,11 @@ exports.ResetPass = async (req, res, next) => {
 // Vo hieu hoa tai khoan
 exports.DisableUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body.msnv) return next(new ApiErr(400, "Empty user id"));
     try {
-        res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
+        const disable = await Admin_account_services.disableUser(req.params.id);
+        if (disable !== 'Success') throw new Error('Fail');
+        res.send(disable);
+    } catch (err) { return next(new ApiErr(500, 'An error orcurred while disable user.'));}
 }
 
 // Tao bang cham cong moi

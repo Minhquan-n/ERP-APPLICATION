@@ -4,13 +4,13 @@ const bcrypt = require('bcrypt');
 
 // Dang nhap
 exports.Login = async(req, res, next) => { 
-
+    // Kiem tra dang nhap
     if (req.cookies.loggedin === 'true') return next(new ApiErr(400, 'Logged in already.'));
     if (!req.body?.msnv) return next(new ApiErr(400, 'Empty id and password'));
-    
+    // Kiem tra va khoa chuc nang dang nhap
     if (!req.cookies.loginFail) res.cookie('loginFail', '0');
     else if (req.cookies.loginFail >= 12) res.cookie('block', true);
-
+    // Dang nhap
     try {
         const account = await Staff_account_services.login(req.body);
         if (account.trangthai_taikhoan != 1) res.send('Blocked');
@@ -46,9 +46,11 @@ exports.Logout = async (req, res, next) => {
 
 // Hien thi thong tin nhan vien
 exports.ShowUserInfo = async (req, res, next) => {
+    // Kiem tra dang nhap
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
     if (!req.cookies.msnv) return next(new ApiErr(401, 'Unknow id'));
     try {
+        // Lay thong tin nguoi dung
         const msnv = req.cookies.msnv;
         const acc = await Staff_account_services.getUserAccountInfo(msnv);
         const usr_info = await Staff_account_services.getUserPersonalInfo(msnv);

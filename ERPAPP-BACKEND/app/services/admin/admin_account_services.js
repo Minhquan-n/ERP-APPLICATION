@@ -173,6 +173,14 @@ class Admin_Services {
         (await db).query(query);
         return 'Success';
     }
+
+    // Vo hieu tai khoan nguoi dung
+    async disableUser (msnv) {
+        const db = this.connection();
+        const query = `UPDATE taikhoan SET trangthai_taikhoan = 0 WHERE msnv = '${msnv}'`;
+        (await db).query(query);
+        return 'Success';
+    }
 }
 
 module.exports = new Admin_Services;

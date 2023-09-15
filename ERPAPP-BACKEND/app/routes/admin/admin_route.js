@@ -11,5 +11,6 @@ router.route('/usr/:id')
         .get(account_controller.ShowUserInfo)
         .post(account_controller.ResetPass)
         .put(account_controller.UpdateUser)
+        .delete(account_controller.DisableUser)
 
 module.exports = router;

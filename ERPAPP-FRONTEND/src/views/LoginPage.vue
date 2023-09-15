@@ -32,6 +32,8 @@
                 account,
                 accountSchema,
                 hasError: ref(false),
+                loginFail: 0,
+                blockLogin: false,
             }
         },
 
@@ -46,23 +48,40 @@
             },
 
             async login (data) {
-                try {
-                    const login = await Service.login(data);
-                    if (login !== 'Login success') {
-                        throw new Error(login);
-                    }
-                    this.hasError = ref(false);
-                    this.serverMessage = 'Đăng nhập thành công.';
-                    const access = $cookie.get('position');
-                    setTimeout(() => {
-                        switch (access){
-                            case '1': this.$router.push({name: 'AdminHomePage'}); break;
-                        }
-                    }, 500);
-                } catch (error) {
+                if ($cookie.get('block')) {
                     this.hasError = ref(true);
-                    console.log(error);
-                    this.serverMessage = 'Đăng nhập thất bại. Vui lòng thử lại.'
+                    this.serverMessage = 'CẢNH BÁO: Chúng tôi nghi ngờ xảy ra một cuộc tấn công từ địa chỉ IP này. Liên hệ với quản trị viên để được hỗ trợ.';
+                    this.blockLogin = true;
+                } else {
+                    try {
+                        const login = await Service.login(data);
+                        if (login !== 'Login success') {
+                            throw new Error(login);
+                        }
+                        this.hasError = ref(false);
+                        this.serverMessage = 'Đăng nhập thành công.';
+                        const access = $cookie.get('position');
+                        setTimeout(() => {
+                            switch (access){
+                                case '1': this.$router.push({name: 'AdminHomePage'}); break;
+                            }
+                        }, 500);
+                    } catch (error) {
+                        this.hasError = ref(true);
+                        this.loginFail = $cookie.get('loginFail');
+                        this.loginFail++;
+                        $cookie.set('loginFail', this.loginFail);
+                        if (this.loginFail % 5 == 0) {
+                            const blocktime = 30 * (this.loginFail/5);
+                            this.serverMessage = `Đăng nhập thất bại ${this.loginFail} lần. Vui lòng thử lại sau ${blocktime >= 60 ? (parseInt(blocktime/60)) + ' phút ' + (blocktime - (60 * (parseInt(blocktime/60)))): '0 phút ' + blocktime} giây.`;
+                            this.blockLogin = true;
+                            setTimeout(() => {
+                                this.blockLogin = false;
+                                this.hasError = ref(false);
+                                this.serverMessage = 'Vui lòng thử lại.';
+                            }, (blocktime * 1000));
+                        } else this.serverMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';
+                    }
                 }
             }
         },
@@ -93,6 +112,7 @@
                     aria-describedby="basic-addon1" 
                     v-model="account.msnv"
                     model-value=""
+                    :disabled="blockLogin"
                 />
                 <ErrorMessage  name="msnv" class="ms-2 text-danger error_message" />
             </div>
@@ -106,17 +126,18 @@
                     placeholder="Nhập mật khẩu"
                     v-model="account.matkhau"
                     model-value=""
+                    :disabled="blockLogin"
                 />
                 <ErrorMessage name="matkhau" class="ms-2 text-danger error_message" />
             </div>
             <span id="server_message" class="ms-2 fw-medium" :class="{'text-danger': hasError, 'text-success': !hasError}">{{ serverMessage }}</span>
             <div class="d-flex justify-content-center">
-                <button class="btn btn-primary mt-4">Đăng nhập</button>
+                <button class="btn btn-primary mt-4" :disabled="blockLogin">Đăng nhập</button>
             </div>
         </form>
     </div>
 </template>
 
 <style>
-    @import '@/assets/loginpage.css'
+    @import '@/assets/loginpage.css';
 </style>

@@ -3,9 +3,14 @@ const ApiErr = require('../../api-error');
 const bcrypt = require('bcrypt');
 
 // Dang nhap
-exports.Login = async(req, res, next) => {
+exports.Login = async(req, res, next) => { 
+
     if (req.cookies.loggedin === 'true') return next(new ApiErr(400, 'Logged in already.'));
     if (!req.body?.msnv) return next(new ApiErr(400, 'Empty id and password'));
+    
+    if (!req.cookies.loginFail) res.cookie('loginFail', '0');
+    else if (req.cookies.loginFail >= 12) res.cookie('block', true);
+
     try {
         const account = await Staff_account_services.login(req.body);
         if (account.trangthai_taikhoan != 1) res.send('Blocked');
@@ -18,6 +23,7 @@ exports.Login = async(req, res, next) => {
                     res.cookie('position', account.id_bophan);
                     res.cookie('hoten', account.hoten);
                     res.cookie('avt_url', avt_url.avt_secure_url);
+                    res.cookie('loginFail', '0');
                     res.send(`Login success`);
                 } else res.send('Your password is incorrect.');
             })

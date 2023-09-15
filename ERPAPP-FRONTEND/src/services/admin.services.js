@@ -48,19 +48,19 @@ class Service {
         return (await this.api.get('/data/wardlist', data)).data;
     }
 
-    async getOfficeList () {
+    async getBranchList () {
         return (await this.api.get('/data/branch')).data;
     }
 
-    async searchOffice (data) {
+    async searchBranch (data) {
         return (await this.api.put('/data/branch', data)).data;
     }
 
-    async getAreaList () {
+    async getDepartmentList () {
         return (await this.api.get('/data/department')).data;
     }
 
-    async searchArea (data) {
+    async searchDepartment (data) {
         return (await this.api.put('/data/department', data)).data;
     }
     async getPositionList () {

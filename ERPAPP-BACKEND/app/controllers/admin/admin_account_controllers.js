@@ -152,16 +152,7 @@ exports.SearchUser = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while search user.'));}
 }
 
-// Khoa tai khoan nhan vien
-exports.DisableUser = async (req, res, next) => {
-    if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
-    if (!req.body.msnv) return next(new ApiErr(400, "Empty user id"));
-    try {
-        res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
-}
-
-// Reset mat khau tai khoan cho nhan vien
+// Reset mat khau tai khoan
 exports.ResetPass = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
@@ -171,6 +162,15 @@ exports.ResetPass = async (req, res, next) => {
                 if (reset === 'Success') res.send(reset);
             }
         }) 
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
+}
+
+// Vo hieu hoa tai khoan
+exports.DisableUser = async (req, res, next) => {
+    if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    if (!req.body.msnv) return next(new ApiErr(400, "Empty user id"));
+    try {
+        res.send('ok');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
 }
 

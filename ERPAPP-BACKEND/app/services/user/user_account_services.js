@@ -31,7 +31,7 @@ class Staff_Servieces {
         return workinghours;
     }
 
-    //Tao thong tin dang nhap
+    //Lay thong tin dang nhap tu payload
     extractpayload_login (payload) {
         const account = {
             msnv: payload.msnv,
@@ -117,7 +117,7 @@ class Staff_Servieces {
         return data.then((data) => {return data[0][0]});
     }
 
-    // Tach thong tin cap nhat tai khoan
+    // Lay thong tin cap nhat tai khoan tu payload
     extractpayload_updateUserInfo (payload) {
         const info = {
             sdt: payload.sdt,
@@ -141,6 +141,7 @@ class Staff_Servieces {
         return info;
     }
 
+    // Lay thong tin cap nhat anh dai dien tu payload
     extractpayload_update_avt (payload) {
         const avt = {
             avt_secure_url: payload.avt_secure_url,

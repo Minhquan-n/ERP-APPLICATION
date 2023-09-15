@@ -31,6 +31,14 @@ class Service {
         return (await this.api.put(`/usr/${id}`, data)).data;
     }
 
+    async enableUser (id) {
+        return (await this.api.patch(`/usr/${id}`)).data;
+    }
+    
+    async disableUser (id) {
+        return (await this.api.delete(`/usr/${id}`)).data;
+    }
+
     // Cac dich vu thao tac voi cac du lieu danh muc
     async getEthnicList () {
         return (await this.api.get('/data/ethniclist')).data;

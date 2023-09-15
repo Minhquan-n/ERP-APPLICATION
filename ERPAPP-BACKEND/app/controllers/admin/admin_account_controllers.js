@@ -175,6 +175,16 @@ exports.DisableUser = async (req, res, next) => {
     } catch (err) { return next(new ApiErr(500, 'An error orcurred while disable user.'));}
 }
 
+// Kich hoat tai khoan nguoi dung
+exports.EnableUser = async (req, res, next) => {
+    if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    try {
+        const enable = await Admin_account_services.enableUser(req.params.id);
+        if (enable !== 'Success') throw new Error('Fail');
+        res.send(enable);
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while enable user.'))};
+}
+
 // Tao bang cham cong moi
 exports.CreateTimesheet = async (req, res, next) => {
     try {

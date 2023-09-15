@@ -49,7 +49,7 @@
             async login (data) {
                 if ($cookie.get('block')) {
                     this.hasError = true;
-                    this.serverMessage = 'CẢNH BÁO: Chúng tôi nghi ngờ xảy ra một cuộc tấn công từ địa chỉ IP này. Liên hệ với quản trị viên để được hỗ trợ.';
+                    this.serverMessage = 'CẢNH BÁO: Bạn không thể truy cập vào hệ thống từ địa chỉ IP này. Liên hệ với quản trị viên để được hỗ trợ.';
                     this.blockLogin = true;
                 } else {
                     try {

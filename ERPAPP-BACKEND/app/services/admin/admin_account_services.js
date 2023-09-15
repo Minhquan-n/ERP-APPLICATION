@@ -181,6 +181,14 @@ class Admin_Services {
         (await db).query(query);
         return 'Success';
     }
+
+    // Kich hoat lai tai khoan nguoi dung
+    async enableUser (msnv) {
+        const db = this.connection();
+        const query = `UPDATE taikhoan SET trangthai_taikhoan = 1 WHERE msnv = '${msnv}'`;
+        (await db).query(query);
+        return 'Success';
+    }
 }
 
 module.exports = new Admin_Services;

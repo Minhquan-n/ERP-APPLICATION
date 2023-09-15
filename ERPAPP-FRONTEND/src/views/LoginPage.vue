@@ -3,7 +3,6 @@
     import Service from '@/services/user.services';
     import * as yup from 'yup';
     import {Form, Field, ErrorMessage} from 'vee-validate';
-    import { ref } from 'vue';
 
     export default {
         components: {
@@ -31,7 +30,7 @@
                 serverMessage: '',
                 account,
                 accountSchema,
-                hasError: ref(false),
+                hasError: false,
                 loginFail: 0,
                 blockLogin: false,
             }
@@ -49,25 +48,29 @@
 
             async login (data) {
                 if ($cookie.get('block')) {
-                    this.hasError = ref(true);
+                    this.hasError = true;
                     this.serverMessage = 'CẢNH BÁO: Chúng tôi nghi ngờ xảy ra một cuộc tấn công từ địa chỉ IP này. Liên hệ với quản trị viên để được hỗ trợ.';
                     this.blockLogin = true;
                 } else {
                     try {
                         const login = await Service.login(data);
-                        if (login !== 'Login success') {
+                        if (login === 'Blocked') {
+                            this.hasError = true;
+                            this.serverMessage = 'Tài khoản đã bị vô hiệu hóa.';
+                        } else if (login !== 'Login success') {
                             throw new Error(login);
+                        } else {
+                            this.hasError = false;
+                            this.serverMessage = 'Đăng nhập thành công.';
+                            const access = $cookie.get('position');
+                            setTimeout(() => {
+                                switch (access){
+                                    case '1': this.$router.push({name: 'AdminHomePage'}); break;
+                                }
+                            }, 500);
                         }
-                        this.hasError = ref(false);
-                        this.serverMessage = 'Đăng nhập thành công.';
-                        const access = $cookie.get('position');
-                        setTimeout(() => {
-                            switch (access){
-                                case '1': this.$router.push({name: 'AdminHomePage'}); break;
-                            }
-                        }, 500);
                     } catch (error) {
-                        this.hasError = ref(true);
+                        this.hasError = true;
                         this.loginFail = $cookie.get('loginFail');
                         this.loginFail++;
                         $cookie.set('loginFail', this.loginFail);
@@ -77,7 +80,7 @@
                             this.blockLogin = true;
                             setTimeout(() => {
                                 this.blockLogin = false;
-                                this.hasError = ref(false);
+                                this.hasError = false;
                                 this.serverMessage = 'Vui lòng thử lại.';
                             }, (blocktime * 1000));
                         } else this.serverMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';

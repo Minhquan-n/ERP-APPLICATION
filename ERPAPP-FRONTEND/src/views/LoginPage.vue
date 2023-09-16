@@ -142,5 +142,5 @@
 </template>
 
 <style>
-    @import '@/assets/loginpage.css';
+    @import '@/assets/LoginPage/loginpage.css';
 </style>

@@ -120,8 +120,6 @@ class Staff_Servieces {
     // Lay thong tin cap nhat tai khoan tu payload
     extractpayload_updateUserInfo (payload) {
         const info = {
-            sdt: payload.sdt,
-            email: payload.email,
             hoten: payload.hoten,
             gioitinh: payload.gioitinh,
             ngaysinh: payload.ngaysinh,
@@ -141,6 +139,15 @@ class Staff_Servieces {
         return info;
     }
 
+    // Lay thong tin tai khoan
+    extractpayload_updateUserAcc (payload) {
+        const acc = {
+            sdt: payload.sdt,
+            email: payload.email
+        }
+        return acc;
+    }
+
     // Lay thong tin cap nhat anh dai dien tu payload
     extractpayload_update_avt (payload) {
         const avt = {
@@ -151,35 +158,55 @@ class Staff_Servieces {
         return avt;
     }
 
-    // Cap nhat thong tin ca nhan tai khoan
+    // Cap nhat thong tin tai khoan
+    async updateUserAcc (msnv, payload) {
+        const db = this.connection();
+        const acc = this.extractpayload_updateUserAcc(payload);
+        const info_account = `sdt = '${data.sdt}', email = '${data.email}'`;
+        const query = `UPDATE taikhoan SET ${info_account} WHERE msnv = '${msnv}'`;
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
+    }
+
+    // Cap nhat thong tin ca nhan
     async updateUserInfo (msnv, payload) {
         const db = this.connection();
-        const data = this.extractpayload_updateUserInfo(payload);
-        const info_account = `sdt = '${data.sdt}', email = '${data.email}'`;
-        const info_user = `hoten = '${data.hoten}', gioitinh = '${data.gioitinh}', ngaysinh = '${data.ngaysinh}', dantoc = '${data.dantoc}', cccd = '${data.cccd}', ngaycap_cccd = '${data.ngaycap_cccd}', noicap_cccd = '${data.noicap_cccd}', trinhdo = '${data.trinhdo}', dclh_sonha = '${data.dclh_sonha}', dclh_tinhthanh = '${data.dclh_tinhthanh}', dclh_quanhuyen = '${data.dclh_quanhuyen}', dclh_phuongxa = '${data.dclh_phuongxa}', hoten_nguoithan = '${data.hoten_nguoithan}', sdt_nguoithan = '${data.sdt_nguoithan}', mqh_nguoithan = '${data.mqh_nguoithan}'`;
-        const query_account = `UPDATE taikhoan SET ${info_account} WHERE msnv = '${msnv}'`;
-        const query_userinfo = `UPDATE thongtincanhan SET ${info_user} WHERE msnv = '${msnv}'`;
-        (await db).query(query_account);
-        (await db).query(query_userinfo);
-        return "Update success.";
+        const info = this.extractpayload_updateUserInfo(payload);
+        const info_user = `hoten = '${info.hoten}', gioitinh = '${info.gioitinh}', ngaysinh = '${info.ngaysinh}', dantoc = '${info.dantoc}', cccd = '${info.cccd}', ngaycap_cccd = '${info.ngaycap_cccd}', noicap_cccd = '${info.noicap_cccd}', trinhdo = '${info.trinhdo}', dclh_sonha = '${info.dclh_sonha}', dclh_tinhthanh = '${info.dclh_tinhthanh}', dclh_quanhuyen = '${info.dclh_quanhuyen}', dclh_phuongxa = '${info.dclh_phuongxa}', hoten_nguoithan = '${info.hoten_nguoithan}', sdt_nguoithan = '${info.sdt_nguoithan}', mqh_nguoithan = '${info.mqh_nguoithan}'`;
+        const query = `UPDATE thongtincanhan SET ${info_user} WHERE msnv = '${msnv}'`;
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Cap nhat anh dai dien tai khoan
     async updateAvt (msnv, payload) {
         const db = this.connection();
-        const data = this.extractpayload_update_avt(payload);
-        const query = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${msnv}', '${data.avt_secure_url}', '${data.avt_public_id}', '${data.avt_format}')`;
+        const avt = this.extractpayload_update_avt(payload);
+        const query = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${msnv}', '${avt.avt_secure_url}', '${avt.avt_public_id}', '${avt.avt_format}')`;
+        // Thay doi trang thai cua avt hien thoi
         (await db).query(`UPDATE anhdaidien SET avt_status = 0 WHERE msnv = '${msnv}'`);
-        (await db).query(query);
-        return 'Update avatar success.';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Doi mat khau tai khoan
     async changePass (payload) {
         const db = this.connection();
         const query = `UPDATE taikhoan SET matkhau = '${payload.matkhaumoi}' WHERE msnv = '${payload.msnv}'`;
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        })
     }
 }
 

@@ -118,8 +118,11 @@ class Admin_Services {
         const db = this.connection();
         const info = this.extractpayload_UpdateUser(payload);
         const query = `UPDATE thongtincongviec SET soBHXH = '${info.soBHXH}', soBHYT = '${info.soBHYT}', noidkkcb = '${info.noidkkcb}', tyledongbaohiem = ${info.tyledongbaohiem}, luongcoban = ${info.luongcoban}, luongcoban1h = ${info.luongcoban1h}, phepnam = ${info.phepnam}, loaihinhcongviec = ${info.loaihinhcongviec} WHERE msnv = '${msnv}'`;
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Cap nhat thong tin hop dong lao dong cua nhan vien
@@ -129,30 +132,39 @@ class Admin_Services {
         const query_updateStatus = `UPDATE hopdonglaodong SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO hopdonglaodong (msnv, sohdld, ngaykyhopdong, loaihopdong) VALUES ('${msnv}', '${info.sohdld}', '${info.ngaykyhopdong}', '${info.loaihopdong}')`;
         (await db).query(query_updateStatus);
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Cap nhat thong tin chi nhanh lam viec cua nhan vien
-    async updateUserOffice (msnv, payload) {
+    async updateUserBranch (msnv, payload) {
         const db = this.connection();
         const info = this.extractpayload_UpdateUser(payload);
         const query_updateStatus = `UPDATE chinhanh SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO chinhanh (msnv, id_chinhanh, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_chinhanh}, '${info.ngaybatdaulamviec}')`;
         (await db).query(query_updateStatus);
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Cap nhat thong tin bo phan lam viec cua nhan vien
-    async updateUserArea (msnv, payload) {
+    async updateUserDepartment (msnv, payload) {
         const db = this.connection();
         const info = this.extractpayload_UpdateUser(payload);
         const query_updateStatus = `UPDATE bophan SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO bophan (msnv, id_bophan, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_bophan}, '${ngaybatdaulamviec}')`;
         (await db).query(query_updateStatus);
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Cap nhat thong tin chuc vu lam viec cua nhan vien
@@ -162,32 +174,44 @@ class Admin_Services {
         const query_updateStatus = `UPDATE chucvu SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO chucvu (msnv, id_chucvu, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_chucvu}, '${info.ngaybatdaulamviec}')`
         (await db).query(query_updateStatus);
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Reset mat khau cho tai khoan nhan vien
     async resetPass (msnv, matkhau) {
         const db = this.connection();
         const query = `UPDATE taikhoan SET matkhau = '${matkhau}' WHERE msnv = '${msnv}'`;
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Vo hieu tai khoan nguoi dung
     async disableUser (msnv) {
         const db = this.connection();
         const query = `UPDATE taikhoan SET trangthai_taikhoan = 0 WHERE msnv = '${msnv}'`;
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 
     // Kich hoat lai tai khoan nguoi dung
     async enableUser (msnv) {
         const db = this.connection();
         const query = `UPDATE taikhoan SET trangthai_taikhoan = 1 WHERE msnv = '${msnv}'`;
-        (await db).query(query);
-        return 'Success';
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 }
 

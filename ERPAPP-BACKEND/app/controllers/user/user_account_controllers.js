@@ -69,22 +69,38 @@ exports.ShowUserInfo = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
 }
 
-// Cap nhat thong tin ca nhan cua nhan vien
+// Cap nhat thong tin ca nhan
 exports.UpdateUserInfo = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
     try {
         const msnv = req.cookies.msnv;
+
+        // Lay thong tin hien co kiem tra thay doi
         const cur_avt = await Staff_account_services.getUserAvt(msnv);
+        const acc = await Staff_account_services.getUserAccountInfo(msnv);
+
+        // Kiem tra cap nhat avt
         if (req.body.avt_public_id && (cur_avt.avt_public_id !== req.body.avt_public_id)) {
             const update_avt = await Staff_account_services.updateAvt(msnv, req.body);
-            if (update_avt !== 'Update avatar success.') return next(new ApiErr(500, 'An error orcurred while update avatar.'));
+            if (!update_avt) throw new Error('Fail');
         }
+
+        // Kiem tra cap nhat account
+        if (req.body.email !== acc.email || req.body.sdt !== acc.sdt) {
+            const update_acc = await Staff_account_services.updateUserAcc(msnv, req.body);
+            if (!update_acc) throw new Error('Fail');
+        }
+
+        // Cap nhat thong tin ca nhan
         const update_result = await Staff_account_services.updateUserInfo(msnv, req.body);
-        if (update_result === 'Update success.') {
-            const avt = await Staff_account_services.getUserAvt(msnv);
-            res.cookie('avt_url', avt.avt_secure_url);
-            res.send(update_result);
-        }
+        if (!update_result) throw new Error('Fail');
+
+        // Lay duong dan avt va cap nhat cookie luu thong tin avt
+        const avt = await Staff_account_services.getUserAvt(msnv);
+        res.cookie('avt_url', avt.avt_secure_url);
+
+        // Tra ve ket qua
+        res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while update user information.'));}
 }
 
@@ -94,6 +110,7 @@ exports.ChangePassword = async (req, res, next) => {
     if (!req.body.matkhau || !req.body.matkhaumoi) return next(new ApiErr(400, 'Empty current password and new password'));
     try {
         const payload = {msnv: req.cookies.msnv, matkhau: req.body.matkhau, matkhaumoi: req.body.matkhaumoi};
+        // Kiem tra mat khau hien tai
         const check = await Staff_account_services.login(payload);
         bcrypt.compare(payload.matkhau, check.matkhau, async (err, result) => {
             if (result) {
@@ -101,7 +118,8 @@ exports.ChangePassword = async (req, res, next) => {
                     if (!err) {
                         payload.matkhaumoi = hash;
                         const change = await Staff_account_services.changePass(payload);
-                        if (change === 'Success') res.send(change);
+                        if (!change) throw new Error('Fail');
+                        res.send('Success');
                     }
                 })
             } else {res.send('Your password is incorrect.');}

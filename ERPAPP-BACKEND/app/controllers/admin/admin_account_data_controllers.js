@@ -46,6 +46,27 @@ exports.GetBranchList = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load branch list.'))};
 }
 
+// Them chi nhanh
+exports.AddBranch = async (req, res, next) => {
+    if (req.body.id || !req.body.tenchinhanh || !req.body.sonha || !req.body.tinhthanh || !req.body.quanhuyen || !req.body.phuongxa) 
+        return next(new ApiErr(400, 'Empty information to add new branch'));
+    try {
+        const add = await Datalogues_Service.addBranch(req.body);
+        if (!add) throw new Error('Fail');
+        res.send('Success');
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while add new branch.'))};
+}
+
+// Cap nhat chi nhanh
+exports.UpdateBranch = async (req, res, next) => {
+    if (!req.body.id) return next(new ApiErr(400, 'Empty branch id.'));
+    try {
+        const update = await Datalogues_Service.updateBranch(req.body.id, req.body);
+        if (!update) throw new Error('Fail');
+        res.send('Success');
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while update branch.'))};
+}
+
 // Tim kiem chi nhanh
 exports.SearchBranch = async (req, res, next) => {
     if (!req.body.key) return next(new ApiErr(400, 'Empty key.'));
@@ -63,6 +84,26 @@ exports.GetDepartmentList = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load department list.'))};
 }
 
+// Them bo phan
+exports.AddDepartment = async (req, res, next) => {
+    if (req.body.id || !req.body.tenbophan) return next(new ApiErr(400, 'Empty name of department.'));
+    try {
+        const add = await Datalogues_Service.addDepartment(req.body.tenbophan);
+        if (!add) throw new Error('Fail');
+        res.send('Success');
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while add new department'))};
+}
+
+// Cap nhat bo phan
+exports.UpdateDepartment = async (req, res, next) => {
+    if (!req.body.id) return next(new ApiErr(400, 'Empty department id.'));
+    try {
+        const update = await Datalogues_Service.updateDepartment(req.body.id, req.body.tenbophan);
+        if (!update) throw new Error('Fail');
+        res.send('Success');
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while update department.'))};
+}
+
 // Tim kiem bo phan
 exports.SearchDepartment = async (req, res, next) => {
     if (!req.body.key) return next(new ApiErr(400, 'Empty key.'));
@@ -78,6 +119,26 @@ exports.GetPositionList = async (req, res, next) => {
         const list = await Datalogues_Service.getPositionList();
         res.send(list);
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while load positon list.'))};
+}
+
+// Them chuc vu
+exports.AddPosition = async (req, res, next) => {
+    if (req.body.if || !req.body.tenchucvu) return next(new ApiErr(400, 'Empty name of position.'));
+    try {
+        const add = await Datalogues_Service.addPosition(req.body.tenchucvu);
+        if (!add) throw new Error('Fail');
+        res.send('Success');
+    } catch (err) {return next(new ApiErr(500), 'An error orcurred while add new position.')};
+}
+
+// Cap nhat chuc vu
+exports.UpdatePosition = async (req, res, next) => {
+    if (!req.body.id) return next(new ApiErr(400, 'Epmty position id.'));
+    try {
+        const update = await Datalogues_Service.updatePosition(req.body.id, req.body.tenchucvu);
+        if (!update) throw new Error('Fail');
+        res.send('Success');
+    } catch (err) {return next(new ApiErr(500, 'An error orcurred while update position.'))};
 }
 
 // Tim kiem chuc vu

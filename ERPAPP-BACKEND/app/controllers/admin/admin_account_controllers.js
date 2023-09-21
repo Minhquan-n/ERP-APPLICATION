@@ -10,6 +10,7 @@ exports.CreateUser = async (req, res, next) => {
     if (!req.body.sdt) return next(new ApiErr(400, 'Empty phone number'));
     else if (!req.body.hoten) return next(new ApiErr(400, 'Empty user name'));
     try {
+        // Kiem tra ton tai cua sdt va email
         const phoneCheck = await Staff_account_services.verify_phone(req.body.sdt);
         const emailCheck = await Staff_account_services.verify_email(req.body.email);
         if (phoneCheck) return next (new ApiErr(400, 'Phone number existed'));
@@ -18,11 +19,13 @@ exports.CreateUser = async (req, res, next) => {
             else {
                 bcrypt.hash('12345678', 10, async (err, hash) => {
                     if (!err) {
+                        // Lay so luong nhan vien hien tai va tao msnv moi
                         const staffamount = await Admin_account_services.getStaffAmount();
                         const newAmount = staffamount + 1;
                         const msnv = 'MNV0' + staffamount;
                         const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
                         const salaryOn1H = (req.body.luongcoban / workinghours);
+                        // Tao payload thong tin 
                         const payload = {
                             msnv: msnv,
                             sdt: req.body.sdt,
@@ -80,6 +83,7 @@ exports.ShowUserInfo = async (req, res, next) => {
 exports.UpdateUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
+        // Tao payload cap nhat thong tin cong viec
         const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
         const salaryOn1H = (req.body.luongcoban / workinghours);
         const payload = {
@@ -99,28 +103,35 @@ exports.UpdateUser = async (req, res, next) => {
             id_chucvu: req.body.chucvu,
             ngaybatdaulamviec: req.body.ngaybatdaulamviec
         }
+        // Lay thong tin hien tai de kiem tra
         const oldLaborContract = await Staff_account_services.getUserLaborContract(req.params.id);
         const oldoffice = await Staff_account_services.getUserOffice(req.params.id);
         const oldarea = await Staff_account_services.getUserArea(req.params.id);
         const oldPosition = await Staff_account_services.getUserPosition(req.params.id);
+        // Kiem tra mshd
         if (payload.sohdld !== oldLaborContract.sohdld) {
             const laborcontract = await Admin_account_services.updateUserLaborContract(req.params.id, payload);
-            if (laborcontract !== 'Success') return next(new ApiErr(500, "An error orcurred while update labor contract."));
+            if (!laborcontract) throw new Error('Fail');
         }
+        // Kiem tra chi nhanh lam viec
         if (payload.id_chinhanh !== oldoffice.id_chinhanh) {
-            const office = await Admin_account_services.updateUserOffice(req.params.id, payload);
-            if (office !== 'Succes') return next(new ApiErr(500, "An error orcurred while update office."));
+            const office = await Admin_account_services.updateUserBranch(req.params.id, payload);
+            if (!office) throw new Error('Fail');
         }
+        // Kiem tra bo phan lam viec
         if (payload.id_bophan !== oldarea.id_bophan) {
-            const area = await Admin_account_services.updateUserArea(req.params.id, payload);
-            if (area !== 'Succes') return next(new ApiErr(500, "An error orcurred while update depatment."));
+            const area = await Admin_account_services.updateUserDepartment(req.params.id, payload);
+            if (!area) throw new Error('Fail');
         }
+        // Kiem tra chuc vu lam viec
         if (payload.id_chucvu !== oldPosition.id_chucvu) {
             const position = await Admin_account_services.updateUserPosition(req.params.id, payload);
             if (position !== 'Succes') return next(new ApiErr(500, "An error orcurred while update position."));
         }
+        // Cap nhat thong tin cong viec
         const result_workinfo = await Admin_account_services.updateUserWorkInfo(req.params.id, payload);
-        if (result_workinfo === 'Success') res.send('Update success.');
+        if (!result_workinfo) throw new Error('Fail');
+        res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while update user.'));}
 }
 
@@ -159,7 +170,8 @@ exports.ResetPass = async (req, res, next) => {
         bcrypt.hash('12345678', 10, async (err, hash) => {
             if (!err) {
                 const reset = await Admin_account_services.resetPass(req.params.id, hash);
-                if (reset === 'Success') res.send(reset);
+                if (!reset) throw new Error('Fail');
+                res.send('Success');
             }
         }) 
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
@@ -170,8 +182,8 @@ exports.DisableUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
         const disable = await Admin_account_services.disableUser(req.params.id);
-        if (disable !== 'Success') throw new Error('Fail');
-        res.send(disable);
+        if (!disable) throw new Error('Fail');
+        res.send('Success');
     } catch (err) { return next(new ApiErr(500, 'An error orcurred while disable user.'));}
 }
 
@@ -180,8 +192,8 @@ exports.EnableUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
         const enable = await Admin_account_services.enableUser(req.params.id);
-        if (enable !== 'Success') throw new Error('Fail');
-        res.send(enable);
+        if (!enable) throw new Error('Fail');
+        res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while enable user.'))};
 }
 

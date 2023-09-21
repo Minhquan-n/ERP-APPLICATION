@@ -12,14 +12,20 @@ router.route('/data/wardlist').get(staff_datalogues.GetWardList)
 
 router.route('/data/branch')
         .get(staff_datalogues.GetBranchList)
-        .put(staff_datalogues.SearchBranch)
+        .post(staff_datalogues.AddBranch)
+        .put(staff_datalogues.UpdateBranch)
+        .patch(staff_datalogues.SearchBranch)
 
 router.route('/data/department')
         .get(staff_datalogues.GetDepartmentList)
-        .put(staff_datalogues.SearchDepartment)
+        .post(staff_datalogues.AddDepartment)
+        .put(staff_datalogues.UpdateDepartment)
+        .patch(staff_datalogues.SearchDepartment)
 
 router.route('/data/position')
         .get(staff_datalogues.GetPositionList)
-        .put(staff_datalogues.SearchPosition)
+        .post(staff_datalogues.AddPosition)
+        .put(staff_datalogues.UpdatePosition)
+        .patch(staff_datalogues.SearchPosition)
 
 module.exports = router;

@@ -14,7 +14,7 @@ const routes = [
     {
         path: '/catalogues',
         name: 'AdminDataCatalogPage',
-        component: () => import('@/views/Admin/DataCatalogues/DataCatalogPage.vue'),
+        component: () => import('@/views/Admin/DataCatalogues/BranchListPage.vue'),
     },
     {
         path: '/usr',

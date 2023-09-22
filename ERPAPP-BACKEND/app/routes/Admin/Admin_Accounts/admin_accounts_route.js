@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const account_controller = require('../../controllers/admin/admin_account_controllers');
+const account_controller = require('../../../controllers/Admin/Admin_Accounts/admin_account_controllers');
 
 router.route('/usr')
         .get(account_controller.ShowStaff)

@@ -3,10 +3,11 @@ const cors = require('cors');
 const cookie = require('cookie-parser');
 
 const app = express();
+
 const ApiError = require('./app/api-error');
-const AdminRouter = require('./app/routes/admin/admin_route');
-const UserRouter = require('./app/routes/user/user_route');
-const UserDatalogueRouter = require('./app/routes/admin/admin_data_route');
+const AdminRouter = require('./app/routes/Admin/Admin_Accounts/admin_accounts_route');
+const UserRouter = require('./app/routes/User/User_Accounts/user_accounts_route');
+const UserDatalogueRouter = require('./app/routes/Admin/Admin_Catalogues/admin_catalogues_route');
 
 app.use(cors());
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use('/api/erpapp', AdminRouter);
 app.use('/api/erpapp', UserRouter);
 app.use('/api/erpapp', UserDatalogueRouter);
 
+// Bat loi truy cap duong dan khong ton tai
 app.use((req, res, next) => {
     return next(new ApiError(404, "Resource not found"));
 });

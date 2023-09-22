@@ -1,6 +1,6 @@
-const Admin_account_services = require('../../services/admin/admin_account_services');
-const Staff_account_services = require('../../services/user/user_account_services');
-const ApiErr = require('../../api-error');
+const Admin_account_services = require('../../../services/Admin/Admin_Accounts/admin_account_services');
+const Staff_account_services = require('../../../services/User/User_Accounts/user_account_services');
+const ApiErr = require('../../../api-error');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 

@@ -1,5 +1,5 @@
-const Datalogues_Service  = require('../../services/admin/admin_account_data_services');
-const ApiErr = require('../../api-error');
+const Datalogues_Service  = require('../../../services/Admin/Admin_Catalogues/admin_account_data_services');
+const ApiErr = require('../../../api-error');
 require('dotenv').config();
 
 // Lay danh sach dan toc

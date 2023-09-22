@@ -1,5 +1,5 @@
-const config = require('../../config');
-const database = require('../../mysql/database.connect');
+const config = require('../../../config');
+const database = require('../../../mysql/database.connect');
 
 class Admin_Services {
     // Phuong thuc ket noi csdl

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const staff_datalogues = require('../../controllers/admin/admin_account_data_controllers');
+const staff_datalogues = require('../../../controllers/Admin/Admin_Catalogues/admin_account_data_controllers');
 
 router.route('/data/ethniclist').get(staff_datalogues.GetEthnicList)
 

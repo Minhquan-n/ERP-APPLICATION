@@ -8,31 +8,6 @@ class Admin_Services {
         return database_connection;
     }
 
-    // Tong hop thong tin tai khoan
-    extractpayload_createUser (payload) {
-        const newusr = {
-            msnv: payload.msnv,
-            sdt: payload.sdt,
-            email: payload.email,
-            matkhau: payload.matkhau,
-            hoten: payload.hoten,
-            avt_secure_url: payload.avt_secure_url,
-            avt_public_id: payload.avt_public_id,
-            avt_format: payload.avt_format,
-            ngaybatdau: payload.ngaykyhopdong,
-            sohdld: payload.sohdld,
-            ngaykyhopdong: payload.ngaykyhopdong,
-            loaihopdong: payload.loaihopdong,
-            luongcoban: payload.luongcoban,
-            luongcoban1h: payload.luongcoban1h,
-            loaihinhcongviec: payload.loaihinhcongviec,
-            chinhanh: payload.chinhanh,
-            bophan: payload.bophan,
-            chucvu: payload.chucvu
-        };
-        return newusr;
-    }
-
     // Lay so luong nhan vien hien tai cua doanh nghiep
     async getStaffAmount () {
         const db = this.connection();
@@ -49,11 +24,49 @@ class Admin_Services {
         return 'Success';
     }
 
-    // Tao tai khoan cho nguoi dung moi
-    async createUser (payload) {
-        const usr = this.extractpayload_createUser(payload);
+    // Lay so gio lam viec trong thang cua loai hinh cong viec
+    async getWorkingHours (id) {
         const db = this.connection();
-        const query_account = `INSERT INTO taikhoan (msnv, sdt, email, matkhau) VALUES ('${usr.msnv}','${usr.sdt}','${usr.email}','${usr.matkhau}')`;
+        const data = (await db).execute(`SELECT sogiolamviec FROM loaihinhcongviec WHERE id_loaihinhcongviec = ${id}`);
+        const workinghours = data.then((data) => {return data[0][0].sogiolamviec});
+        return workinghours;
+    }
+
+    // Tong hop thong tin tai khoan
+    async extractpayload_createUser (msnv, pass, payload) {
+        // Lay so luong nhan vien hien tai va tao msnv moi
+        const workinghours = await this.getWorkingHours(payload.loaihinhcongviec);
+        const salaryOn1H = (payload.luongcoban / workinghours);
+        // Tao payload thong tin 
+        const newusr = {
+            msnv: msnv,
+            sdt: payload.sdt,
+            email: payload.email,
+            matkhau: pass,
+            hoten: payload.hoten,
+            ngaybatdau: payload.ngaykyhopdong,
+            sohdld: payload.sohdld,
+            ngaykyhopdong: payload.ngaykyhopdong,
+            loaihopdong: payload.loaihopdong,
+            luongcoban: payload.luongcoban,
+            luongcoban1h: salaryOn1H,
+            loaihinhcongviec: payload.loaihinhcongviec,
+            chinhanh: payload.chinhanh,
+            bophan: payload.bophan,
+            chucvu: payload.chucvu,
+            avt_secure_url: process.env.AVT_SECURE_URL,
+            avt_public_id: process.env.AVT_PUBLIC_ID,
+            avt_format: process.env.AVT_FORMAT,
+            ngaytaotk: payload.ngaykyhopdong
+        }
+        return newusr;
+    }    
+
+    // Tao tai khoan cho nguoi dung moi
+    async createUser (msnv, pass, payload) {
+        const usr = await this.extractpayload_createUser(msnv, pass, payload);
+        const db = this.connection();
+        const query_account = `INSERT INTO taikhoan (msnv, sdt, email, matkhau, ngaytaotk) VALUES ('${usr.msnv}','${usr.sdt}','${usr.email}','${usr.matkhau}', '${usr.ngaytaotk}')`;
         const query_userinfo = `INSERT INTO thongtincanhan (msnv, hoten, dantoc, dclh_tinhthanh, dclh_quanhuyen, dclh_phuongxa) VALUES ('${usr.msnv}','${usr.hoten}', 0, '000', '000', 0)`;
         const query_avt = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${usr.msnv}', '${usr.avt_secure_url}', '${usr.avt_public_id}', '${usr.avt_format}')`;
         const query_workinfo = `INSERT INTO thongtincongviec (msnv, ngaybatdau, luongcoban, luongcoban1h, loaihinhcongviec) VALUES ('${usr.msnv}', '${usr.ngaybatdau}', ${usr.luongcoban}, ${usr.luongcoban1h}, ${usr.loaihinhcongviec})`;

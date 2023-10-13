@@ -14,46 +14,20 @@ exports.CreateUser = async (req, res, next) => {
         const phoneCheck = await Staff_account_services.verify_phone(req.body.sdt);
         const emailCheck = await Staff_account_services.verify_email(req.body.email);
         if (phoneCheck) return next (new ApiErr(400, 'Phone number existed'));
+        else if (emailCheck) return next (new ApiErr(400, 'Email number existed'));
         else {
-            if (emailCheck) return next (new ApiErr(400, 'Email number existed'));
-            else {
-                bcrypt.hash('12345678', 10, async (err, hash) => {
-                    if (!err) {
-                        // Lay so luong nhan vien hien tai va tao msnv moi
-                        const staffamount = await Admin_account_services.getStaffAmount();
-                        const newAmount = staffamount + 1;
-                        const msnv = 'MNV0' + staffamount;
-                        const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
-                        const salaryOn1H = (req.body.luongcoban / workinghours);
-                        // Tao payload thong tin 
-                        const payload = {
-                            msnv: msnv,
-                            sdt: req.body.sdt,
-                            email: req.body.email,
-                            matkhau: hash,
-                            hoten: req.body.hoten,
-                            ngaybatdau: req.body.ngaykyhopdong,
-                            sohdld: req.body.sohdld,
-                            ngaykyhopdong: req.body.ngaykyhopdong,
-                            loaihopdong: req.body.loaihopdong,
-                            luongcoban: req.body.luongcoban,
-                            luongcoban1h: salaryOn1H,
-                            loaihinhcongviec: req.body.loaihinhcongviec,
-                            chinhanh: req.body.chinhanh,
-                            bophan: req.body.bophan,
-                            chucvu: req.body.chucvu,
-                            avt_secure_url: process.env.AVT_SECURE_URL,
-                            avt_public_id: process.env.AVT_PUBLIC_ID,
-                            avt_format: process.env.AVT_FORMAT
-                        }
-                        const newUsr = await Admin_account_services.createUser(payload);
-                        if (newUsr.msnv === payload.msnv && newUsr.hoten === payload.hoten) {
-                            const updateStaffAmount = await Admin_account_services.updateStaffAmount(newAmount);
-                            if (updateStaffAmount === 'Success') res.send(newUsr);
-                        }
+            bcrypt.hash('12345678', 10, async (err, hash) => {
+                if (!err) {
+                    const staffamount = await Admin_account_services.getStaffAmount();
+                    const newAmount = staffamount + 1;
+                    const msnv = 'MNV0' + staffamount;
+                    const newUsr = await Admin_account_services.createUser(msnv, hash, req.body);
+                    if (newUsr.msnv === msnv && newUsr.hoten === req.body.hoten) {
+                        const updateStaffAmount = await Admin_account_services.updateStaffAmount(newAmount);
+                        if (updateStaffAmount === 'Success') res.send(newUsr);
                     }
-                })
-            }
+                }
+            })
         }
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while create new user.'));}
 }
@@ -90,7 +64,6 @@ exports.UpdateUser = async (req, res, next) => {
             soBHXH: req.body.soBHXH,
             soBHYT: req.body.soBHYT,
             noidkkcb: req.body.noidkkcb,
-            tyledongbaohiem: req.body.tyledongbaohiem,
             luongcoban: req.body.luongcoban,
             luongcoban1h: salaryOn1H,
             phepnam: req.body.phepnam,
@@ -195,32 +168,4 @@ exports.EnableUser = async (req, res, next) => {
         if (!enable) throw new Error('Fail');
         res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while enable user.'))};
-}
-
-// Tao bang cham cong moi
-exports.CreateTimesheet = async (req, res, next) => {
-    try {
-        res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while create timesheet.'));}
-}
-
-// Hien thi bang cham cong
-exports.ShowTimesheet = async (req, res, next) => {
-    try {
-        res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while show timesheet.'));}
-}
-
-// Tao bang luong cho tung nhan vien
-exports.CreatePaySheet = async (req, res, next) => {
-    try {
-        res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while create pay sheets.'));}
-}
-
-// Hien thi bang luong tat ca nhan vien trong thang
-exports.ShowPaySheets = async (req, res, next) => {
-    try {
-        res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while show pay sheets.'));}
 }

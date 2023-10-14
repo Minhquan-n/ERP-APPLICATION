@@ -1,4 +1,6 @@
 const Staff_account_services = require('../../../services/User/User_Accounts/user_account_services');
+const Admin_Account_Services = require('../../../services/Admin/Admin_Accounts/admin_account_services');
+
 const ApiErr = require('../../../api-error');
 const bcrypt = require('bcrypt');
 
@@ -7,25 +9,32 @@ exports.Login = async(req, res, next) => {
     // Kiem tra dang nhap
     if (req.cookies.loggedin === 'true') return next(new ApiErr(400, 'Logged in already.'));
     if (!req.body?.msnv) return next(new ApiErr(400, 'Empty id and password'));
-    // Kiem tra va khoa chuc nang dang nhap
-    if (!req.cookies.loginFail) res.cookie('loginFail', '0');
-    else if (req.cookies.loginFail >= 12) res.cookie('block', true);
     // Dang nhap
     try {
         const account = await Staff_account_services.login(req.body);
         if (account.trangthai_taikhoan != 1) res.send('Blocked');
-        else {
+        else if (account.badlogin >= 5) {
+            const block = await Admin_Account_Services.disableUser(account.msnv);
+            if (!block) throw new Error('Fail to block user');
+            res.send('Blocked');
+        } else {
             bcrypt.compare(req.body.matkhau, account.matkhau, async function (err, result) {
                 if (result) {
+                    const resetBadLogin = await Staff_account_services.updateBadLogin(account.msnv, 0);
+                    if (!resetBadLogin) throw new Error('Fail to update bad login');
                     const avt_url = await Staff_account_services.getUserAvt(account.msnv);
                     res.cookie('loggedin','true');
                     res.cookie('msnv', account.msnv);
                     res.cookie('position', account.id_bophan);
                     res.cookie('hoten', account.hoten);
                     res.cookie('avt_url', avt_url.avt_secure_url);
-                    res.cookie('loginFail', '0');
                     res.send(`Login success`);
-                } else res.send('Your password is incorrect.');
+                } else {
+                    const badlogin = Number(account.badlogin);
+                    const resetBadLogin = await Staff_account_services.updateBadLogin(account.msnv, (badlogin + 1));
+                    if (!resetBadLogin) throw new Error('Fail to update bad login');
+                    res.send('Your password is incorrect.');
+                }
             })
         }
     }catch (err) {return next(new ApiErr(500, 'An error orcurred while login.'));}

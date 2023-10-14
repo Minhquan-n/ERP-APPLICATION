@@ -1,5 +1,6 @@
 const config = require('../../../config');
 const database = require('../../../mysql/database.connect');
+const DB_Services = require('../../DB_Services/service');
 
 class Staff_Servieces {
     async connection () {
@@ -23,14 +24,6 @@ class Staff_Servieces {
         return checkEmail;
     }
 
-    // Lay so gio lam viec trong thang cua loai hinh cong viec
-    async getWorkingHours (id) {
-        const db = this.connection();
-        const data = (await db).execute(`SELECT sogiolamviec FROM loaihinhcongviec WHERE id_loaihinhcongviec = ${id}`);
-        const workinghours = data.then((data) => {return data[0][0].sogiolamviec});
-        return workinghours;
-    }
-
     //Lay thong tin dang nhap tu payload
     extractpayload_login (payload) {
         const account = {
@@ -44,10 +37,18 @@ class Staff_Servieces {
     async login (payload) {
         const db = this.connection();
         const usr = this.extractpayload_login(payload);
-        const info = 'tk.msnv, tk.matkhau, tk.trangthai_taikhoan, ttcn.hoten, bp.id_bophan';
+        const info = 'tk.msnv, tk.matkhau, tk.trangthai_taikhoan, ttcn.hoten, bp.id_bophan, tk.badlogin';
         const query = `SELECT ${info} FROM (taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN bophan bp ON tk.msnv = bp.msnv WHERE tk.msnv = '${usr.msnv}'`;
         const data = (await db).execute(query);
         return (data.then((data) => {return data[0][0]}));
+    }
+
+    // Cap nhat so lan dang nhap sai
+    async updateBadLogin (msnv,num) {
+        const db = this.connection();
+        const query = `UPDATE taikhoan SET badlogin = ${num} WHERE msnv = '${msnv}'`;
+        const update = await DB_Services.updateDB(query);
+        return update ? true : false;
     }
 
     // Lay thong tin tai khoan nhan vien theo msnv
@@ -70,7 +71,7 @@ class Staff_Servieces {
     // Lay thong tin cong viec
     async getUserWorkInfo (msnv) {
         const db = this.connection();
-        const info = 'ttcv.ngaybatdau, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.tyledongbaohiem, ttcv.luongcoban, lhcv.tenloaihinhcongviec';
+        const info = 'ttcv.ngaybatdau, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.khautruBHXH, ttcv.khautruBHYT, ttcv.khautruBHTN, ttcv.luongcoban, lhcv.tenloaihinhcongviec';
         const selectfrom = 'thongtincongviec ttcv JOIN loaihinhcongviec lhcv ON ttcv.loaihinhcongviec = lhcv.id_loaihinhcongviec';
         const query = `SELECT ${info} FROM ${selectfrom} WHERE ttcv.msnv = '${msnv}'`;
         const data =  (await db).execute(query);
@@ -128,6 +129,9 @@ class Staff_Servieces {
             ngaycap_cccd: payload.ngaycap_cccd,
             noicap_cccd: payload.noicap_cccd,
             trinhdo: payload.trinhdo,
+            stk: payload.stk,
+            tenNH: payload.tenNH,
+            tentk: payload.tentk,
             dclh_sonha: payload.dclh_sonha,
             dclh_tinhthanh: payload.dclh_tinhthanh,
             dclh_quanhuyen: payload.dclh_quanhuyen,
@@ -162,7 +166,7 @@ class Staff_Servieces {
     async updateUserAcc (msnv, payload) {
         const db = this.connection();
         const acc = this.extractpayload_updateUserAcc(payload);
-        const info_account = `sdt = '${data.sdt}', email = '${data.email}'`;
+        const info_account = `sdt = '${acc.sdt}', email = '${acc.email}'`;
         const query = `UPDATE taikhoan SET ${info_account} WHERE msnv = '${msnv}'`;
         const data = (await db).execute(query);
         return data.then((data, err) => {
@@ -175,7 +179,7 @@ class Staff_Servieces {
     async updateUserInfo (msnv, payload) {
         const db = this.connection();
         const info = this.extractpayload_updateUserInfo(payload);
-        const info_user = `hoten = '${info.hoten}', gioitinh = '${info.gioitinh}', ngaysinh = '${info.ngaysinh}', dantoc = '${info.dantoc}', cccd = '${info.cccd}', ngaycap_cccd = '${info.ngaycap_cccd}', noicap_cccd = '${info.noicap_cccd}', trinhdo = '${info.trinhdo}', dclh_sonha = '${info.dclh_sonha}', dclh_tinhthanh = '${info.dclh_tinhthanh}', dclh_quanhuyen = '${info.dclh_quanhuyen}', dclh_phuongxa = '${info.dclh_phuongxa}', hoten_nguoithan = '${info.hoten_nguoithan}', sdt_nguoithan = '${info.sdt_nguoithan}', mqh_nguoithan = '${info.mqh_nguoithan}'`;
+        const info_user = `hoten = '${info.hoten}', gioitinh = '${info.gioitinh}', ngaysinh = '${info.ngaysinh}', dantoc = '${info.dantoc}', cccd = '${info.cccd}', ngaycap_cccd = '${info.ngaycap_cccd}', noicap_cccd = '${info.noicap_cccd}', trinhdo = '${info.trinhdo}', stk = '${info.stk}', tenNH = '${info.tenNH}', tentk = '${info.tentk}', dclh_sonha = '${info.dclh_sonha}', dclh_tinhthanh = '${info.dclh_tinhthanh}', dclh_quanhuyen = '${info.dclh_quanhuyen}', dclh_phuongxa = '${info.dclh_phuongxa}', hoten_nguoithan = '${info.hoten_nguoithan}', sdt_nguoithan = '${info.sdt_nguoithan}', mqh_nguoithan = '${info.mqh_nguoithan}'`;
         const query = `UPDATE thongtincanhan SET ${info_user} WHERE msnv = '${msnv}'`;
         const data = (await db).execute(query);
         return data.then((data, err) => {

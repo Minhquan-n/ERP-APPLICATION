@@ -1,5 +1,6 @@
 const config = require('../../../config');
 const database = require('../../../mysql/database.connect');
+const DB_Services = require('../../DB_Services/service');
 
 class Admin_Services {
     // Phuong thuc ket noi csdl
@@ -20,8 +21,8 @@ class Admin_Services {
     async updateStaffAmount (num) {
         const db = this.connection();
         const query = `UPDATE doanhnghiep SET soluongnhanvien = ${num} where msdn = '2805514562'`;
-        (await db).query(query);
-        return 'Success';
+        const update = await DB_Services.updateDB(query);
+        return update ?  'Success' : 'Fail';
     }
 
     // Lay so gio lam viec trong thang cua loai hinh cong viec
@@ -60,7 +61,7 @@ class Admin_Services {
             ngaytaotk: payload.ngaykyhopdong
         }
         return newusr;
-    }    
+    }
 
     // Tao tai khoan cho nguoi dung moi
     async createUser (msnv, pass, payload) {
@@ -74,14 +75,15 @@ class Admin_Services {
         const query_agency = `INSERT INTO chinhanh (msnv, id_chinhanh, ngaybatdaulamviec) VALUES ('${usr.msnv}', ${usr.chinhanh}, '${usr.ngaybatdau}')`;
         const query_department = `INSERT INTO bophan (msnv, id_bophan, ngaybatdaulamviec) VALUES ('${usr.msnv}',${usr.bophan},'${usr.ngaybatdau}')`;
         const query_position = `INSERT INTO chucvu (msnv, id_chucvu, ngaybatdaulamviec) VALUES ('${usr.msnv}', ${usr.chucvu}, '${usr.ngaybatdau}')`;
-        (await db).query(query_account);
-        (await db).query(query_userinfo);
-        (await db).query(query_avt);
-        (await db).query(query_workinfo);
-        (await db).query(query_laborcontract);
-        (await db).query(query_agency);
-        (await db).query(query_department);
-        (await db).query(query_position);
+        const acc = await DB_Services.insertDB(query_account);
+        const usrInfo = await DB_Services.insertDB(query_userinfo);
+        const avt = await DB_Services.insertDB(query_avt);
+        const workInfo = await DB_Services.insertDB(query_workinfo);
+        const laborContract = await DB_Services.insertDB(query_laborcontract);
+        const branch = await DB_Services.insertDB(query_agency);
+        const department = await DB_Services.insertDB(query_department);
+        const position = await DB_Services.insertDB(query_position);
+        if (!acc || !usrInfo || !avt || !workInfo || !laborContract || !branch || !department || !position) return 'Fail';
         const data = (await db).execute(`SELECT thongtincanhan.hoten, taikhoan.msnv FROM taikhoan join thongtincanhan on taikhoan.msnv = thongtincanhan.msnv WHERE sdt = '${usr.sdt}'`);
         return (data.then((data) => {return data[0][0]}));
     }
@@ -104,94 +106,110 @@ class Admin_Services {
         return data.then((data) => {return data[0]});
     }
 
-    // Tong hop thong tin cap nhat thong tin cong viec cho nhan vien
-    extractpayload_UpdateUser (payload) {
+    // Lay thong tin cap nhat thong tin cong viec cho nhan vien
+    async extractpayload_UpdateUser (payload) {
+        const workinghours = await this.getWorkingHours(payload.loaihinhcongviec);
+        const salaryOn1H = (payload.luongcoban / workinghours);
         const work_info = {
             soBHXH: payload.soBHXH,
             soBHYT: payload.soBHYT,
             noidkkcb: payload.noidkkcb,
-            tyledongbaohiem: payload.tyledongbaohiem,
             luongcoban: payload.luongcoban,
-            luongcoban1h: payload.luongcoban1h,
+            luongcoban1h: salaryOn1H,
             phepnam: payload.phepnam,
-            loaihinhcongviec: payload.loaihinhcongviec,
-            sohdld: payload.sohdld,
-            ngaykyhopdong: payload.ngaykyhopdong,
-            loaihopdong: payload.loaihopdong,
-            id_chinhanh: payload.id_chinhanh,
-            id_bophan: payload.id_bophan,
-            id_chucvu: payload.id_chucvu,
-            ngaybatdaulamviec: payload.ngaybatdaulamviec
-        };
+            loaihinhcongviec: payload.loaihinhcongviec
+        }
         return work_info;
     }
 
     // Cap nhat thong tin cong viec nhan vien 
     async updateUserWorkInfo (msnv, payload) {
-        const db = this.connection();
-        const info = this.extractpayload_UpdateUser(payload);
-        const query = `UPDATE thongtincongviec SET soBHXH = '${info.soBHXH}', soBHYT = '${info.soBHYT}', noidkkcb = '${info.noidkkcb}', tyledongbaohiem = ${info.tyledongbaohiem}, luongcoban = ${info.luongcoban}, luongcoban1h = ${info.luongcoban1h}, phepnam = ${info.phepnam}, loaihinhcongviec = ${info.loaihinhcongviec} WHERE msnv = '${msnv}'`;
-        const data = (await db).execute(query);
-        return data.then((data, err) => {
-            if (err) return false;
-            return true;
-        });
+        const info = await this.extractpayload_UpdateUser(payload);
+        const query = `UPDATE thongtincongviec SET soBHXH = '${info.soBHXH}', soBHYT = '${info.soBHYT}', noidkkcb = '${info.noidkkcb}', luongcoban = ${info.luongcoban}, luongcoban1h = ${info.luongcoban1h}, phepnam = ${info.phepnam}, loaihinhcongviec = ${info.loaihinhcongviec} WHERE msnv = '${msnv}'`;
+        const update = await DB_Services.updateDB(query);
+        return update ? true : false;
+    }
+
+    // Lay thong tin cap nhat hop dong
+    extractpayload_updateLaborContract (payload) {
+        const labor = {
+            sohdld: payload.sohdld,
+            ngaykyhopdong: payload.ngaykyhopdong,
+            loaihopdong: payload.loaihopdong
+        }
+        return labor;
     }
 
     // Cap nhat thong tin hop dong lao dong cua nhan vien
     async updateUserLaborContract (msnv, payload) {
-        const db = this.connection();
-        const info = this.extractpayload_UpdateUser(payload);
+        const info = this.extractpayload_updateLaborContract(payload);
         const query_updateStatus = `UPDATE hopdonglaodong SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO hopdonglaodong (msnv, sohdld, ngaykyhopdong, loaihopdong) VALUES ('${msnv}', '${info.sohdld}', '${info.ngaykyhopdong}', '${info.loaihopdong}')`;
-        (await db).query(query_updateStatus);
-        const data = (await db).execute(query);
-        return data.then((data, err) => {
-            if (err) return false;
-            return true;
-        });
+        const update_status = await DB_Services.updateDB(query_updateStatus);
+        const insert = await DB_Services.insertDB(query);
+        if (!update_status || !insert) return false;
+        return true;
+    }
+
+    // Lay thong tin cap nhat chi nhanh
+    extractpayload_UpdateUserBranch (payload) {
+        const branch = {
+            id_chinhanh: payload.chinhanh,
+            ngaybatdaulamviec: payload.ngaybatdaulamviec
+        };
+        return branch;
     }
 
     // Cap nhat thong tin chi nhanh lam viec cua nhan vien
     async updateUserBranch (msnv, payload) {
-        const db = this.connection();
-        const info = this.extractpayload_UpdateUser(payload);
+        const info = this.extractpayload_UpdateUserBranch(payload);
         const query_updateStatus = `UPDATE chinhanh SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO chinhanh (msnv, id_chinhanh, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_chinhanh}, '${info.ngaybatdaulamviec}')`;
-        (await db).query(query_updateStatus);
-        const data = (await db).execute(query);
-        return data.then((data, err) => {
-            if (err) return false;
-            return true;
-        });
+        const update_status = await DB_Services.updateDB(query_updateStatus);
+        const insert = await DB_Services.insertDB(query);
+        if (!update_status || !insert) return false;
+        return true;
+    }
+
+    // Lay thong tin cap nhat bo phan
+    extractpayload_UpdateUserDepartment (payload) {
+        const department = {
+            id_bophan: payload.bophan,
+            ngaybatdaulamviec: payload.ngaybatdaulamviec
+        };
+        return department;
     }
 
     // Cap nhat thong tin bo phan lam viec cua nhan vien
     async updateUserDepartment (msnv, payload) {
-        const db = this.connection();
-        const info = this.extractpayload_UpdateUser(payload);
+        const info = this.extractpayload_UpdateUserDepartment(payload);
         const query_updateStatus = `UPDATE bophan SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO bophan (msnv, id_bophan, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_bophan}, '${ngaybatdaulamviec}')`;
-        (await db).query(query_updateStatus);
-        const data = (await db).execute(query);
-        return data.then((data, err) => {
-            if (err) return false;
-            return true;
-        });
+        const update_status = await DB_Services.updateDB(query_updateStatus);
+        const insert = await DB_Services.insertDB(query);
+        if (!update_status || !insert) return false;
+        return true;
+    }
+
+    // Lay thong tin cap nhat chi nhanh
+    extractpayload_UpdateUserPosition (payload) {
+        const position = {
+            id_chucvu: payload.chucvu,
+            ngaybatdaulamviec: payload.ngaybatdaulamviec
+        };
+        return position;
     }
 
     // Cap nhat thong tin chuc vu lam viec cua nhan vien
     async updateUserPosition (msnv, payload) {
-        const db = this.connection();
-        const info = this.extractpayload_UpdateUser(payload);
+        // const db = this.connection();
+        const info = this.extractpayload_UpdateUserPosition(payload);
         const query_updateStatus = `UPDATE chucvu SET trangthai = 0 WHERE msnv = '${msnv}'`;
         const query = `INSERT INTO chucvu (msnv, id_chucvu, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_chucvu}, '${info.ngaybatdaulamviec}')`
-        (await db).query(query_updateStatus);
-        const data = (await db).execute(query);
-        return data.then((data, err) => {
-            if (err) return false;
-            return true;
-        });
+        const update_status = await DB_Services.updateDB(query_updateStatus);
+        const insert = await DB_Services.insertDB(query);
+        if (!update_status || !insert) return false;
+        return true;
     }
 
     // Reset mat khau cho tai khoan nhan vien

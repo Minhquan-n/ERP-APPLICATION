@@ -8,27 +8,26 @@ require('dotenv').config();
 exports.CreateUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     if (!req.body.sdt) return next(new ApiErr(400, 'Empty phone number'));
-    else if (!req.body.hoten) return next(new ApiErr(400, 'Empty user name'));
+    if (!req.body.hoten) return next(new ApiErr(400, 'Empty user name'));
     try {
         // Kiem tra ton tai cua sdt va email
         const phoneCheck = await Staff_account_services.verify_phone(req.body.sdt);
         const emailCheck = await Staff_account_services.verify_email(req.body.email);
         if (phoneCheck) return next (new ApiErr(400, 'Phone number existed'));
-        else if (emailCheck) return next (new ApiErr(400, 'Email number existed'));
-        else {
-            bcrypt.hash('12345678', 10, async (err, hash) => {
-                if (!err) {
-                    const staffamount = await Admin_account_services.getStaffAmount();
-                    const newAmount = staffamount + 1;
-                    const msnv = 'MNV0' + staffamount;
-                    const newUsr = await Admin_account_services.createUser(msnv, hash, req.body);
-                    if (newUsr.msnv === msnv && newUsr.hoten === req.body.hoten) {
-                        const updateStaffAmount = await Admin_account_services.updateStaffAmount(newAmount);
-                        if (updateStaffAmount === 'Success') res.send(newUsr);
-                    }
+        if (emailCheck) return next (new ApiErr(400, 'Email number existed'));
+        bcrypt.hash('12345678', 10, async (err, hash) => {
+            if (!err) {
+                const staffamount = await Admin_account_services.getStaffAmount();
+                const newAmount = staffamount + 1;
+                const msnv = 'MNV0' + staffamount;
+                const newUsr = await Admin_account_services.createUser(msnv, hash, req.body);
+                if (newUsr === 'Fail') {
+                    throw new Error('Fail');
                 }
-            })
-        }
+                const updateStaffAmount = await Admin_account_services.updateStaffAmount(newAmount);
+                if (updateStaffAmount === 'Success') res.send(newUsr);
+            }
+        })
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while create new user.'));}
 }
 
@@ -57,55 +56,30 @@ exports.ShowUserInfo = async (req, res, next) => {
 exports.UpdateUser = async (req, res, next) => {
     if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
-        // Tao payload cap nhat thong tin cong viec
-        const workinghours = await Staff_account_services.getWorkingHours(req.body.loaihinhcongviec);
-        const salaryOn1H = (req.body.luongcoban / workinghours);
-        const payload = {
-            soBHXH: req.body.soBHXH,
-            soBHYT: req.body.soBHYT,
-            noidkkcb: req.body.noidkkcb,
-            luongcoban: req.body.luongcoban,
-            luongcoban1h: salaryOn1H,
-            phepnam: req.body.phepnam,
-            loaihinhcongviec: req.body.loaihinhcongviec,
-            sohdld: req.body.sohdld,
-            ngaykyhopdong: req.body.ngaykyhopdong,
-            loaihopdong: req.body.loaihopdong,
-            id_chinhanh: req.body.chinhanh,
-            id_bophan: req.body.bophan,
-            id_chucvu: req.body.chucvu,
-            ngaybatdaulamviec: req.body.ngaybatdaulamviec
-        }
-        // Lay thong tin hien tai de kiem tra
         const oldLaborContract = await Staff_account_services.getUserLaborContract(req.params.id);
-        const oldoffice = await Staff_account_services.getUserOffice(req.params.id);
-        const oldarea = await Staff_account_services.getUserArea(req.params.id);
+        const oldBranch = await Staff_account_services.getUserOffice(req.params.id);
+        const oldArea = await Staff_account_services.getUserArea(req.params.id);
         const oldPosition = await Staff_account_services.getUserPosition(req.params.id);
-        // Kiem tra mshd
-        if (payload.sohdld !== oldLaborContract.sohdld) {
-            const laborcontract = await Admin_account_services.updateUserLaborContract(req.params.id, payload);
-            if (!laborcontract) throw new Error('Fail');
+        if (req.body.sohdld !== oldLaborContract.sohdld) {
+            const laborcontract = await Admin_account_services.updateUserLaborContract(req.params.id, req.body);
+            if (!laborcontract) throw new Error('Fail to update labor contract.');
         }
-        // Kiem tra chi nhanh lam viec
-        if (payload.id_chinhanh !== oldoffice.id_chinhanh) {
-            const office = await Admin_account_services.updateUserBranch(req.params.id, payload);
-            if (!office) throw new Error('Fail');
+        if (req.body.chinhanh !== oldBranch.id_chinhanh) {
+            const laborcontract = await Admin_account_services.updateUserBranch(req.params.id, req.body);
+            if (!laborcontract) throw new Error('Fail to update branch.');
         }
-        // Kiem tra bo phan lam viec
-        if (payload.id_bophan !== oldarea.id_bophan) {
-            const area = await Admin_account_services.updateUserDepartment(req.params.id, payload);
-            if (!area) throw new Error('Fail');
+        if (req.body.bophan !== oldArea.id_bophan) {
+            const laborcontract = await Admin_account_services.updateUserDepartment(req.params.id, req.body);
+            if (!laborcontract) throw new Error('Fail to update department.');
         }
-        // Kiem tra chuc vu lam viec
-        if (payload.id_chucvu !== oldPosition.id_chucvu) {
-            const position = await Admin_account_services.updateUserPosition(req.params.id, payload);
-            if (position !== 'Succes') return next(new ApiErr(500, "An error orcurred while update position."));
+        if (req.body.chucvu !== oldPosition.id_chucvu) {
+            const laborcontract = await Admin_account_services.updateUserPosition(req.params.id, req.body);
+            if (!laborcontract) throw new Error('Fail to update position.');
         }
-        // Cap nhat thong tin cong viec
-        const result_workinfo = await Admin_account_services.updateUserWorkInfo(req.params.id, payload);
-        if (!result_workinfo) throw new Error('Fail');
+        const update_workInfo = await Admin_account_services.updateUserWorkInfo(req.params.id, req.body);
+        if (!update_workInfo) throw new Error('Fail to update work information.');
         res.send('Success');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while update user.'));}
+    } catch (err) {return next(new ApiErr(500, err));}
 }
 
 // Hien thi danh sach nhan vien

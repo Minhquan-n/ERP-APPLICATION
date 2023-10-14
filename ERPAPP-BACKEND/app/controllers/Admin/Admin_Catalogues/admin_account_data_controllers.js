@@ -53,6 +53,10 @@ exports.AddBranch = async (req, res, next) => {
     try {
         const add = await Datalogues_Service.addBranch(req.body);
         if (!add) throw new Error('Fail');
+        const branchamount = await Datalogues_Service.getBranchAmount();
+        if (!branchamount) throw new Error('Fail to get branch amout.');
+        const update = await Datalogues_Service.updateBranchAmount(branchamount);
+        if (!update) throw new Error('Fail to update branch amount.');
         res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error orcurred while add new branch.'))};
 }

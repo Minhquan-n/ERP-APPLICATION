@@ -63,6 +63,23 @@ class Staff_Datalogues  {
         return branch;
     }
 
+    // Lay so luong chi nhanh
+    async getBranchAmount () {
+        const db = this.connection();
+        const oldData = (await db).execute('SELECT count(*) as branchamount FROM danhsachchinhanh');
+        return oldData.then((data) => {return data[0][0].branchamount});
+    }
+
+    // Cap nhat thong tin so luong chi nhanh
+    async updateBranchAmount(num) {
+        const db = this.connection();
+        const data = (await db).execute(`UPDATE doanhnghiep SET soluongchinhanh = ${num} WHERE msdn = '2805514562'`);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
+    }
+
     // Them chi nhanh
     async addBranch (payload) {
         const db = this.connection();

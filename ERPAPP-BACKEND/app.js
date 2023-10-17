@@ -1,22 +1,32 @@
 const express = require('express');
 const cors = require('cors');
 const cookie = require('cookie-parser');
+const cron = require('node-cron');
 
 const app = express();
 
 const ApiError = require('./app/api-error');
+
 const AdminRouter = require('./app/routes/Admin/Admin_Accounts/admin_accounts_route');
+const AdminCatalogueRouter = require('./app/routes/Admin/Admin_Catalogues/admin_catalogues_route');
+const AdminPaySheetRouter = require('./app/routes/Admin/Admin_Paysheets/admin_paysheets_route');
+
 const UserRouter = require('./app/routes/User/User_Accounts/user_accounts_route');
-const UserDatalogueRouter = require('./app/routes/Admin/Admin_Catalogues/admin_catalogues_route');
+
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookie());
 
+// Cac route cua admin
 app.use('/api/erpapp', AdminRouter);
+app.use('/api/erpapp', AdminCatalogueRouter);
+app.use('/api/erpapp', AdminPaySheetRouter);
+
+// Cac route cua user
 app.use('/api/erpapp', UserRouter);
-app.use('/api/erpapp', UserDatalogueRouter);
+
 
 // Bat loi truy cap duong dan khong ton tai
 app.use((req, res, next) => {
@@ -28,5 +38,12 @@ app.use((err, req, res, next) => {
         message: err.message || "Interal Server Error",
     });
 });
+
+// cron.schedule('* * * * * *', () => {
+//     console.log('cron job');
+// }, {
+//     scheduled: true,
+//     timezone: "America/Sao_Paulo"
+// });
 
 module.exports = app;

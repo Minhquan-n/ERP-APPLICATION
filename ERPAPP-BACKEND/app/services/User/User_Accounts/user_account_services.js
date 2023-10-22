@@ -1,3 +1,6 @@
+const xlsx = require('xlsx');
+const path = require('path');
+
 const config = require('../../../config');
 const database = require('../../../mysql/database.connect');
 const DB_Services = require('../../DB_Services/service');
@@ -211,6 +214,28 @@ class Staff_Servieces {
             if (err) return false;
             return true;
         })
+    }
+
+    // Lay bang luong hien tai
+    async getPaysheet (msnv, id_dotluong) {
+        const db = this.connection();
+        const select = 'blnv.id_bangluong, blnv.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, blnv.luongtangca, blnv.thuong, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
+        const table = 'bangluongnhanvien blnv JOIN (((thongtincanhan ttcn JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON cn.msnv = ttcn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON ttcn.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON ttcn.msnv = cv.msnv) ON blnv.msnv = ttcn.msnv';
+        const query = `SELECT ${select} FROM ${table} WHERE blnv.msnv = '${msnv}' AND blnv.id_dotluong = '${id_dotluong}'`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
+    }
+
+    // Lay bang cham cong theo thang
+    async getTimesheet (msnv, month, path) {
+        const wb = xlsx.readFile(path);
+        const ws = wb.Sheets[`${month}`];
+        const timesheet = xlsx.utils.sheet_to_json(ws, {header: 2});
+        var usrTimesheet;
+        timesheet.forEach(element => {
+            if (element.MSNV === msnv) usrTimesheet = element;
+        });
+        return usrTimesheet;
     }
 }
 

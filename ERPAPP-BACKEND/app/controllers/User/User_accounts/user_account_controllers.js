@@ -3,6 +3,7 @@ const Admin_Account_Services = require('../../../services/Admin/Admin_Accounts/a
 
 const ApiErr = require('../../../api-error');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 // Dang nhap
 exports.Login = async(req, res, next) => { 
@@ -136,19 +137,28 @@ exports.ChangePassword = async (req, res, next) => {
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load pay sheet.'));}
 }
 
-// Hien thi bang luong ca nhan
-exports.ShowPaySheet = async (req, res, next) => {
+// Hien thi bang luong ca nhan theo thang
+exports.ShowPaysheet = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
+    if (!req.body.month || !req.body.year) return next(new ApiErr(400, 'Provide month and year'));
     try {
-        res.send('ok');
+        const month = req.body.month;
+        const year = req.body.year;
+        const id_dotluong = month + '/' + year;
+        const paysheet = await Staff_account_services.getPaysheet(req.cookies.msnv, id_dotluong);
+        res.send(paysheet);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load pay sheet.'));}
 }
 
-// Hien thi bang cham cong
-exports.ShowTimeSheet = async (req, res, next) => {
+// Hien thi bang cham cong theo thang
+exports.ShowTimesheet = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
+    if (!req.body.month || !req.body.year) return next(new ApiErr(400, 'Provide month and year'));
     try {
-        res.send('ok');
+        const month = req.body.month;
+        const year = req.body.year;
+        const path = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
+        const timesheet = await Staff_account_services.getTimesheet(req.cookies.msnv, month, path);
+        res.send(timesheet);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while time sheet.'));}
 }
-

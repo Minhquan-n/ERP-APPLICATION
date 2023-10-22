@@ -1,6 +1,5 @@
 const xlsx = require('xlsx');
 const path = require('path');
-const fs = require('fs');
 
 require('dotenv').config();
 
@@ -295,8 +294,8 @@ class PaySheet {
     // Lay danh sach tat ca bang luong cua nhan vien theo thang
     async getAllUserPaysheetByMonth (id_dotluong) {
         const db = this.connection();
-        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dscv.tenchucvu';
-        const table = 'bangluongnhanvien blnv join (((taikhoan tk join thongtincanhan ttcn on tk.msnv = ttcn.msnv) join (chinhanh cn join danhsachchinhanh dscn on cn.id_chinhanh = dscn.id_chinhanh) on tk.msnv = cn.msnv) join (chucvu cv join danhsachchucvu dscv on cv.id_chucvu = dscv.id_chucvu) on tk.msnv = cv.msnv) on tk.msnv = blnv.msnv';
+        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
+        const table = 'bangluongnhanvien blnv JOIN (((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN thongtincongviec ttcv ON tk.msnv = ttcv.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) ON tk.msnv = blnv.msnv';
         const query = `SELECT ${select} FROM ${table} WHERE blnv.id_dotluong = '${id_dotluong}' ORDER BY blnv.msnv`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});

@@ -48,7 +48,7 @@ exports.GetBranchList = async (req, res, next) => {
 
 // Them chi nhanh
 exports.AddBranch = async (req, res, next) => {
-    if (req.body.id || !req.body.tenchinhanh || !req.body.sonha || !req.body.tinhthanh || !req.body.quanhuyen || !req.body.phuongxa) 
+    if (!req.body.tenchinhanh || !req.body.sonha || !req.body.tinhthanh || !req.body.quanhuyen || !req.body.phuongxa) 
         return next(new ApiErr(400, 'Empty information to add new branch'));
     try {
         const add = await Datalogues_Service.addBranch(req.body);

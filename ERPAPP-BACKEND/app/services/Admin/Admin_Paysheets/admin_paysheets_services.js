@@ -202,7 +202,7 @@ class PaySheet {
                 vacation_day: dayoff
             };
             wh.push(temp);
-        });        
+        });
         return wh;
     }
 
@@ -227,17 +227,11 @@ class PaySheet {
         })
     }
 
-    // Tao paysheet header
-    createPaysheetForm () {
-        const paysheet = ['STT', 'MSNV', 'Ho_Ten', 'Gio_Lam', 'Gio_Tang_Ca', 'BHXH', 'BHYT', 'BHTN', 'Luong_Co_Ban', 'Tang_Ca', 'Thuong', 'Thuc_Lanh', 'Ghi_Chu'];
-        return paysheet;
-    }
-
     // Them 1 bang luong nhan vien vao DB
     async insertUserPaysheet (user, id_dotluong) {
         const db = this.connection();
-        const field = 'msnv, sogiolam, sogiotangca, BHXH, BHYT, BHTN, luongtangca, id_dotluong';
-        const inputData = `'${user.msnv}', ${user.sogiolam}, ${user.sogiotangca}, ${user.BHXH}, ${user.BHYT}, ${user.BHTN}, ${user.luongtangca}, '${id_dotluong}'`;
+        const field = 'msnv, sogiolam, sogiotangca, BHXH, BHYT, BHTN, luongtangca, thuong, thuclanh, id_dotluong';
+        const inputData = `'${user.msnv}', ${user.sogiolam}, ${user.sogiotangca}, ${user.BHXH}, ${user.BHYT}, ${user.BHTN}, ${user.luongtangca}, ${user.thuong}, ${user.thuclanh}, '${id_dotluong}'`;
         const query = `INSERT INTO bangluongnhanvien (${field}) VALUES (${inputData})`;
         const data = (await db).execute(query);
         return data.then((data, err) => {
@@ -246,73 +240,48 @@ class PaySheet {
         });
     }
 
+    // Lay gio lam chuan va % tang ca
+    getStandarHour () {
+        const stdHour = [
+            {sogiolamviec: 216, tangca: 2},
+            {sogiolamviec: 108, tangca: 1.5}
+        ]
+        return stdHour;
+    }
+
     // Lay thong tin nhan vien cho bang luong
-    async userPaysheet (staffList, month, year) {
+    async userPaysheet (month, year) {
         const id_dotluong = month + '/' + year;
         const timesheetpath = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
-        const hour = {1: 208, 2: 104};
+        const stdHour = this.getStandarHour();
+        const staffList = await this.getStaffList();
         var stafflist = [];
         try {
             const working_hour = await this.workingdayCaculate(month, timesheetpath);
             staffList.forEach(async (e, i) => {
-                const sogiotangca = Math.max((working_hour[i].working_hour - hour[Number(e.loaihinhcongviec)]), 0);
+                const sogiotangca = Math.max((working_hour[i].working_hour - stdHour[Number(e.loaihinhcongviec) - 1].sogiolamviec), 0);
+                const bhxh = (e.luongcoban * (e.khautruBHXH / 100));
+                const bhyt = (e.luongcoban * (e.khautruBHYT / 100));
+                const bhtn = (e.luongcoban * (e.khautruBHTN / 100));
+                const tangca = (e.luongcoban1h * sogiotangca) * stdHour[Number(e.loaihinhcongviec) - 1].tangca;
+                const thuclanhtam = (e.luongcoban + tangca) - (bhxh + bhyt + bhtn);
                 const user = {
-                    stt: i,
                     msnv: e.msnv,
-                    hoten: e.hoten,
                     sogiolam: working_hour[i].working_hour,
                     sogiotangca: sogiotangca,
-                    BHXH: (e.luongcoban * (e.khautruBHXH / 100)),
-                    BHYT: (e.luongcoban * (e.khautruBHYT / 100)),
-                    BHTN: (e.luongcoban * (e.khautruBHTN / 100)),
-                    luongcoban: e.luongcoban,
-                    luongtangca: (e.luongcoban1h * sogiotangca)
+                    BHXH: bhxh,
+                    BHYT: bhyt,
+                    BHTN: bhtn,
+                    luongtangca: tangca,
+                    thuong: 0,
+                    thuclanh: thuclanhtam,
                 };
                 stafflist.push(user);
                 const userPaysheet = await this.insertUserPaysheet(user, id_dotluong);
                 if (!userPaysheet) throw new Error('Fail');
             });
-        } catch (err) {return 'Fail'};
-        return stafflist;
-    }
-
-    // Tao sheet bang luong cho tung nhan vien
-    async createPaySheetFile (month, year) {
-        const paysheetpath = process.env.PAYROLLS_PATH + '\\' + year + '.xlsx';
-        const staffList = await this.getStaffList();
-        const paysheetHeader = this.createPaysheetForm();
-        try {
-            const stafflist = await this.userPaysheet(staffList, month, year);
-            if (staffList === 'Fail') throw new Error('Fail');
-            const ws = xlsx.utils.json_to_sheet(stafflist);
-            const wb = xlsx.utils.book_new();
-            xlsx.utils.book_append_sheet(wb, ws, month.toString());
-            xlsx.utils.sheet_add_aoa(ws, [paysheetHeader], { origin: 0 });
-
-            // Ghi vao file excel
-            xlsx.writeFile(wb, path.resolve(paysheetpath), { compression: true });
-        } catch (err) {return err};
-        return 'Success';
-    }
-
-    // Tao sheet moi bang luong nhan vien
-    async createPaySheet (month, year) {
-        const paysheetpath = process.env.PAYROLLS_PATH + '\\' + year + '.xlsx';
-        const staffList = await this.getStaffList();
-        const paysheetHeader = this.createPaysheetForm();
-
-        try {
-            const stafflist = await this.userPaysheet(staffList, month, year);
-            if (staffList === 'Fail') throw new Error('Fail');
-            const wb = xlsx.readFile(paysheetpath);
-            const ws = xlsx.utils.json_to_sheet(stafflist);
-            xlsx.utils.book_append_sheet(wb, ws, month.toString());
-            xlsx.utils.sheet_add_aoa(ws, [paysheetHeader], { origin: 0 });
-
-            // Ghi vao file excel
-            xlsx.writeFile(wb, path.resolve(paysheetpath), { compression: true });
-        } catch (err) {return err};
-        return 'Success';
+        } catch (err) {return false};
+        return true;
     }
 
     // Lay danh sach bang luong tu DB
@@ -321,6 +290,57 @@ class PaySheet {
         const query = 'SELECT id_dotluong FROM dotluong';
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});
+    }
+
+    // Lay danh sach tat ca bang luong cua nhan vien theo thang
+    async getAllUserPaysheetByMonth (id_dotluong) {
+        const db = this.connection();
+        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dscv.tenchucvu';
+        const table = 'bangluongnhanvien blnv join (((taikhoan tk join thongtincanhan ttcn on tk.msnv = ttcn.msnv) join (chinhanh cn join danhsachchinhanh dscn on cn.id_chinhanh = dscn.id_chinhanh) on tk.msnv = cn.msnv) join (chucvu cv join danhsachchucvu dscv on cv.id_chucvu = dscv.id_chucvu) on tk.msnv = cv.msnv) on tk.msnv = blnv.msnv';
+        const query = `SELECT ${select} FROM ${table} WHERE blnv.id_dotluong = '${id_dotluong}' ORDER BY blnv.msnv`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0]});
+    }
+
+    // Lay bang luong cu cua nhan vien
+    async getOldPaysheet (id_bangluong) {
+        const db = this.connection();
+        const select = 'blnv.id_bangluong, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, ttcv.loaihinhcongviec';
+        const query = `SELECT ${select} FROM bangluongnhanvien blnv JOIN thongtincongviec ttcv ON blnv.msnv = ttcv.msnv WHERE blnv.id_bangluong = '${id_bangluong}'`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
+    }
+
+    // Lay thong tin cap nhat
+    async extractpayload_updatepaysheet (payload) {
+        const oldPaysheet = await this.getOldPaysheet(payload.id_bangluong);
+        const stdHour = this.getStandarHour();
+        const giotangca = payload.sogiolam - stdHour[oldPaysheet.loaihinhcongviec - 1].sogiolamviec;
+        const luongtangca = (oldPaysheet.luongcoban1h * giotangca) * stdHour[oldPaysheet.loaihinhcongviec - 1].tangca;
+        const thuclanh = (oldPaysheet.luongcoban + luongtangca + payload.thuong) - (oldPaysheet.BHXH + oldPaysheet.BHYT + oldPaysheet.BHTN);
+        const paysheet = {
+            id_bangluong: payload.id_bangluong,
+            sogiolam: payload.sogiolam,
+            sogiotangca: giotangca,
+            luongtangca: luongtangca,
+            thuong: payload.thuong,
+            thuclanh: thuclanh,
+            ghichu: payload.ghichu
+        }
+        return paysheet;
+    }
+
+    // Cap nhat bang luong nv
+    async updatePaysheet (payload) {
+        const db = this.connection();
+        const userPaysheet = await this.extractpayload_updatepaysheet(payload);
+        const field = `sogiolam = ${userPaysheet.sogiolam}, sogiotangca = ${userPaysheet.sogiotangca}, luongtangca = ${userPaysheet.luongtangca}, thuong = ${userPaysheet.thuong}, thuclanh = ${userPaysheet.thuclanh}, ghichu = '${userPaysheet.ghichu}'`;
+        const query = `UPDATE bangluongnhanvien SET ${field} WHERE id_bangluong = '${userPaysheet.id_bangluong}'`;
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
     }
 }
 

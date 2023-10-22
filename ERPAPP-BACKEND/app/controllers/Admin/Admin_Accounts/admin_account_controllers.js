@@ -28,7 +28,7 @@ exports.CreateUser = async (req, res, next) => {
                 if (updateStaffAmount === 'Success') res.send(newUsr);
             }
         })
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while create new user.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while create new user.'));}
 }
 
 // Hien thi thong tin nhan vien
@@ -49,7 +49,7 @@ exports.ShowUserInfo = async (req, res, next) => {
         user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
         user.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
         res.send(user);
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while load user information.'));}
 }
 
 // Cap nhat thong tin cong viec cho nhan vien
@@ -88,7 +88,7 @@ exports.ShowStaff = async (req, res, next) => {
     try {
         const staff = await Admin_account_services.getUserList();
         res.send(staff);
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while load user information.'));}
 }
 
 // Tim kiem nhan vien theo tu khoa
@@ -107,7 +107,7 @@ exports.SearchUser = async (req, res, next) => {
         const list = await Admin_account_services.getSearch(key_search);
         if (list.length !== 0) res.send(list);
         else res.send('No result.');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while search user.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while search user.'));}
 }
 
 // Reset mat khau tai khoan
@@ -121,7 +121,7 @@ exports.ResetPass = async (req, res, next) => {
                 res.send('Success');
             }
         }) 
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while disable user.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while disable user.'));}
 }
 
 // Vo hieu hoa tai khoan
@@ -131,7 +131,7 @@ exports.DisableUser = async (req, res, next) => {
         const disable = await Admin_account_services.disableUser(req.params.id);
         if (!disable) throw new Error('Fail');
         res.send('Success');
-    } catch (err) { return next(new ApiErr(500, 'An error orcurred while disable user.'));}
+    } catch (err) { return next(new ApiErr(500, 'An error occurred while disable user.'));}
 }
 
 // Kich hoat tai khoan nguoi dung
@@ -141,5 +141,5 @@ exports.EnableUser = async (req, res, next) => {
         const enable = await Admin_account_services.enableUser(req.params.id);
         if (!enable) throw new Error('Fail');
         res.send('Success');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while enable user.'))};
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while enable user.'))};
 }

@@ -37,7 +37,7 @@ exports.Login = async(req, res, next) => {
                 }
             })
         }
-    }catch (err) {return next(new ApiErr(500, 'An error orcurred while login.'));}
+    }catch (err) {return next(new ApiErr(500, 'An error occurred while login.'));}
 }
 
 // Dang xuat
@@ -50,7 +50,7 @@ exports.Logout = async (req, res, next) => {
         res.cookie('avt_url', '');
         res.cookie('hoten', '');
         res.send('Logout success');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while logout.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while logout.'));}
 }
 
 // Hien thi thong tin nhan vien
@@ -75,7 +75,7 @@ exports.ShowUserInfo = async (req, res, next) => {
         user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
         user.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
         res.send(user);
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while load user information.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while load user information.'));}
 }
 
 // Cap nhat thong tin ca nhan
@@ -110,7 +110,7 @@ exports.UpdateUserInfo = async (req, res, next) => {
 
         // Tra ve ket qua
         res.send('Success');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while update user information.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while update user information.'));}
 }
 
 // Doi mat khau tai khoan
@@ -133,7 +133,7 @@ exports.ChangePassword = async (req, res, next) => {
                 })
             } else {res.send('Your password is incorrect.');}
         })
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while load pay sheet.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while load pay sheet.'));}
 }
 
 // Hien thi bang luong ca nhan
@@ -141,7 +141,7 @@ exports.ShowPaySheet = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
     try {
         res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while load pay sheet.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while load pay sheet.'));}
 }
 
 // Hien thi bang cham cong
@@ -149,6 +149,6 @@ exports.ShowTimeSheet = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
     try {
         res.send('ok');
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while time sheet.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while time sheet.'));}
 }
 

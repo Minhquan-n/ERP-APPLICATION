@@ -24,7 +24,7 @@ exports.CreateTimesheet = async (req, res, next) => {
         // Neu chua co tap tin cham cong nam hien tai -> tao moi
         if (err.code === 'ENOENT') {
             const data = await services.createTimeSheetFile(month, year);
-            if (data !== 'Success') return next(new ApiErr(500, 'An error orcurred while create new time sheets file.'));
+            if (data !== 'Success') return next(new ApiErr(500, 'An error occurred while create new time sheets file.'));
             res.send(data);
         }
     }
@@ -45,7 +45,7 @@ exports.ShowTimesheet = async (req, res, next) => {
             data = await services.getTimesheet(month, path, branch);
         }
         res.send(data);
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while show timesheet.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while show timesheet.'));}
     
 }
 
@@ -59,7 +59,7 @@ exports.Timekeeping = async (req, res, next) => {
         const data = await services.timekeeping(req.body, month, path);
         if (data !== 'Success') throw err;
         res.send(data);
-    } catch (err) {return next(new ApiErr(500, 'An error orcurred while timekeeping for user.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while timekeeping for user.'));}
 }
 
 // Tao bang luong cho tung nhan vien
@@ -70,50 +70,54 @@ exports.CreatePaysheet = async (req, res, next) => {
     const month = (today.getMonth() === 0) ? 12 : today.getMonth();
     const year = (today.getMonth() === 0) ? today.getFullYear - 1 : today.getFullYear();
     const path = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
-    const paysheetPath = process.env.PAYROLLS_PATH + '\\' + year + '.xlsx';
+    // const paysheetPath = process.env.PAYROLLS_PATH + '\\' + year + '.xlsx';
 
     try {
         // Tao dot luong
         const paysheetSumary = await services.createPaySheetSumary(date, month, year, path);
-        if (!paysheetSumary) return next(new ApiErr(500, 'Error'));
+        if (!paysheetSumary) throw new Error('Paysheet sumary error.');
 
-        // Tao paysheet moi
-        const wb = xlsx.readFile(paysheetPath);
-        if (wb.Sheets[`${month}`]) res.send('This month paysheet created.');
-        const newPaysheet = await services.createPaySheet(month, year);
-        if (newPaysheet !== 'Success') return next(new ApiErr(500, 'An error orcurred while create new paysheet.'));
+        // Tao bang luog cho nahn vien
+        const userPaysheet = await services.userPaysheet(month, year);
+        if (!userPaysheet) return new Error('User paysheet error.');
         res.send('Success');
     } catch (err) {
-        if (err.code === 'ENOENT') {
-            const newPaysheetFile = await services.createPaySheetFile(month, year);
-            if (newPaysheetFile !== 'Success') return next(new ApiErr(500, 'An error orcurred while create new paysheet.'));
-            res.send('Success');
-        } else if (err.code === 'ER_DUP_ENTRY') res.send('This month paysheet created.');
-        else return next(new ApiErr(500, 'An error orcurred while create new paysheet.'));
+        if (err.code === 'ER_DUP_ENTRY') return next(new ApiErr(400, 'This month paysheet exists.'));
+        return next(new ApiErr(500, err));
     }
 }
 
-// Hien thi bang luong tat ca nhan vien trong theo thang
+// Hien thi bang luong tat ca nhan vien theo thang
 exports.ShowPaysheets = async (req, res, next) => {
     if (!req.body.month || !req.body.year) return next(new ApiErr(400, 'Provide month and year.'));
     const month = req.body.month;
     const year = req.body.year;
-    const paysheetpath = process.env.PAYROLLS_PATH + '\\' + year + '.xlsx';
+    const id_dotluong = month + '/' + year;
     try {
-        const wb = xlsx.readFile(paysheetpath);
-        const ws = wb.Sheets[`${month}`];
-        const paysheet = xlsx.utils.sheet_to_json(ws, {header: 2});
-        res.send(paysheet);
+        const paysheets = await services.getAllUserPaysheetByMonth(id_dotluong);
+        if (paysheets.length === 0) throw new Error('Fail');
+        res.send(paysheets);
     } catch (err) {
-        if (err.code === 'ENOENT') return next(new ApiErr(500, 'This paysheets file is not exists.'));
-        else return next(new ApiErr(500, err));
+        return next(new ApiErr(500, 'An error occurred while load paysheets.'));
     }
 }
 
-// Lay danh sach cac bang luong tu file
+// Lay danh sach cac dot luong
 exports.GetPaysheetList = async (req, res, next) => {
     try {
         const paysheetList = await services.getPaysheetList();
         res.send(paysheetList);
     } catch (err) {return next(new ApiErr(500, 'An error occured while load paysheet list.'))};
+}
+
+// Chinh sua bang luong cho nhan vien
+exports.UpdatePaySheet = async (req, res, next) => {
+    if (Object.keys(req.body).length === 0) return next(new ApiErr(400, 'Empty'));
+    try {
+        (req.body).forEach(async element => {
+            const update = await services.updatePaysheet(element);
+            if (!update) throw new Error('Fail');
+        });
+        res.send('Success');
+    } catch (err) {return next(new ApiErr(500, 'An error occurred wile update user paysheets.'))};
 }

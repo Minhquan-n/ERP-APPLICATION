@@ -10,7 +10,8 @@ router.route('/timesheet')
 router.route('/paysheet')
         .get(controllers.ShowPaysheets)
         .post(controllers.CreatePaysheet)
-router.route('data/paysheetlist')
+        .put(controllers.UpdatePaySheet)
+router.route('/data/paysheetlist')
         .get(controllers.GetPaysheetList)
 
 module.exports = router;

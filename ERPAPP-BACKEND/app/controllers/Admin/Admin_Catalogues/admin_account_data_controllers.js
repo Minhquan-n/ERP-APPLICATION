@@ -1,5 +1,6 @@
 const Datalogues_Service  = require('../../../services/Admin/Admin_Catalogues/admin_account_data_services');
 const ApiErr = require('../../../api-error');
+const databaseConnect = require('../../../mysql/database.connect');
 require('dotenv').config();
 
 // Lay danh sach dan toc
@@ -22,18 +23,18 @@ exports.GetProvinceList = async (req, res, next) => {
 
 // Lay danh sach quan huyen
 exports.GetDistrictList = async (req, res, next) => {
-    if (!req.body.id_tinhthanh) return next(new ApiErr(400, 'Empty province code.'));
+    if (!req.body.tinhthanh) return next(new ApiErr(400, 'Empty province code.'));
     try {
-        const list = await Datalogues_Service.getDistrictList(req.body.id_tinhthanh);
+        const list = await Datalogues_Service.getDistrictList(req.body.tinhthanh);
         res.send(list);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load district list.'))};
 }
 
 // Lay danh sach phuong xa
 exports.GetWardList = async (req, res, next) => {
-    if (!req.body.id_tinhthanh || req.body.id_quanhuyen) return next(new ApiErr(400, 'Empty province code or district code.'));
+    if (!req.body.tinhthanh || !req.body.quanhuyen) return next(new ApiErr(400, 'Empty province code or district code.'));
     try {
-        const list = await Datalogues_Service.getWardList(req.body.id_tinhthanh, req.body.id_quanhuyen);
+        const list = await Datalogues_Service.getWardList(req.body.tinhthanh, req.body.quanhuyen);
         res.send(list);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load ward list.'))};
 }
@@ -44,6 +45,14 @@ exports.GetBranchList = async (req, res, next) => {
         const list = await Datalogues_Service.getBranchList();
         res.send(list);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load branch list.'))};
+}
+
+// Lay mot chi nhanh
+exports.GetBranch = async (req, res, next) => {
+    try {
+        const branch = await Datalogues_Service.getBranch(req.params.id);
+        res.send(branch);
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while load branch.'))};
 }
 
 // Them chi nhanh
@@ -63,9 +72,8 @@ exports.AddBranch = async (req, res, next) => {
 
 // Cap nhat chi nhanh
 exports.UpdateBranch = async (req, res, next) => {
-    if (!req.body.id) return next(new ApiErr(400, 'Empty branch id.'));
     try {
-        const update = await Datalogues_Service.updateBranch(req.body.id, req.body);
+        const update = await Datalogues_Service.updateBranch(req.params.id, req.body);
         if (!update) throw new Error('Fail');
         res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error occurred while update branch.'))};

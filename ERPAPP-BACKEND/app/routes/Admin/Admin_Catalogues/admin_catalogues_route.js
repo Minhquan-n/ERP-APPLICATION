@@ -6,15 +6,18 @@ router.route('/data/ethniclist').get(staff_datalogues.GetEthnicList)
 
 router.route('/data/provincelist').get(staff_datalogues.GetProvinceList)
 
-router.route('/data/districtlist').get(staff_datalogues.GetDistrictList)
+router.route('/data/districtlist').put(staff_datalogues.GetDistrictList)
 
-router.route('/data/wardlist').get(staff_datalogues.GetWardList)
+router.route('/data/wardlist').put(staff_datalogues.GetWardList)
 
 router.route('/data/branch')
         .get(staff_datalogues.GetBranchList)
         .post(staff_datalogues.AddBranch)
-        .put(staff_datalogues.UpdateBranch)
         .patch(staff_datalogues.SearchBranch)
+
+router.route('/data/branch/:id')
+        .get(staff_datalogues.GetBranch)
+        .post(staff_datalogues.UpdateBranch)
 
 router.route('/data/department')
         .get(staff_datalogues.GetDepartmentList)

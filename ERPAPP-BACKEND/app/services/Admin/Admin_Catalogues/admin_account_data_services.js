@@ -44,11 +44,19 @@ class Staff_Datalogues  {
     // Lay danh sach chi nhanh
     async getBranchList () {
         const db = this.connection();
-        const select = 'cn.id_chinhanh, cn.tenchinhanh, cn.dccn_sonha, cn.dccn_phuongxa, cn.dccn_quanhuyen, cn.dccn_tinhthanh, tt.tentinhthanh, qh.tenquanhuyen, px.tenphuongxa';
+        const select = 'cn.id_chinhanh, cn.tenchinhanh, cn.dccn_sonha as sonha, cn.dccn_phuongxa as phuongxa, cn.dccn_quanhuyen as quanhuyen, cn.dccn_tinhthanh as tinhthanh, tt.tentinhthanh, qh.tenquanhuyen, px.tenphuongxa';
         const table = '((danhsachchinhanh cn JOIN tinhthanh tt ON cn.dccn_tinhthanh = tt.id_tinhthanh) JOIN quanhuyen qh ON cn.dccn_quanhuyen = qh.id_quanhuyen AND cn.dccn_tinhthanh = qh.id_tinhthanh) JOIN phuongxa px ON cn.dccn_phuongxa = px.id_phuongxa AND cn.dccn_tinhthanh = px.id_tinhthanh AND cn.dccn_quanhuyen = px.id_quanhuyen'
         const query = `SELECT ${select} FROM ${table}`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});
+    }
+
+    // Lay mot chi nhanh
+    async getBranch (id) {
+        const db = this.connection();
+        const query = `SELECT tenchinhanh, dccn_sonha as sonha, dccn_tinhthanh as tinhthanh, dccn_quanhuyen as quanhuyen, dccn_phuongxa as phuongxa FROM danhsachchinhanh WHERE id_chinhanh = ${id}`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
     }
 
     // Lay thong tin them chi nhanh

@@ -88,7 +88,7 @@ exports.ShowStaff = async (req, res, next) => {
     try {
         const staff = await Admin_account_services.getUserList();
         res.send(staff);
-    } catch (err) {return next(new ApiErr(500, 'An error occurred while load user information.'));}
+    } catch (err) {return next(new ApiErr(500, 'An error occurred while load user.'));}
 }
 
 // Tim kiem nhan vien theo tu khoa

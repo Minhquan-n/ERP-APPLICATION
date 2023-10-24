@@ -25,6 +25,15 @@ class Service {
     async updateUserInfo (data) {
         return (await this.api.put('/profile', data)).data;
     }
+
+    // Cac dich vu voi bang cham cong va bang luong
+    async getTimesheet (data) {
+        return (await this.api.get('/timesheet', data)).data;
+    }
+
+    async getPaysheet (data) {
+        return (await this.api.get('/paysheet', data)).data;
+    }
 }
 
 export default new Service();

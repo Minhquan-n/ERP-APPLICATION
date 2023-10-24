@@ -28,14 +28,14 @@
                         path: '/usr',
                         routername: 'AdminHRPage',
                         icon: 'user',
-                        text: 'Quản lý nhân sự',
+                        text: 'Nhân sự',
                         position: [1, 2],
                     },
                     {
                         path: '/catalogues',
-                        routername: 'AdminDataCatalogPage',
+                        routername: 'AdminDataCatalogBranchPage',
                         icon: 'list',
-                        text: 'Quản lý danh mục',
+                        text: 'Danh mục',
                         position: [1],
                     },
                 ];
@@ -85,7 +85,7 @@
             <span class="header_navigation_menu" :class="[open_nav === true ? 'header_navigation_menu_active' : '']" @click="open_close_navbar()"><font-awesome-icon :icon="'bars'" /></span>
             <ul class="nav" :style="{display: open_nav === true ? 'flex' : ''}">
                 <li class="nav-item w-100" v-for="item in nav_items">
-                    <router-link class="w-100 nav_item" :class="[path ===  item.path ? 'nav_item_active' : '']" :to="{name: item.routername }">
+                    <router-link class="w-100 nav_item" :class="[(path.search(item.path) !== -1) ? 'nav_item_active' : '']" :to="{name: item.routername }">
                         <font-awesome-icon :icon=item.icon class="nav_item_icon"/> {{ item.text }}
                     </router-link>
                 </li>

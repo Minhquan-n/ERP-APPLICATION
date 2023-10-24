@@ -49,34 +49,91 @@ class Service {
     }
 
     async getDistrictList (data) {
-        return (await this.api.get('/data/districtlist', data)).data;
+        return (await this.api.put('/data/districtlist', data)).data;
     }
 
     async getWardList (data) {
-        return (await this.api.get('/data/wardlist', data)).data;
+        return (await this.api.put('/data/wardlist', data)).data;
     }
 
     async getBranchList () {
         return (await this.api.get('/data/branch')).data;
     }
 
+    async getBranch (id) {
+        return (await this.api.get(`/data/branch/${id}`)).data;
+    }
+
+    async addBranch (data) {
+        return (await this.api.post('/data/branch', data)).data;
+    }
+
+    async updateBranch (id, data) {
+        return (await this.api.post(`/data/branch/${id}`, data)).data;
+    }
+
     async searchBranch (data) {
-        return (await this.api.put('/data/branch', data)).data;
+        return (await this.api.patch('/data/branch', data)).data;
     }
 
     async getDepartmentList () {
         return (await this.api.get('/data/department')).data;
     }
 
-    async searchDepartment (data) {
+    async addDepartment (data) {
+        return (await this.api.post('/data/department', data)).data;
+    }
+
+    async updateDepartment (data) {
         return (await this.api.put('/data/department', data)).data;
+    }
+
+    async searchDepartment (data) {
+        return (await this.api.patch('/data/department', data)).data;
     }
     async getPositionList () {
         return (await this.api.get('/data/position')).data;
     }
 
-    async searchPosition (data) {
+    async addPosition (data) {
+        return (await this.api.post('/data/position', data)).data;
+    }
+
+    async updatePosition (data) {
         return (await this.api.put('/data/position', data)).data;
+    }
+
+    async searchPosition (data) {
+        return (await this.api.patch('/data/position', data)).data;
+    }
+
+    // Cac dich thao tac voi bang cham cong va bang luong
+    async admin_showTimesheet (data) {
+        return (await this.api.get('/admin/timesheet', data)).data;
+    }
+
+    async admin_createTimesheet () {
+        return (await this.api.post('/admin/timesheet')).data;
+    }
+
+    async admin_timekeeping (data) {
+        return (await this.api.put('/admin/timesheet', data)).data;
+    }
+
+    async admin_showPaysheet (data) {
+        return (await this.api.get('/admin/paysheet', data)).data;
+    }
+
+    async admin_createPaysheet () {
+        return (await this.api.post('/admin/paysheet')).data;
+    }
+
+    async admin_upadatePaysheet (data) {
+        return (await this.api.put('/admin/paysheet', data)).data;
+    }
+
+    async getPaysheetList () {
+        return (await this.api.get('/data/paysheetlist')).data;
     }
 }
 

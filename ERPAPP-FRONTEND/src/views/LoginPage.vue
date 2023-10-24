@@ -70,20 +70,7 @@
                             }, 500);
                         }
                     } catch (error) {
-                        this.hasError = true;
-                        this.loginFail = $cookie.get('loginFail');
-                        this.loginFail++;
-                        $cookie.set('loginFail', this.loginFail);
-                        if (this.loginFail % 5 == 0) {
-                            const blocktime = 30 * (this.loginFail/5);
-                            this.serverMessage = `Đăng nhập thất bại ${this.loginFail} lần. Vui lòng thử lại sau ${blocktime >= 60 ? (parseInt(blocktime/60)) + ' phút ' + (blocktime - (60 * (parseInt(blocktime/60)))): '0 phút ' + blocktime} giây.`;
-                            this.blockLogin = true;
-                            setTimeout(() => {
-                                this.blockLogin = false;
-                                this.hasError = false;
-                                this.serverMessage = 'Vui lòng thử lại.';
-                            }, (blocktime * 1000));
-                        } else this.serverMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';
+                        this.serverMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';
                     }
                 }
             }

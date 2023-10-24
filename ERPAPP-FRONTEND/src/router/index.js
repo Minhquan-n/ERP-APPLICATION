@@ -1,16 +1,21 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 const routes = [
-    {
-        path: '/home',
-        name: 'AdminHomePage',
-        component: () => import('@/views/Admin/HomePage.vue'),
-    },
+    // Route dang nhap
     {
         path: '/',
         name: 'LoginPage',
         component: () => import('@/views/LoginPage.vue'),
     },
+
+    // Cac route cho dashboard
+    {
+        path: '/home',
+        name: 'AdminHomePage',
+        component: () => import('@/views/Admin/HomePage.vue'),
+    },
+
+    // Cac route cho du lieu danh muc
     {
         path: '/catalogues/branch',
         name: 'AdminDataCatalogBranchPage',
@@ -36,11 +41,15 @@ const routes = [
         name: 'AdminDataCataloguesPositionPage',
         component: () => import('@/views/Admin/DataCatalogues/Position/PositionListPage.vue'),
     },
+
+    // Cac route cho account
     {
         path: '/usr',
         name: 'AdminHRPage',
-        component: () => import('@/views/Admin/HRManagementPage.vue'),
+        component: () => import('@/views/Admin/Accounts/HRManagementPage.vue'),
     },
+
+    // Trang loi 404
     {
         path: '/:pathMatch(.*)*',
         name: 'PageNotFound',

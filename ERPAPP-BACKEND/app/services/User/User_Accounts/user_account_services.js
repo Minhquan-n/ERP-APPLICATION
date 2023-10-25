@@ -65,8 +65,9 @@ class Staff_Servieces {
     // Lay thong tin ca nhan nhan vien theo msnv
     async getUserPersonalInfo (msnv) {
         const db = this.connection();
-        const info = 'hoten, gioitinh, ngaysinh, dantoc, cccd, ngaycap_cccd, noicap_cccd, trinhdo, dclh_sonha, hoten_nguoithan, sdt_nguoithan, mqh_nguoithan';
-        const query = `SELECT ${info} FROM thongtincanhan WHERE msnv = '${msnv}'`;
+        const info = 'ttcn.hoten, ttcn.gioitinh, ttcn.ngaysinh, ttcn.dantoc, ttcn.cccd, ttcn.ngaycap_cccd, ttcn.noicap_cccd, ttcn.trinhdo, ttcn.stk, ttcn.tentk, ttcn.tenNH, ttcn.dclh_sonha, ttcn.dclh_tinhthanh, ttcn.dclh_quanhuyen, ttcn.dclh_phuongxa, ttcn.hoten_nguoithan, ttcn.sdt_nguoithan, ttcn.mqh_nguoithan, tt.tentinhthanh, qh.tenquanhuyen, px.tenphuongxa, dt.tendantoc';
+        const table = '(((thongtincanhan ttcn JOIN dantoc dt ON ttcn.dantoc = dt.id_dantoc) JOIN tinhthanh tt ON ttcn.dclh_tinhthanh = tt.id_tinhthanh) JOIN quanhuyen qh ON ttcn.dclh_quanhuyen = qh.id_quanhuyen AND ttcn.dclh_tinhthanh = qh.id_tinhthanh) JOIN phuongxa px ON ttcn.dclh_phuongxa = px.id_phuongxa AND ttcn.dclh_tinhthanh = px.id_tinhthanh AND ttcn.dclh_quanhuyen = px.id_quanhuyen'
+        const query = `SELECT ${info} FROM ${table} WHERE msnv = '${msnv}'`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0][0]});
     }
@@ -74,9 +75,9 @@ class Staff_Servieces {
     // Lay thong tin cong viec
     async getUserWorkInfo (msnv) {
         const db = this.connection();
-        const info = 'ttcv.ngaybatdau, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.khautruBHXH, ttcv.khautruBHYT, ttcv.khautruBHTN, ttcv.luongcoban, lhcv.tenloaihinhcongviec';
-        const selectfrom = 'thongtincongviec ttcv JOIN loaihinhcongviec lhcv ON ttcv.loaihinhcongviec = lhcv.id_loaihinhcongviec';
-        const query = `SELECT ${info} FROM ${selectfrom} WHERE ttcv.msnv = '${msnv}'`;
+        const info = 'ttcv.ngaybatdau, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.khautruBHXH, ttcv.khautruBHYT, ttcv.khautruBHTN, ttcv.luongcoban, ttcv.luongcoban1h, lhcv.tenloaihinhcongviec';
+        const select = 'thongtincongviec ttcv JOIN loaihinhcongviec lhcv ON ttcv.loaihinhcongviec = lhcv.id_loaihinhcongviec';
+        const query = `SELECT ${info} FROM ${select} WHERE ttcv.msnv = '${msnv}'`;
         const data =  (await db).execute(query);
         return data.then((data) => {return data[0][0]});
     }

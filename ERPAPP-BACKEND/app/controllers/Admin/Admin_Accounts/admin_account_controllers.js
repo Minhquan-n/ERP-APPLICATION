@@ -43,11 +43,30 @@ exports.ShowUserInfo = async (req, res, next) => {
         const area_info = await Staff_account_services.getUserArea(req.params.id);
         const position_info = await Staff_account_services.getUserPosition(req.params.id);
         const avt = await Staff_account_services.getUserAvt(req.params.id);
-        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, office_info, area_info, position_info, avt);
-        const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
-        const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
-        user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
-        user.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
+
+        const user = {
+            taikhoan: acc,
+            ttcn: usr_info,
+            ttcv: work_info,
+            hdld: laborcontract_info,
+            chinhanh: office_info,
+            bophan: area_info,
+            chucvu: position_info,
+            avt: avt,
+        }
+
+        const ngaysinh = new Date(`${user.ttcn.ngaysinh} UTC+0`);
+        const ngaycap_cccd = new Date(`${user.ttcn.ngaycap_cccd} UTC+0`);
+        const ngaybatdau = new Date (`${user.ttcv.ngaybatdau} UTC+0`);
+        const ngaykyhopdong = new Date(`${user.hdld.ngaykyhopdong} UTC+0`);
+        const luongcoban1h = parseInt(user.ttcv.luongcoban1h);
+
+        user.ttcv.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
+        user.hdld.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
+        user.ttcn.ngaysinh = (user.ttcn.ngaysinh) ? ngaysinh.toLocaleDateString('en-GB') : null;
+        user.ttcn.ngaycap_cccd = (user.ttcn.ngaycap_cccd) ? ngaycap_cccd.toLocaleDateString('en-GB') : null;
+        user.ttcv.luongcoban1h = luongcoban1h;
+
         res.send(user);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load user information.'));}
 }

@@ -75,7 +75,7 @@ class Staff_Servieces {
     // Lay thong tin cong viec
     async getUserWorkInfo (msnv) {
         const db = this.connection();
-        const info = 'ttcv.ngaybatdau, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.khautruBHXH, ttcv.khautruBHYT, ttcv.khautruBHTN, ttcv.luongcoban, ttcv.luongcoban1h, lhcv.tenloaihinhcongviec';
+        const info = 'ttcv.ngaybatdau, ttcv.soBHXH, ttcv.soBHYT, ttcv.noidkkcb, ttcv.khautruBHXH, ttcv.khautruBHYT, ttcv.khautruBHTN, ttcv.luongcoban, ttcv.luongcoban1h, ttcv.loaihinhcongviec, ttcv.phepnam, lhcv.tenloaihinhcongviec';
         const select = 'thongtincongviec ttcv JOIN loaihinhcongviec lhcv ON ttcv.loaihinhcongviec = lhcv.id_loaihinhcongviec';
         const query = `SELECT ${info} FROM ${select} WHERE ttcv.msnv = '${msnv}'`;
         const data =  (await db).execute(query);

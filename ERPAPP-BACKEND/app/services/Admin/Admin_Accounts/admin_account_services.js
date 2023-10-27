@@ -64,10 +64,10 @@ class Admin_Services {
     }
 
     // Tao tai khoan cho nguoi dung moi
-    async createUser (msnv, pass, payload) {
+    async createUser (msnv, stt, pass, payload) {
         const usr = await this.extractpayload_createUser(msnv, pass, payload);
         const db = this.connection();
-        const query_account = `INSERT INTO taikhoan (msnv, sdt, email, matkhau, ngaytaotk) VALUES ('${usr.msnv}','${usr.sdt}','${usr.email}','${usr.matkhau}', '${usr.ngaytaotk}')`;
+        const query_account = `INSERT INTO taikhoan (stt, msnv, sdt, email, matkhau, ngaytaotk) VALUES (${stt}, '${usr.msnv}','${usr.sdt}','${usr.email}','${usr.matkhau}', '${usr.ngaytaotk}')`;
         const query_userinfo = `INSERT INTO thongtincanhan (msnv, hoten, dantoc, dclh_tinhthanh, dclh_quanhuyen, dclh_phuongxa) VALUES ('${usr.msnv}','${usr.hoten}', 0, '000', '000', 0)`;
         const query_avt = `INSERT INTO anhdaidien (msnv, avt_secure_url, avt_public_id, avt_format) VALUES ('${usr.msnv}', '${usr.avt_secure_url}', '${usr.avt_public_id}', '${usr.avt_format}')`;
         const query_workinfo = `INSERT INTO thongtincongviec (msnv, ngaybatdau, luongcoban, luongcoban1h, loaihinhcongviec) VALUES ('${usr.msnv}', '${usr.ngaybatdau}', ${usr.luongcoban}, ${usr.luongcoban1h}, ${usr.loaihinhcongviec})`;
@@ -93,7 +93,7 @@ class Admin_Services {
         const db = this.connection();
         const select = 'tk.msnv, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu, avt.avt_secure_url, tk.trangthai_taikhoan';
         const table = '((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) JOIN anhdaidien avt ON tk.msnv = avt.msnv';
-        const query = `SELECT ${select} FROM ${table} WHERE cn.trangthai = 1 AND avt.avt_status = 1 AND bp.trangthai = 1 AND cv.trangthai = 1 ORDER BY tk.msnv`;
+        const query = `SELECT ${select} FROM ${table} WHERE cn.trangthai = 1 AND avt.avt_status = 1 AND bp.trangthai = 1 AND cv.trangthai = 1 ORDER BY tk.stt`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});
     }

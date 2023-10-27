@@ -20,7 +20,7 @@ exports.CreateUser = async (req, res, next) => {
                 const staffamount = await Admin_account_services.getStaffAmount();
                 const newAmount = staffamount + 1;
                 const msnv = 'MNV0' + staffamount;
-                const newUsr = await Admin_account_services.createUser(msnv, hash, req.body);
+                const newUsr = await Admin_account_services.createUser(msnv, newAmount, hash, req.body);
                 if (newUsr === 'Fail') {
                     throw new Error('Fail');
                 }

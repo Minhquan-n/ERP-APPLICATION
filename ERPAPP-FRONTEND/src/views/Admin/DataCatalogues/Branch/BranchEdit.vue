@@ -41,7 +41,7 @@
 <template>
     <AppHeader />
     <main>
-        <router-link :to="{name: 'AdminDataCatalogBranchPage'}" >Back</router-link>
+        <router-link :to="{name: 'AdminDataCatalogBranchPage'}" >Trở lại</router-link>
         <h2>Chỉnh sửa chi nhánh</h2>
         <div id="addBranchForm">
             <p>{{ serverMessage }}</p>

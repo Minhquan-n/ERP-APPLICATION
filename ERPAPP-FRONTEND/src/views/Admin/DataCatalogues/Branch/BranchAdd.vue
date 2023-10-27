@@ -41,8 +41,8 @@
 <template>
     <AppHeader />
     <main>
-        <router-link :to="{name: 'AdminDataCatalogBranchPage'}" >Back</router-link>
-        <h2>Thêm chi nhánh</h2>
+        <router-link :to="{name: 'AdminDataCatalogBranchPage'}" >Trở lại</router-link>
+        <h2>Tạo chi nhánh</h2>
         <div id="addBranchForm">
             <p>{{ serverMessage }}</p>
             <BranchForm :branch="branch" @Branch="addBranch" />

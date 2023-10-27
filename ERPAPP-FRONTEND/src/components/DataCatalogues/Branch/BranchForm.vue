@@ -95,6 +95,6 @@
         <ErrorMessage name="phuongxa" />
         <Field name="sonha" type="text" v-model="branch.sonha" />
         <ErrorMessage name="sonha" />
-        <button type="submit">Lưu</button>
+        <button type="submit">Submit</button>
     </Form>
 </template>

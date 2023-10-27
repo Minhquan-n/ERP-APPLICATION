@@ -70,6 +70,7 @@
                             }, 500);
                         }
                     } catch (error) {
+                        this.hasError = true;
                         this.serverMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';
                     }
                 }

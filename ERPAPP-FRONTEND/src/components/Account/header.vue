@@ -6,7 +6,7 @@
             const navbar = [
                 {
                     pageName: 'AdminHRPage',
-                    title: 'Nhân viên',
+                    title: 'Employees',
                     path: '/usr',
                 },
             ];

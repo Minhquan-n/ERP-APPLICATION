@@ -116,10 +116,10 @@
                     <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
-                                <router-link class="nav-link active" aria-current="page" :to="{name: 'AdminDataCatalogBranchPage'}">Chi Nhánh</router-link>
+                                <router-link class="nav-link active" aria-current="page" :to="{name: 'AdminDataCatalogBranchPage'}">Chi nhánh</router-link>
                             </li>
                             <li class="nav-item">
-                                <router-link class="nav-link" aria-current="page" :to="{name: 'AdminDataCataloguesDepartmentPage'}">Bộ Phận</router-link>
+                                <router-link class="nav-link" aria-current="page" :to="{name: 'AdminDataCataloguesDepartmentPage'}">Bộ phận</router-link>
                             </li>
                             <li class="nav-item">
                                 <router-link class="nav-link" aria-current="page" :to="{name: 'AdminDataCataloguesPositionPage'}">Chức vụ</router-link>
@@ -134,6 +134,7 @@
             </nav>
         </div>
         <div id="data_list">
+            <h2>Danh sách chi nhánh</h2>
             <table class="table table-hover">
                 <thead>
                     <tr>

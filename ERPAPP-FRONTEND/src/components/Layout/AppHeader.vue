@@ -21,21 +21,21 @@
                         path: '/home',
                         routername: 'AdminHomePage',
                         icon: 'house',
-                        text: 'Trang chủ',
+                        text: 'Trang Chủ',
                         position: [1, 2, 3],
                     },
                     {
                         path: '/usr',
                         routername: 'AdminHRPage',
                         icon: 'user',
-                        text: 'Nhân sự',
+                        text: 'Nhân Sự',
                         position: [1, 2],
                     },
                     {
                         path: '/catalogues',
                         routername: 'AdminDataCatalogBranchPage',
                         icon: 'list',
-                        text: 'Danh mục',
+                        text: 'Danh Mục',
                         position: [1],
                     },
                 ];
@@ -102,7 +102,7 @@
                 </li>
                 <li class="nav-item w-100" @click="logout">
                     <div class="nav_item">
-                        <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="nav_item_icon"/> Logout
+                        <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="nav_item_icon"/> Đăng xuất
                     </div>
                 </li>
             </ul>

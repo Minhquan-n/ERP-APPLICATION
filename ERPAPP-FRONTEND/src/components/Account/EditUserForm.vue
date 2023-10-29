@@ -88,6 +88,10 @@
 
             async editUser (data, {resetForm}) {
                 try {
+                    const ngaybatdau = data.ngaybatdaulamviec.split('/');
+                    const ngaykyhopdong = data.ngaykyhopdong.split('/');
+                    data.ngaykyhopdong = ngaykyhopdong[2] + '-' + ngaykyhopdong[1] + '-' + ngaykyhopdong[0];
+                    data.ngaybatdaulamviec =ngaybatdau[2] + '-' + ngaybatdau[1] + '-' + ngaybatdau[0];
                     const update = await Services.updateUser(this.user.taikhoan.msnv, data);
                     if (update !== 'Success') throw err;
                     this.$emit('edituser', 'Chỉnh sửa thông tin công việc thành công.');

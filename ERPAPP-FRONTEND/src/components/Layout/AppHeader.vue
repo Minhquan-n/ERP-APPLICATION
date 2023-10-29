@@ -27,7 +27,7 @@
                     {
                         path: '/usr',
                         routername: 'AdminHRPage',
-                        icon: 'user',
+                        icon: 'users',
                         text: 'Nhân Sự',
                         position: [1, 2],
                     },
@@ -36,6 +36,13 @@
                         routername: 'AdminDataCatalogBranchPage',
                         icon: 'list',
                         text: 'Danh Mục',
+                        position: [1],
+                    },
+                    {
+                        path: '/timesheets',
+                        routername: 'AdminTimesheetPage',
+                        icon: 'calendar',
+                        text: 'Chấm Công',
                         position: [1],
                     },
                 ];

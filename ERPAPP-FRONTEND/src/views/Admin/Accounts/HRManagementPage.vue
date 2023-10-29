@@ -142,8 +142,10 @@
             },
 
             async editUser (message) {
+                this.getUserList();
                 this.serverMessage = message;
                 this.editform = false;
+                this.resetMessage();
             },
 
             // Cac ham cap nhat trang thai tai khaon

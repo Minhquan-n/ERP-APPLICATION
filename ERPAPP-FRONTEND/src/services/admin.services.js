@@ -108,8 +108,9 @@ class Service {
     }
 
     // Cac dich thao tac voi bang cham cong va bang luong
+    // Du lieu cham cong
     async admin_showTimesheet (data) {
-        return (await this.api.get('/admin/timesheet', data)).data;
+        return (await this.api.patch('/admin/timesheet', data)).data;
     }
 
     async admin_createTimesheet () {
@@ -120,6 +121,7 @@ class Service {
         return (await this.api.put('/admin/timesheet', data)).data;
     }
 
+    // Du lieu bang luong
     async admin_showPaysheet (data) {
         return (await this.api.get('/admin/paysheet', data)).data;
     }

@@ -49,6 +49,13 @@ const routes = [
         component: () => import('@/views/Admin/Accounts/HRManagementPage.vue'),
     },
 
+    // Cac route cho timesheet
+    {
+        path: '/timesheets',
+        name: 'AdminTimesheetPage',
+        component: () => import('@/views/Admin/Timesheets/TimesheetManagementPage.vue'),
+    },
+
     // Trang loi 404
     {
         path: '/:pathMatch(.*)*',

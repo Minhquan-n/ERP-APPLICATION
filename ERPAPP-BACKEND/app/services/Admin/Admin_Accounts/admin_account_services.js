@@ -185,7 +185,7 @@ class Admin_Services {
     async updateUserDepartment (msnv, payload) {
         const info = this.extractpayload_UpdateUserDepartment(payload);
         const query_updateStatus = `UPDATE bophan SET trangthai = 0 WHERE msnv = '${msnv}'`;
-        const query = `INSERT INTO bophan (msnv, id_bophan, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_bophan}, '${ngaybatdaulamviec}')`;
+        const query = `INSERT INTO bophan (msnv, id_bophan, ngaybatdaulamviec) VALUES ('${msnv}', ${info.id_bophan}, '${info.ngaybatdaulamviec}')`;
         const update_status = await DB_Services.updateDB(query_updateStatus);
         const insert = await DB_Services.insertDB(query);
         if (!update_status || !insert) return false;

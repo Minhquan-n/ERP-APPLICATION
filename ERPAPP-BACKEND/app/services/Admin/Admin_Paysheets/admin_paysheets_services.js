@@ -42,7 +42,7 @@ class PaySheet {
         const db = this.connection();
         const table = '((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON bp.msnv = tk.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON cv.msnv = tk.msnv) JOIN thongtincongviec ttcv ON tk.msnv = ttcv.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv';
         const selected = 'tk.msnv, ttcn.hoten, bp.id_bophan, dsbp.tenbophan, cv.id_chucvu, dscv.tenchucvu, ttcv.khautruBHXH, ttcv.khautruBHYT, ttcv.khautruBHTN, ttcv.luongcoban, ttcv.luongcoban1h, ttcv.loaihinhcongviec, cn.id_chinhanh, dscn.tenchinhanh';
-        const query = `SELECT ${selected} FROM ${table} WHERE tk.trangthai_taikhoan = 1`;
+        const query = `SELECT ${selected} FROM ${table} WHERE tk.trangthai_taikhoan = 1 AND bp.trangthai = 1 AND cn.trangthai = 1 ORDER BY tk.stt`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});
     }
@@ -127,21 +127,12 @@ class PaySheet {
         return data;
     }
 
-    // Lay ten chi nhanh
-    async getBranchName (id) {
-        const db = this.connection();
-        const query = `SELECT tenchinhanh FROM danhsachchinhanh WHERE id_chinhanh = ${id}`;
-        const data = (await db).execute(query);
-        return data.then((data) => {return data[0][0]});
-    }
-
     // Lay bang cham cong theo chi nhanh
     async getTimesheet (month, filePath, branch) {
         const data = await this.getAllTimesheet(month, filePath);
-        const branchName = await this.getBranchName(branch);
         var timesheet = [];
         data.forEach((e, i) => {
-            if (e.Branch === branchName.tenchinhanh) timesheet.push(e);
+            if (e.Branch === branch) timesheet.push(e);
         });
         return timesheet;
     }

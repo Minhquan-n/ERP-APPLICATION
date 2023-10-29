@@ -39,13 +39,14 @@ exports.ShowTimesheet = async (req, res, next) => {
         const branch = req.body.chinhanh;
         const path = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
         var data;
-        if (!branch || branch === 0) {
+        if (!branch || branch === '0') {
             data = await services.getAllTimesheet(month, path);
         } else {
             data = await services.getTimesheet(month, path, branch);
         }
         res.send(data);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while show timesheet.'));}
+    
     
 }
 

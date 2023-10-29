@@ -4,7 +4,7 @@ const router = express.Router();
 const controllers = require('../../../controllers/Admin/Admin_Paysheets/admin_paysheets_controllers');
 
 router.route('/admin/timesheet')
-        .get(controllers.ShowTimesheet)
+        .patch(controllers.ShowTimesheet)
         .post(controllers.CreateTimesheet)
         .put(controllers.Timekeeping)
 router.route('/admin/paysheet')

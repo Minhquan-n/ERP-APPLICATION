@@ -4,54 +4,64 @@
 
     export default {
         data () {
+            const navigation_item = [
+                {
+                    path: '/home',
+                    routername: 'AdminHomePage',
+                    icon: 'house',
+                    text: 'Trang Chủ',
+                    position: [1, 2, 3, 4],
+                },
+                {
+                    path: '/usr',
+                    routername: 'AdminHRPage',
+                    icon: 'users',
+                    text: 'Nhân Sự',
+                    position: [1, 2, 3, 4],
+                },
+                {
+                    path: '/timesheets',
+                    routername: 'AdminTimesheetPage',
+                    icon: 'calendar',
+                    text: 'Chấm Công',
+                    position: [1, 2, 3, 4],
+                },
+                {
+                    path: '/payrolls',
+                    routername: 'AdminPayrollPage',
+                    icon: 'coins',
+                    text: 'Bảng Lương',
+                    position: [1, 3, 4],
+                },
+                {
+                    path: '/catalogues',
+                    routername: 'AdminDataCatalogBranchPage',
+                    icon: 'list',
+                    text: 'Danh Mục',
+                    position: [1],
+                },
+            ];
+            
             return {
                 avt: '',
                 username: '',
                 path: '',
                 nav_items: [],
                 open_nav: false,
-                open_user: false
+                open_user: false,
+                navigation_item
             }
         },
         methods: {
             setUpLayout () {
                 const position = $cookie.get('position');
-                const navigation_item = [
-                    {
-                        path: '/home',
-                        routername: 'AdminHomePage',
-                        icon: 'house',
-                        text: 'Trang Chủ',
-                        position: [1, 2, 3],
-                    },
-                    {
-                        path: '/usr',
-                        routername: 'AdminHRPage',
-                        icon: 'users',
-                        text: 'Nhân Sự',
-                        position: [1, 2],
-                    },
-                    {
-                        path: '/catalogues',
-                        routername: 'AdminDataCatalogBranchPage',
-                        icon: 'list',
-                        text: 'Danh Mục',
-                        position: [1],
-                    },
-                    {
-                        path: '/timesheets',
-                        routername: 'AdminTimesheetPage',
-                        icon: 'calendar',
-                        text: 'Chấm Công',
-                        position: [1],
-                    },
-                ];
+                
                 this.avt = $cookie.get('avt_url');
                 this.username = $cookie.get('hoten');
                 this.path = window.location.pathname;
-                navigation_item.forEach((item) => {
+                this.navigation_item.forEach((item) => {
                     const findPosition = item.position.findIndex((val) => val === Number(position));
-                    if (findPosition != -1) this.nav_items.push(item);
+                    if (findPosition !== -1) this.nav_items.push(item);
                 });
             },
 

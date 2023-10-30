@@ -123,7 +123,7 @@ class Service {
 
     // Du lieu bang luong
     async admin_showPaysheet (data) {
-        return (await this.api.get('/admin/paysheet', data)).data;
+        return (await this.api.patch('/admin/paysheet', data)).data;
     }
 
     async admin_createPaysheet () {

@@ -61,7 +61,8 @@
             // Ham tao thanh tieu de bang
             setUpThead () {
                 this.thead.length = 0;
-                for (var i = 1; i <= this.today; i++) {
+                const daycount = (this.month === this.currmonth) ? this.today : this.dayOfMonth(this.month, this.year);
+                for (var i = 1; i <= daycount; i++) {
                     this.thead.push(`${i}/${this.month}`);
                 }
             },

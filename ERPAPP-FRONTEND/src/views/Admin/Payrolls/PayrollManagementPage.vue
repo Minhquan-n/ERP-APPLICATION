@@ -22,7 +22,7 @@
                 payrollshow: [],
                 payrolllength: 0,
 
-                limit: 2,
+                limit: 10,
                 page: 1,
                 curpage: 1,
 

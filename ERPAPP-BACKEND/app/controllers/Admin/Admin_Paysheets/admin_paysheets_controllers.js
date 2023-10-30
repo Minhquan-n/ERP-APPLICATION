@@ -71,14 +71,13 @@ exports.CreatePaysheet = async (req, res, next) => {
     const month = (today.getMonth() === 0) ? 12 : today.getMonth();
     const year = (today.getMonth() === 0) ? today.getFullYear - 1 : today.getFullYear();
     const path = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
-    // const paysheetPath = process.env.PAYROLLS_PATH + '\\' + year + '.xlsx';
 
     try {
         // Tao dot luong
         const paysheetSumary = await services.createPaySheetSumary(date, month, year, path);
         if (!paysheetSumary) throw new Error('Paysheet sumary error.');
 
-        // Tao bang luog cho nahn vien
+        // Tao bang luog cho nhan vien
         const userPaysheet = await services.userPaysheet(month, year);
         if (!userPaysheet) return new Error('User paysheet error.');
         res.send('Success');
@@ -90,13 +89,18 @@ exports.CreatePaysheet = async (req, res, next) => {
 
 // Hien thi bang luong tat ca nhan vien theo thang
 exports.ShowPaysheets = async (req, res, next) => {
-    if (!req.body.month || !req.body.year) return next(new ApiErr(400, 'Provide month and year.'));
-    const month = req.body.month;
-    const year = req.body.year;
-    const id_dotluong = month + '/' + year;
+    if (!req.body.dotluong) return next(new ApiErr(400, 'Provide month and year.'));
+    const id_dotluong = req.body.dotluong;
+    const branch = req.body.chinhanh;
     try {
-        const paysheets = await services.getAllUserPaysheetByMonth(id_dotluong);
-        if (paysheets.length === 0) throw new Error('Fail');
+        var paysheets;
+        if (!branch || branch === 0) {
+            paysheets = await services.getAllUserPaysheet(id_dotluong);
+            if (paysheets.length === 0) throw new Error('Fail');
+        } else {
+            paysheets = await services.getAllUserPaysheetOfBranch(id_dotluong, branch);
+            if (paysheets.length === 0) throw new Error('Fail');
+        }
         res.send(paysheets);
     } catch (err) {
         return next(new ApiErr(500, 'An error occurred while load paysheets.'));
@@ -115,10 +119,8 @@ exports.GetPaysheetList = async (req, res, next) => {
 exports.UpdatePaySheet = async (req, res, next) => {
     if (Object.keys(req.body).length === 0) return next(new ApiErr(400, 'Empty'));
     try {
-        (req.body).forEach(async element => {
-            const update = await services.updatePaysheet(element);
-            if (!update) throw new Error('Fail');
-        });
+        const update = await services.updatePaysheet(req.body);
+        if (!update) throw new Error('Fail');
         res.send('Success');
     } catch (err) {return next(new ApiErr(500, 'An error occurred wile update user paysheets.'))};
 }

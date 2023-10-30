@@ -248,30 +248,35 @@ class PaySheet {
         var stafflist = [];
         try {
             const working_hour = await this.workingdayCaculate(month, timesheetpath);
-            staffList.forEach(async (e, i) => {
-                const sogiotangca = Math.max((working_hour[i].working_hour - stdHour[Number(e.loaihinhcongviec) - 1].sogiolamviec), 0);
-                const bhxh = (e.luongcoban * (e.khautruBHXH / 100));
-                const bhyt = (e.luongcoban * (e.khautruBHYT / 100));
-                const bhtn = (e.luongcoban * (e.khautruBHTN / 100));
-                const tangca = (e.luongcoban1h * sogiotangca) * stdHour[Number(e.loaihinhcongviec) - 1].tangca;
-                const thuclanhtam = (e.luongcoban + tangca) - (bhxh + bhyt + bhtn);
-                const user = {
-                    msnv: e.msnv,
-                    sogiolam: working_hour[i].working_hour,
-                    sogiotangca: sogiotangca,
-                    BHXH: bhxh,
-                    BHYT: bhyt,
-                    BHTN: bhtn,
-                    luongtangca: tangca,
-                    thuong: 0,
-                    thuclanh: thuclanhtam,
-                };
-                stafflist.push(user);
-                const userPaysheet = await this.insertUserPaysheet(user, id_dotluong);
-                if (!userPaysheet) throw new Error('Fail');
+            working_hour.forEach(async (e) => {
+                const userindex = staffList.findIndex((element) => {
+                    return element.msnv === e.msnv
+                });
+                if (userindex !== -1) {
+                    const sogiotangca = Math.max((e.working_hour - stdHour[Number(staffList[userindex].loaihinhcongviec) - 1].sogiolamviec), 0);
+                    const bhxh = (staffList[userindex].luongcoban * (staffList[userindex].khautruBHXH / 100));
+                    const bhyt = (staffList[userindex].luongcoban * (staffList[userindex].khautruBHYT / 100));
+                    const bhtn = (staffList[userindex].luongcoban * (staffList[userindex].khautruBHTN / 100));
+                    const tangca = (staffList[userindex].luongcoban1h * sogiotangca) * stdHour[Number(staffList[userindex].loaihinhcongviec) - 1].tangca;
+                    const thuclanhtam = (staffList[userindex].luongcoban + tangca) - (bhxh + bhyt + bhtn);
+                    const user = {
+                        msnv: staffList[userindex].msnv,
+                        sogiolam: e.working_hour,
+                        sogiotangca: sogiotangca,
+                        BHXH: bhxh,
+                        BHYT: bhyt,
+                        BHTN: bhtn,
+                        luongtangca: tangca,
+                        thuong: 0,
+                        thuclanh: thuclanhtam,
+                    };
+                    stafflist.push(user);
+                    const userPaysheet = await this.insertUserPaysheet(user, id_dotluong);
+                    if (!userPaysheet) throw new Error('Fail');
+                }
             });
+            return true;
         } catch (err) {return false};
-        return true;
     }
 
     // Lay danh sach bang luong tu DB
@@ -283,11 +288,21 @@ class PaySheet {
     }
 
     // Lay danh sach tat ca bang luong cua nhan vien theo thang
-    async getAllUserPaysheetByMonth (id_dotluong) {
+    async getAllUserPaysheet (id_dotluong) {
         const db = this.connection();
         const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
         const table = 'bangluongnhanvien blnv JOIN (((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN thongtincongviec ttcv ON tk.msnv = ttcv.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) ON tk.msnv = blnv.msnv';
-        const query = `SELECT ${select} FROM ${table} WHERE blnv.id_dotluong = '${id_dotluong}' ORDER BY blnv.msnv`;
+        const query = `SELECT ${select} FROM ${table} WHERE blnv.id_dotluong = '${id_dotluong}' AND cn.trangthai = 1 ORDER BY tk.stt`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0]});
+    }
+
+    // Lay danh sach bang luong nhan vien theo chi nhanh
+    async getAllUserPaysheetOfBranch (id_dotluong, id_chinhanh) {
+        const db = this.connection();
+        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
+        const table = 'bangluongnhanvien blnv JOIN (((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN thongtincongviec ttcv ON tk.msnv = ttcv.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) ON tk.msnv = blnv.msnv';
+        const query = `SELECT ${select} FROM ${table} WHERE blnv.id_dotluong = '${id_dotluong}' AND cn.id_chinhanh = ${id_chinhanh} AND cn.trangthai = 1 ORDER BY tk.stt`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});
     }
@@ -307,7 +322,7 @@ class PaySheet {
         const stdHour = this.getStandarHour();
         const giotangca = payload.sogiolam - stdHour[oldPaysheet.loaihinhcongviec - 1].sogiolamviec;
         const luongtangca = (oldPaysheet.luongcoban1h * giotangca) * stdHour[oldPaysheet.loaihinhcongviec - 1].tangca;
-        const thuclanh = (oldPaysheet.luongcoban + luongtangca + payload.thuong) - (oldPaysheet.BHXH + oldPaysheet.BHYT + oldPaysheet.BHTN);
+        const thuclanh = (oldPaysheet.luongcoban + luongtangca + Number(payload.thuong)) - (oldPaysheet.BHXH + oldPaysheet.BHYT + oldPaysheet.BHTN);
         const paysheet = {
             id_bangluong: payload.id_bangluong,
             sogiolam: payload.sogiolam,

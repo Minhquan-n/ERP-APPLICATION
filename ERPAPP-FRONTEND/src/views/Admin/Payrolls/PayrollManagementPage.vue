@@ -5,8 +5,8 @@
 
     // components
     import AppHeader from '@/components/Layout/AppHeader.vue';
-    import Panigation from '@/components/Account/UserListPanigation.vue';
-    import PayrollDetail from '@/components/Payrolls/UpdateUserPayroll.vue'
+    import Panigation from '@/components/Admin/Account/UserListPanigation.vue';
+    import PayrollDetail from '@/components/Admin/Payrolls/UpdateUserPayroll.vue'
 
     export default {
         data () {
@@ -59,7 +59,7 @@
                 try {
                     this.payrollsid = await Services.getPaysheetList();
                     if (this.payrollsid.length === 0) throw err;
-                    this.payrollid = this.payrollsid[this.payrollsid.length - 1].id_dotluong;
+                    this.payrollid = this.payrollsid[0].id_dotluong;
                 } catch (err) {
                     console.log(err);
                 }
@@ -157,7 +157,7 @@
             <div class="form_select_field">
                 <label for="form_payroll_id">Đợt lương</label>
                 <select name="payroll_id" id="form_payroll_id" v-model="payrollid">
-                    <option v-for="item in payrollsid.reverse()" :value="item.id_dotluong">{{ item.id_dotluong }}</option>
+                    <option v-for="item in payrollsid" :value="item.id_dotluong">{{ item.id_dotluong }}</option>
                 </select>
             </div>
             <div class="form_select_field">

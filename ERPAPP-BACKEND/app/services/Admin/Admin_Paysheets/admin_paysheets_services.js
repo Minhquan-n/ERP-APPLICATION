@@ -173,19 +173,18 @@ class PaySheet {
         var data = xlsx.utils.sheet_to_json(ws, {header: 2});
         // Tinh tong so gio lam viec
         data.forEach((e, i) => {
-            e.working_hour = 0;
             const item = Object.values(e);
+            console.log(item);
             var count = 0;
             var dayoff = 0;
-            for (var j = 5; j < item.length - 1; j++) {
+            for (var j = 5; j < item.length; j++) {
                 if (item[j] === 'p') {
                     dayoff++;
                     count += 8;
                 } else if (item[j] === 'x') count += 8;
-                else count += (8 + (item[j]));
+                else if (item[j] === 'v') count += 0;
+                else count += (8 + Number(item[j]));
             }
-            e.working_hour = count;
-            e.vacation_days = dayoff;
             const temp = {
                 msnv: e.MSNV,
                 working_hour: count,
@@ -245,9 +244,10 @@ class PaySheet {
         const timesheetpath = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
         const stdHour = this.getStandarHour();
         const staffList = await this.getStaffList();
-        var stafflist = [];
+        // var stafflist = [];
         try {
             const working_hour = await this.workingdayCaculate(month, timesheetpath);
+            console.log(working_hour);
             working_hour.forEach(async (e) => {
                 const userindex = staffList.findIndex((element) => {
                     return element.msnv === e.msnv
@@ -270,7 +270,7 @@ class PaySheet {
                         thuong: 0,
                         thuclanh: thuclanhtam,
                     };
-                    stafflist.push(user);
+                    // stafflist.push(user);
                     const userPaysheet = await this.insertUserPaysheet(user, id_dotluong);
                     if (!userPaysheet) throw new Error('Fail');
                 }

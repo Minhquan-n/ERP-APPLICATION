@@ -6,6 +6,15 @@ class Service {
     }
 
     // Cac dich vu cua admin
+    // Cac dich vu trang dashboard
+    async overview () {
+        return (await this.api.get('/dashboard/overview')).data;
+    }
+
+    async getAvgOT () {
+        return (await this.api.get('/dashboard/avgot')).data;
+    }
+    
     // Cac dich vu thao tac tren tai khoan nguoi dung
     async showStaff () {
         return (await this.api.get('/usr')).data;

@@ -10,8 +10,8 @@ router.route('/profile').get(controller.ShowUserInfo)
                     .post(controller.ChangePassword)
                     .put(controller.UpdateUserInfo)
 
-router.route('/timesheet').get(controller.ShowTimesheet)
+router.route('/timesheet').put(controller.ShowTimesheet)
 
-router.route('/paysheet').get(controller.ShowPaysheet)
+router.route('/paysheet').put(controller.ShowPaysheet)
 
 module.exports = router;

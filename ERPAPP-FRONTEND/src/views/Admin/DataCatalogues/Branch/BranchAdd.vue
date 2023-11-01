@@ -1,7 +1,7 @@
 <script>
     import Services from '@/services/admin.services';
     import AppHeader from '@/components/Layout/AppHeader.vue';
-    import BranchForm from '@/components/DataCatalogues/Branch/BranchForm.vue';
+    import BranchForm from '@/components/Admin/DataCatalogues/Branch/BranchForm.vue';
 
     export default {
         components: {

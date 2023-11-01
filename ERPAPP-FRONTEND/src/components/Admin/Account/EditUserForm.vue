@@ -48,22 +48,6 @@
                     .required('Chọn ngày bắt đầu làm việc.'),
             });
 
-            // const userLocal = {
-            //     soBHXH: this.user.ttcv.soBHXH,
-            //     soBHYT: this.user.ttcv.soBHYT,
-            //     noidkkcb: this.user.ttcv.noidkkcb,
-            //     luongcoban: this.user.ttcv.luongcoban,
-            //     phepnam: 12,
-            //     ngaykyhopdong: this.user.hdld.ngaykyhopdong,
-            //     sohdld: this.user.hdld.sohdld,
-            //     loaihopdong: this.user.hdld.loaihopdong,
-            //     loaihinhcongviec: this.user.ttcv.loaihinhcongviec,
-            //     chinhanh: this.user.chinhanh.id_chinhanh,
-            //     bophan: this.user.bophan.id_bophan,
-            //     chucvu: this.user.chucvu.id_chucvu,
-            //     ngaybatdaulamviec: this.user.ttcv.ngaybatdau,
-            // };
-
             return {
                 formSchema,
                 branch: [],

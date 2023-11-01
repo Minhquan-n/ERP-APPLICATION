@@ -4,9 +4,8 @@
     import Services from '@/services/admin.services'
     // components
     import AppHeader from '@/components/Layout/AppHeader.vue';
-    import DataList from '@/components/DataCatalogues/Branch/DataBranchList.vue';
-    import DataListPanigation from '@/components/DataCatalogues/DataListPanigation.vue';
-    // import BranchForm from '@/components/DataCatalogues/BranchForm.vue';
+    import DataList from '@/components/Admin/DataCatalogues/Branch/DataBranchList.vue';
+    import DataListPanigation from '@/components/Admin/DataCatalogues/DataListPanigation.vue';
 
     export default {
         data () {

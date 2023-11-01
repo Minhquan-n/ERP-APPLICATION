@@ -113,9 +113,9 @@
             <div class="fullpage_bg" :style="{display: open_user === true ? 'block' : ''}" @click="open_close_user_nav()"></div>
             <ul class="nav" id="header_user_nav" :style="{display: open_user === true ? 'flex' : ''}">
                 <li class="nav-item w-100">
-                    <div class="nav_item">
+                    <router-link class="w-100 nav_item" :class="[(path.search('/profile') !== -1) ? 'nav_item_active' : '']" :to="{name: 'UserProfilePage'}" >
                         <img id="uploadedimage" class="nav_avt" :src="avt" /> {{ username }}
-                    </div>
+                    </router-link>
                 </li>
                 <li class="nav-item w-100" @click="logout">
                     <div class="nav_item">

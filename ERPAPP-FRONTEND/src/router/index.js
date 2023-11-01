@@ -12,7 +12,7 @@ const routes = [
     {
         path: '/home',
         name: 'AdminHomePage',
-        component: () => import('@/views/Admin/HomePage.vue'),
+        component: () => import('@/views/Admin/Dashboard/HomePage.vue'),
     },
 
     // Cac route cho du lieu danh muc
@@ -56,11 +56,28 @@ const routes = [
         component: () => import('@/views/Admin/Timesheets/TimesheetManagementPage.vue'),
     },
 
-    // Cac route cho parolls
+    // Cac route cho payrolls
     {
         path: '/payrolls',
         name: 'AdminPayrollPage',
         component: () => import('@/views/Admin/Payrolls/PayrollManagementPage.vue'),
+    },
+
+    // Cac route cho profile user
+    {
+        path: '/profile',
+        name: 'UserProfilePage',
+        component: () => import('@/views/User/Profile/Profile.vue'),
+    },
+    {
+        path: '/profile/password',
+        name: 'UserPasswordPage',
+        component: () => import('@/views/User/Password/Password.vue'),
+    },
+    {
+        path: '/profile/paysheet',
+        name: 'UserPaysheetPage',
+        component: () => import('@/views/User/Payroll/Payroll.vue'),
     },
 
     // Trang loi 404

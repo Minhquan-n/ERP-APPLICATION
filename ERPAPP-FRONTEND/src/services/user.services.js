@@ -28,11 +28,11 @@ class Service {
 
     // Cac dich vu voi bang cham cong va bang luong
     async getTimesheet (data) {
-        return (await this.api.get('/timesheet', data)).data;
+        return (await this.api.put('/timesheet', data)).data;
     }
 
     async getPaysheet (data) {
-        return (await this.api.get('/paysheet', data)).data;
+        return (await this.api.put('/paysheet', data)).data;
     }
 }
 

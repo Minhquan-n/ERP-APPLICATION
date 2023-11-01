@@ -5,11 +5,11 @@
 
     // components
     import AppHeader from '@/components/Layout/AppHeader.vue';
-    import Navigation from '@/components/Account/header.vue';
-    import Panigation from '@/components/Account/UserListPanigation.vue';
-    import ShowUser from '@/components/Account/ShowUser.vue';
-    import AddForm from '@/components/Account/AddUserForm.vue';
-    import EditForm from '@/components/Account/EditUserForm.vue';
+    import Navigation from '@/components/Admin/Account/header.vue';
+    import Panigation from '@/components/Admin/Account/UserListPanigation.vue';
+    import ShowUser from '@/components/Admin/Account/ShowUser.vue';
+    import AddForm from '@/components/Admin/Account/AddUserForm.vue';
+    import EditForm from '@/components/Admin/Account/EditUserForm.vue';
 
     export default {
         data () {

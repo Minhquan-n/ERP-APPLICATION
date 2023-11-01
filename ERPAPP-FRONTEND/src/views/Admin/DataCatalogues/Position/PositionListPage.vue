@@ -5,8 +5,8 @@
     import Services from '@/services/admin.services'
     //components
     import AppHeader from '@/components/Layout/AppHeader.vue';
-    import DataListPanigation from '@/components/DataCatalogues/DataListPanigation.vue';
-    import DataList from '@/components/DataCatalogues/Position/PositionList.vue';
+    import DataListPanigation from '@/components/Admin/DataCatalogues/DataListPanigation.vue';
+    import DataList from '@/components/Admin/DataCatalogues/Position/PositionList.vue';
 
     export default {
         components: {

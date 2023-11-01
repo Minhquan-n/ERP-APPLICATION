@@ -70,11 +70,30 @@ exports.ShowUserInfo = async (req, res, next) => {
         const area_info = await Staff_account_services.getUserArea(msnv);
         const position_info = await Staff_account_services.getUserPosition(msnv);
         const avt = await Staff_account_services.getUserAvt(msnv);
-        const user = Object.assign(acc, usr_info, work_info, laborcontract_info, office_info, area_info, position_info, avt);
-        const ngaybatdau = new Date (`${user.ngaybatdau} UTC+0`);
-        const ngaykyhopdong = new Date(`${user.ngaykyhopdong} UTC+0`);
-        user.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
-        user.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
+
+        const user = {
+            taikhoan: acc,
+            ttcn: usr_info,
+            ttcv: work_info,
+            hdld: laborcontract_info,
+            chinhanh: office_info,
+            bophan: area_info,
+            chucvu: position_info,
+            avt: avt,
+        }
+
+        const ngaysinh = new Date(`${user.ttcn.ngaysinh} UTC+0`);
+        const ngaycap_cccd = new Date(`${user.ttcn.ngaycap_cccd} UTC+0`);
+        const ngaybatdau = new Date (`${user.ttcv.ngaybatdau} UTC+0`);
+        const ngaykyhopdong = new Date(`${user.hdld.ngaykyhopdong} UTC+0`);
+        const luongcoban1h = parseInt(user.ttcv.luongcoban1h);
+
+        user.ttcv.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
+        user.hdld.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
+        user.ttcn.ngaysinh = (user.ttcn.ngaysinh) ? ngaysinh.toLocaleDateString('en-GB') : null;
+        user.ttcn.ngaycap_cccd = (user.ttcn.ngaycap_cccd) ? ngaycap_cccd.toLocaleDateString('en-GB') : null;
+        user.ttcv.luongcoban1h = luongcoban1h;
+        
         res.send(user);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load user information.'));}
 }
@@ -140,12 +159,9 @@ exports.ChangePassword = async (req, res, next) => {
 // Hien thi bang luong ca nhan theo thang
 exports.ShowPaysheet = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
-    if (!req.body.month || !req.body.year) return next(new ApiErr(400, 'Provide month and year'));
+    if (!req.body.dotluong) return next(new ApiErr(400, 'Provide month and year'));
     try {
-        const month = req.body.month;
-        const year = req.body.year;
-        const id_dotluong = month + '/' + year;
-        const paysheet = await Staff_account_services.getPaysheet(req.cookies.msnv, id_dotluong);
+        const paysheet = await Staff_account_services.getPaysheet(req.cookies.msnv, req.body.dotluong);
         res.send(paysheet);
     } catch (err) {return next(new ApiErr(500, 'An error occurred while load pay sheet.'));}
 }
@@ -153,10 +169,10 @@ exports.ShowPaysheet = async (req, res, next) => {
 // Hien thi bang cham cong theo thang
 exports.ShowTimesheet = async (req, res, next) => {
     if (!req.cookies.loggedin || req.cookies.loggedin === 'false') return next(new ApiErr(401, 'No account were signed in.'));
-    if (!req.body.month || !req.body.year) return next(new ApiErr(400, 'Provide month and year'));
+    if (!req.body.thang || !req.body.nam) return next(new ApiErr(400, 'Provide month and year'));
     try {
-        const month = req.body.month;
-        const year = req.body.year;
+        const month = req.body.thang;
+        const year = req.body.nam;
         const path = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
         const timesheet = await Staff_account_services.getTimesheet(req.cookies.msnv, month, path);
         res.send(timesheet);

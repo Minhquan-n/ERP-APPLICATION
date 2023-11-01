@@ -13,15 +13,13 @@ exports.Overview = async (req, res, next) => {
 
 // Lay trung binh gio tang ca trong thang cu
 exports.GetAverageOT = async (req, res, next) => {
+    if (!req.body.thang || !req.body.nam) return next(new ApiErr(400, 'Provide month and year.'));
     try {
-        const avgOT = await Admin_User_Dashboard.avgOT();    
+        const month = req.body.thang;
+        const year = req.body.nam;
+        const avgOT = await Admin_User_Dashboard.workingTime(month, year);    
         res.send(avgOT);
     } catch (err) {
         return next(new ApiErr(500, 'An error occurred while caculate over time average.'));
     }
-}
-
-// Lay so ngay nghi trung binh trong thang cu
-exports.GetAverageOff = async (req, res, next) => {
-    res.send('ok');
 }

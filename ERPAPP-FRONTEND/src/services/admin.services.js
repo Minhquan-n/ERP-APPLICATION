@@ -11,8 +11,8 @@ class Service {
         return (await this.api.get('/dashboard/overview')).data;
     }
 
-    async getAvgOT () {
-        return (await this.api.get('/dashboard/avgot')).data;
+    async overtime (data) {
+        return (await this.api.put('/dashboard/overview', data)).data;
     }
     
     // Cac dich vu thao tac tren tai khoan nguoi dung

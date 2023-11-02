@@ -47,6 +47,14 @@
                 if($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
             },
 
+            // Kiem tra quyen truy cap
+            checkAccessPermission () {
+                const position = $cookie.get('position');
+                const permission = [1, 4];
+                const checkPermission = permission.findIndex((val) => val === Number(position));
+                if (checkPermission !== -1) this.$router.push({name: 'UserProfilePage'});
+            },
+
             // Ham reset server message
             resetMessage () {
                 setTimeout(() => {
@@ -144,6 +152,7 @@
 
         async created () {
             this.checkLogin();
+            this.checkAccessPermission();
             this.setUpPage();
         },
     }

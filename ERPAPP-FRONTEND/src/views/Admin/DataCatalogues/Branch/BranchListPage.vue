@@ -42,8 +42,15 @@
         },
 
         methods: {
+            // Kiem tra dang nhap
             checkLogin () {
                 if($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
+            },
+
+            // Kiem tra quyen truy cap
+            checkAccessPermission () {
+                const position = $cookie.get('position');
+                if (position !== '1') this.$router.push({name: 'UserProfilePage'});
             },
 
             addAndShowList (list) {
@@ -101,6 +108,7 @@
 
         created () {
             this.checkLogin();
+            this.checkAccessPermission();
             this.getBranchList();
         },
     }

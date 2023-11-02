@@ -33,7 +33,9 @@ exports.CreateUser = async (req, res, next) => {
 
 // Hien thi thong tin nhan vien
 exports.ShowUserInfo = async (req, res, next) => {
-    if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    const permission = [1, 2, 3, 4];
+    const checkPermission = permission.findIndex((value) => value === Number(req.cookies.position));
+    if (!req.cookies.position || checkPermission === -1) return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
         const acc = await Staff_account_services.getUserAccountInfo(req.params.id);
         const usr_info = await Staff_account_services.getUserPersonalInfo(req.params.id);
@@ -104,7 +106,9 @@ exports.UpdateUser = async (req, res, next) => {
 
 // Hien thi danh sach nhan vien
 exports.ShowStaff = async (req, res, next) => {
-    if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    const permission = [1, 2, 3, 4];
+    const checkPermission = permission.findIndex((value) => value === Number(req.cookies.position));
+    if (!req.cookies.position || checkPermission === -1) return next(new ApiErr(401, 'You do not have permission to access.'));
     try {
         const staff = await Admin_account_services.getUserList();
         res.send(staff);
@@ -113,7 +117,9 @@ exports.ShowStaff = async (req, res, next) => {
 
 // Tim kiem nhan vien theo tu khoa
 exports.SearchUser = async (req, res, next) => {
-    if (!req.cookies.position || req.cookies.position !== '1') return next(new ApiErr(401, 'You do not have permission to access.'));
+    const permission = [1, 2, 3, 4];
+    const checkPermission = permission.findIndex((value) => value === Number(req.cookies.position));
+    if (!req.cookies.position || checkPermission === -1) return next(new ApiErr(401, 'You do not have permission to access.'));
     if (!req.body.key) return next(new ApiErr(400, "Empty key"));
     try {
         const key = req.body.key;

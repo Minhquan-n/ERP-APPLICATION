@@ -64,10 +64,8 @@
                             this.serverMessage = 'Đăng nhập thành công.';
                             const access = $cookie.get('position');
                             setTimeout(() => {
-                                // switch (access){
-                                //     case '1': this.$router.push({name: 'AdminHomePage'}); break;
-                                // }
-                                this.$router.push({name: 'AdminHomePage'});
+                                if (access == 1) this.$router.push({name: 'AdminHomePage'});
+                                else this.$router.push({name: 'UserProfilePage'});
                             }, 500);
                         }
                     } catch (error) {

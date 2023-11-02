@@ -42,6 +42,14 @@
                 if($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
             },
 
+            // Kiem tra quyen truy cap
+            checkAccessPermission () {
+                const position = $cookie.get('position');
+                const permission = [1, 2, 3, 4];
+                const checkPermission = permission.findIndex((val) => val === Number(position));
+                if (checkPermission !== -1) this.$router.push({name: 'UserProfilePage'});
+            },
+
             // Ham tinh ngay trong thang
             dayOfMonth (month, year) {
                 if (month === 2) return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)) ? 29 : 28;
@@ -152,6 +160,7 @@
 
         async created () {
             this.checkLogin();
+            this.checkAccessPermission();
             this.setUpPage();
         },
     }

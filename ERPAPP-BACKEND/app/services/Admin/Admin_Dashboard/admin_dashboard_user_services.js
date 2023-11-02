@@ -23,7 +23,7 @@ class Admin_User_Dashboard {
     // Lay so luong nhan vien theo chi nhanh
     async getUserOnBranch () {
         const db = this.connection();
-        const query = 'SELECT COUNT(*) AS soluongnhanvien, dscn.tenchinhanh FROM taikhoan tk JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv WHERE cn.trangthai = 1 AND tk.trangthai_taikhoan = 1 GROUP BY cn.id_chinhanh;'
+        const query = 'SELECT COUNT(cn.msnv) AS soluongnhanvien, dscn.tenchinhanh FROM danhsachchinhanh dscn LEFT JOIN chinhanh cn ON dscn.id_chinhanh = cn.id_chinhanh WHERE cn.trangthai IS NULL OR cn.trangthai = 1 GROUP BY dscn.id_chinhanh ORDER BY dscn.id_chinhanh'
         const data = (await db).execute(query);
         return data.then((data) => {
             return data[0];
@@ -39,27 +39,17 @@ class Admin_User_Dashboard {
         return data.then((data) => {return data[0][0]});
     }
 
-    // Ham tong hop so luong nhan vien theo gioi tinh
-    async userByGender () {
-        const male = await this.countUserByGender('Nam');
-        const female = await this.countUserByGender('Nữ');
-        const unknown = await this.countUserByGender('null');
-        return {
-            nam: male,
-            nu: female,
-            khongxacdinh: unknown,
-        };
-    }
-
     // Tong hop cac thong tin
     async overview () {
         const allUser = await this.getAllUser();
         const userOnBranch = await this.getUserOnBranch();
-        const gender = await this.userByGender();
+        const male = await this.countUserByGender('Nam');
+        const female = await this.countUserByGender('Nữ');
+        const unknown = await this.countUserByGender('null');
         const overview = {
             tongnhanvien: allUser,
             chinhanh: userOnBranch,
-            gioitinh: gender
+            gioitinh: [male.soluong, female.soluong, unknown.soluong],
         };
         return overview;
     }
@@ -74,9 +64,6 @@ class Admin_User_Dashboard {
 
     // Tong hop thong tin trung binh gio tang ca
     async avgOT (month, year) {
-        // const today = new Date();
-        // const month = (today.getMonth() === 0) ? 12 : today.getMonth();
-        // const year = (today.getMonth() === 0) ? today.getFullYear - 1 : today.getFullYear();
         const lastmonth = (month === 1) ? 12 : (month - 1);
         const lastyear = (month === 1) ? (year - 1) : year;
         const dotluong = month + '/' + year;
@@ -99,9 +86,6 @@ class Admin_User_Dashboard {
             5: 0,
             6: 0,
         }
-        // const today = new Date();
-        // const month = (today.getMonth() === 0) ? 12 : today.getMonth();
-        // const year = (today.getMonth() === 0) ? today.getFullYear - 1 : today.getFullYear();
         const path = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
         const wb = xlsx.readFile(path);
         const ws = wb.Sheets[`${month}`];

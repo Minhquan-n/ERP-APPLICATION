@@ -63,7 +63,15 @@
         methods: {
             // Kiem tra dang nhap
             checkLogin () {
-                if($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
+                if ($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
+            },
+
+            // Kiem tra quyen truy cap
+            checkAccessPermission () {
+                const position = $cookie.get('position');
+                const permission = [1, 2, 3, 4];
+                const checkPermission = permission.findIndex((val) => val === Number(position));
+                if (checkPermission !== -1) this.$router.push({name: 'UserProfilePage'});
             },
 
             // Cac ham hien thi danh sach nhan vien
@@ -221,6 +229,7 @@
 
         async created () {
             this.checkLogin();
+            this.checkAccessPermission();
             await this.getUserList();
         },
     }

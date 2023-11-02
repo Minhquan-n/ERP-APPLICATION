@@ -10,7 +10,7 @@
                     routername: 'AdminHomePage',
                     icon: 'house',
                     text: 'Trang Chủ',
-                    position: [1, 2, 3, 4],
+                    position: [1],
                 },
                 {
                     path: '/usr',
@@ -31,7 +31,7 @@
                     routername: 'AdminPayrollPage',
                     icon: 'coins',
                     text: 'Bảng Lương',
-                    position: [1, 3, 4],
+                    position: [1, 4],
                 },
                 {
                     path: '/catalogues',

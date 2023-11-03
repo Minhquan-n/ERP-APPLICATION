@@ -20,16 +20,6 @@ class Admin_User_Dashboard {
         })
     }
 
-    // Lay so luong nhan vien theo chi nhanh
-    async getUserOnBranch () {
-        const db = this.connection();
-        const query = 'SELECT COUNT(cn.msnv) AS soluongnhanvien, dscn.tenchinhanh FROM danhsachchinhanh dscn LEFT JOIN chinhanh cn ON dscn.id_chinhanh = cn.id_chinhanh WHERE cn.trangthai IS NULL OR cn.trangthai = 1 GROUP BY dscn.id_chinhanh ORDER BY dscn.id_chinhanh'
-        const data = (await db).execute(query);
-        return data.then((data) => {
-            return data[0];
-        })
-    }
-
     // Ham dem so luong nhan vien theo gioi tinh
     async countUserByGender (gender) {
         const db = this.connection();
@@ -39,17 +29,60 @@ class Admin_User_Dashboard {
         return data.then((data) => {return data[0][0]});
     }
 
+    // Ham lay tong so luong
+    async getTotalSalary (month, year) {
+        const db = this.connection();
+        const dotluong = month + '/' + year;
+        const query = `SELECT tongluong, id_dotluong FROM dotluong WHERE id_dotluong = '${dotluong}'`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0][0]});
+    }
+
+    // Ham lay tong so luong cua tung bo phan
+    async getDepartmentTotalSalary (month, year) {
+        const db = this.connection();
+        const dotluong = month + '/' + year;
+        const select = 'SUM(blnv.thuclanh) AS luong, dsbp.tenbophan';
+        const table = 'bangluongnhanvien blnv JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON blnv.msnv = bp.msnv';
+        const condition = `blnv.id_dotluong = '${dotluong}' AND bp.trangthai = 1 AND blnv.trangthai = 1`;
+        const query = `SELECT ${select} FROM ${table} WHERE ${condition} GROUP BY bp.id_bophan`;
+        const data = (await db).execute(query);
+        return data.then((data) => {return data[0]});
+    }
+
     // Tong hop cac thong tin
     async overview () {
+        const today = new Date();
+        const month = (today.getMonth() === 0) ? 12: today.getMonth();
+        const year = (today.getMonth() === 0) ? today.getFullYear() - 1 : today.getFullYear();
+
         const allUser = await this.getAllUser();
-        const userOnBranch = await this.getUserOnBranch();
         const male = await this.countUserByGender('Nam');
         const female = await this.countUserByGender('Nữ');
         const unknown = await this.countUserByGender('null');
+        var departmentTotalSalary;
+        var deparMonth = month;
+        var deparYear = year;
+        do {
+            departmentTotalSalary = await this.getDepartmentTotalSalary(deparMonth, deparYear);
+            deparMonth--;
+            if (deparMonth === 0) deparYear--;
+        } while (departmentTotalSalary.length === 0);
+
+        var salary;
+        var totalMonth = month;
+        var totalYear = year;
+        do {
+            salary = await this.getTotalSalary(totalMonth, totalYear);
+            totalMonth--;
+            if (totalMonth === 0) totalYear--;
+        } while (!salary.tongluong)
+
         const overview = {
             tongnhanvien: allUser,
-            chinhanh: userOnBranch,
             gioitinh: [male.soluong, female.soluong, unknown.soluong],
+            luong: salary,
+            luongtheobophan: departmentTotalSalary,
         };
         return overview;
     }

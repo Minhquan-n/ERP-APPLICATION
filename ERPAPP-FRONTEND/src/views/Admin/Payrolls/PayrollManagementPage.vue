@@ -52,7 +52,7 @@
                 const position = $cookie.get('position');
                 const permission = [1, 4];
                 const checkPermission = permission.findIndex((val) => val === Number(position));
-                if (checkPermission !== -1) this.$router.push({name: 'UserProfilePage'});
+                if (checkPermission === -1) this.$router.push({name: 'UserProfilePage'});
             },
 
             // Ham reset server message
@@ -147,6 +147,24 @@
                     this.serverMessage = 'Tạo đợt lương mới thất bại.';
                     this.resetMessage();
                 }
+            },
+
+            // Ham khoa bang luong
+            async blockPaysheets () {
+                try {
+                    if (confirm(`Xác nhận khóa bảng lương đợt lương ${this.payrollid}`)) {
+                        const data = {dotluong: this.payrollid};
+                        const block = await Services.blockPaysheet(data);
+                        if (block !== 'Success') throw err;
+                        this.setUpPage();
+                        this.serverMessage = `Đã khóa bảng lương đợt lương ${this.payrollid}.`;
+                        this.resetMessage();
+                    }
+                } catch (err) {
+                    console.log(err);
+                    this.serverMessage = 'Khóa bảng lương thất bại.'
+                    thí.resetMessage();
+                }
             }
         },
 
@@ -181,6 +199,9 @@
         <div>
             <button @click="createPayroll">Tạo bảng lương</button>
         </div>
+        <div>
+            <button @click="blockPaysheets">Khóa bảng lương</button>
+        </div>
         <p>{{ serverMessage }}</p>
         <div id="paysheet">
             <table class="table table-hover">
@@ -201,7 +222,7 @@
                         <td>{{ Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(row.thuclanh) }}</td>
                         <td>{{ row.id_dotluong }}</td>
                         <td class="list_action">
-                            <button @click="payrollDetail(row.id_bangluong)"><font-awesome-icon :icon="['fas', 'pen']" /></button>
+                            <button @click="payrollDetail(row.id_bangluong)" :disabled="(row.trangthai === 1)"><font-awesome-icon :icon="['fas', 'pen']" /></button>
                         </td>
                     </tr>
                     <tr v-else :style="{width: '100%'}"><p>Không có dữ liệu.</p></tr>

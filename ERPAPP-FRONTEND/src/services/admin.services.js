@@ -146,6 +146,10 @@ class Service {
     async getPaysheetList () {
         return (await this.api.get('/data/paysheetlist')).data;
     }
+
+    async blockPaysheet (data) {
+        return (await this.api.post('data/paysheetlist', data)).data;
+    }
 }
 
 export default new Service();

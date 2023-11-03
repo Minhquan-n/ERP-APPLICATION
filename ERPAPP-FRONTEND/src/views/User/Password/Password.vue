@@ -28,6 +28,11 @@
         },
 
         methods: {
+            // Kiem tra dang nhap
+            checkLogin () {
+                if($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
+            },
+
             resetMessage () {
                 setTimeout(() => {
                     this.serverMessage = '';
@@ -56,6 +61,10 @@
                 }
             }
         },
+
+        create () {
+            this.checkLogin();
+        }
     }
 </script>
 

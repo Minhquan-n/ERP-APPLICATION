@@ -71,7 +71,7 @@
                 const position = $cookie.get('position');
                 const permission = [1, 2, 3, 4];
                 const checkPermission = permission.findIndex((val) => val === Number(position));
-                if (checkPermission !== -1) this.$router.push({name: 'UserProfilePage'});
+                if (checkPermission === -1) this.$router.push({name: 'UserProfilePage'});
             },
 
             // Cac ham hien thi danh sach nhan vien

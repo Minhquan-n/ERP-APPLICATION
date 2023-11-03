@@ -1,0 +1,71 @@
+@import '@/assets/base.css';
+
+    #figures {
+        display: flex;
+        justify-content: stretch;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .small_card {
+        width: 30%;
+        margin: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background-color: var(--color-white);
+        box-shadow: 0 0 10px 4px var(--color-black-shadow);
+    }
+
+    .small_card .icon {
+        width: fit-content;
+        height: fit-content;
+        padding: 6px;
+        margin: 10px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.5s ease;
+    }
+
+    .small_card .icon svg {
+        width: 25px;
+        height: 25px;
+    }
+
+    .small_card span {
+        margin: 2px;
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+
+    #chart {
+        width: 100%;
+        display: flex;
+        justify-content: stretch;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .big_card {
+        height: 400px;
+        margin: 10px;
+        padding: 40px 10px;
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background-color: var(--color-white);
+        box-shadow: 0 0 10px 4px var(--color-black-shadow);
+        transition: all 0.5s ease;
+    }
+
+    .small_card:hover, .big_card:hover {
+        box-shadow: 0 0 20px 6px var(--color-black-shadow-hard);
+        transition: all 0.5s ease;
+    }
+
+    strong {
+        font-size: large;
+    }

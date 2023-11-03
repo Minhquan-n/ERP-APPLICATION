@@ -107,6 +107,18 @@ exports.ShowPaysheets = async (req, res, next) => {
     }
 }
 
+// Khoa bang luong
+exports.BlockPaysheet = async (req, res, next) => {
+    if (!req.body.dotluong) return next(new ApiErr(400, 'Provide payroll id.'));
+    try {
+        const block = await services.blockPaysheet(req.body.dotluong);
+        if (!block) throw new Error('Fail');
+        res.send('Success');
+    } catch (err) {
+        return next(new ApiErr(500, 'An error occurred while block user paysheet.'));
+    }
+}
+
 // Lay danh sach cac dot luong
 exports.GetPaysheetList = async (req, res, next) => {
     try {

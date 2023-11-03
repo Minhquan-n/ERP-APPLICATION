@@ -244,7 +244,6 @@ class PaySheet {
         const timesheetpath = process.env.TIMESHEET_PATH + '\\' + year + '.xlsx';
         const stdHour = this.getStandarHour();
         const staffList = await this.getStaffList();
-        // var stafflist = [];
         try {
             const working_hour = await this.workingdayCaculate(month, timesheetpath);
             console.log(working_hour);
@@ -270,7 +269,6 @@ class PaySheet {
                         thuong: 0,
                         thuclanh: thuclanhtam,
                     };
-                    // stafflist.push(user);
                     const userPaysheet = await this.insertUserPaysheet(user, id_dotluong);
                     if (!userPaysheet) throw new Error('Fail');
                 }
@@ -290,7 +288,7 @@ class PaySheet {
     // Lay danh sach tat ca bang luong cua nhan vien theo thang
     async getAllUserPaysheet (id_dotluong) {
         const db = this.connection();
-        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
+        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, blnv.trangthai, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
         const table = 'bangluongnhanvien blnv JOIN (((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN thongtincongviec ttcv ON tk.msnv = ttcv.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) ON tk.msnv = blnv.msnv';
         const query = `SELECT ${select} FROM ${table} WHERE blnv.id_dotluong = '${id_dotluong}' AND cn.trangthai = 1 ORDER BY tk.stt`;
         const data = (await db).execute(query);
@@ -300,7 +298,7 @@ class PaySheet {
     // Lay danh sach bang luong nhan vien theo chi nhanh
     async getAllUserPaysheetOfBranch (id_dotluong, id_chinhanh) {
         const db = this.connection();
-        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
+        const select = 'blnv.id_bangluong, tk.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, ttcv.luongcoban, ttcv.luongcoban1h, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, blnv.id_dotluong, blnv.trangthai, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
         const table = 'bangluongnhanvien blnv JOIN (((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN thongtincongviec ttcv ON tk.msnv = ttcv.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) ON tk.msnv = blnv.msnv';
         const query = `SELECT ${select} FROM ${table} WHERE blnv.id_dotluong = '${id_dotluong}' AND cn.id_chinhanh = ${id_chinhanh} AND cn.trangthai = 1 ORDER BY tk.stt`;
         const data = (await db).execute(query);
@@ -341,6 +339,29 @@ class PaySheet {
         const userPaysheet = await this.extractpayload_updatepaysheet(payload);
         const field = `sogiolam = ${userPaysheet.sogiolam}, sogiotangca = ${userPaysheet.sogiotangca}, luongtangca = ${userPaysheet.luongtangca}, thuong = ${userPaysheet.thuong}, thuclanh = ${userPaysheet.thuclanh}, ghichu = '${userPaysheet.ghichu}'`;
         const query = `UPDATE bangluongnhanvien SET ${field} WHERE id_bangluong = '${userPaysheet.id_bangluong}'`;
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        });
+    }
+
+    async sumSalary (dotluong) {
+        const db =this.connection();
+        const query = `UPDATE dotluong SET tongluong = (SELECT SUM(thuclanh) FROM bangluongnhanvien WHERE id_dotluong = '${dotluong}') WHERE id_dotluong = '${dotluong}'`;
+        const data = (await db).execute(query);
+        return data.then((data, err) => {
+            if (err) return false;
+            return true;
+        })
+    }
+
+    // Khoa bang luong
+    async blockPaysheet (dotluong) {
+        const db = this.connection();
+        const sumSalary = await this.sumSalary(dotluong);
+        if (!sumSalary) return false;
+        const query = `UPDATE bangluongnhanvien SET trangthai = 1 WHERE id_dotluong = '${dotluong}'`;
         const data = (await db).execute(query);
         return data.then((data, err) => {
             if (err) return false;

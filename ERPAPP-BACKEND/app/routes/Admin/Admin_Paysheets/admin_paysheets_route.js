@@ -13,5 +13,6 @@ router.route('/admin/paysheet')
         .put(controllers.UpdatePaySheet)
 router.route('/data/paysheetlist')
         .get(controllers.GetPaysheetList)
+        .post(controllers.BlockPaysheet)
 
 module.exports = router;

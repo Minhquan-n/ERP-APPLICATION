@@ -5,7 +5,6 @@
 
     // components
     import AppHeader from '@/components/Layout/AppHeader.vue';
-    import Navigation from '@/components/Admin/Account/header.vue';
     import Panigation from '@/components/Admin/Account/UserListPanigation.vue';
     import ShowUser from '@/components/Admin/Account/ShowUser.vue';
     import AddForm from '@/components/Admin/Account/AddUserForm.vue';
@@ -39,19 +38,20 @@
                 list,
                 listshow: [],
                 curpage: 1,
-                limit: 15,
+                limit: 10,
                 page: 1,
                 key: '',
                 showuser: false,
-                addform: false,
-                editform: false,
+                addstatus: false,
+                editstatus: false,
                 serverMessage: '',
+                success: false,
+                inform: false,
             }
         },
 
         components: {
             AppHeader,
-            Navigation,
             Panigation,
             ShowUser,
             AddForm,
@@ -133,50 +133,41 @@
             },
 
             // Cac ham them nhan vien
-            async addForm () {
-                this.addform = (this.addform) ? false : true;
-            },
-
-            async addUser (message) {
+            async addUser (status) {
                 this.getUserList();
-                this.serverMessage = message;
+                this.success = (status) ? true : false;
+                this.serverMessage = (status) ? 'Tạo người dùng mới thành công.' : 'Tạo người dùng mới thất bại';
+                this.inform = true;
                 this.resetMessage();
             },
 
             // Cac ham sua thong tin cong viec nhan vien
             async editForm (msnv) {
                 await this.getUserInfo(msnv);
-                this.editform = (this.editform) ? false : true;
             },
 
-            async editUser (message) {
+            async editUser (status) {
                 this.getUserList();
-                this.serverMessage = message;
-                this.editform = false;
+                this.success = (status) ? true : false;
+                this.serverMessage = (status) ? 'Chỉnh sửa thông tin công việc thành công' : 'Chỉnh sửa thông tin công việc thất bại.';
+                this.inform = true;
                 this.resetMessage();
             },
 
-            // Cac ham cap nhat trang thai tai khaon
-            updateDisable (msnv) {
+            // Ham cap nhat trang thai tai khoan
+            updateUserStatus (msnv, status) {
                 (this.list.userlist).find((item, index) => {
                     if (item.msnv === msnv) {
-                        this.list.userlist[index].trangthai_taikhoan = 0;
-                    }
-                });
-            },
-
-            updateEnable (msnv) {
-                (this.list.userlist).find((item, index) => {
-                    if (item.msnv === msnv) {
-                        this.list.userlist[index].trangthai_taikhoan = 1;
+                        this.list.userlist[index].trangthai_taikhoan = status;
                     }
                 });
             },
 
             resetMessage () {
                 setTimeout(() => {
+                    this.inform = false;
                     this.serverMessage = '';
-                }, 2000);
+                }, 5000);
             },
 
             // Ham kich hoat tai khoan nhan vien
@@ -185,10 +176,13 @@
                     const enable = await Services.enableUser(msnv);
                     if (enable !== 'Success') throw err;
                     this.serverMessage = `Đã kích hoạt lại người dùng ${msnv}`;
-                    this.updateEnable(msnv);
+                    this.inform = true;
+                    this.updateUserStatus(msnv, 1);
                     this.resetMessage();
                 } catch (err) {
                     this.serverMessage = `Kích hoạt thất bại.`;
+                    this.success = flase;
+                    this.inform = true;
                     this.resetMessage();
                     console.log(err);
                 }
@@ -200,12 +194,14 @@
                     const disable = await Services.disableUser(msnv);
                     if (disable !== 'Success') throw err;
                     this.serverMessage = `Đã vô hiệu hóa người dùng ${msnv}`;
-                    this.updateDisable(msnv);
-                    setTimeout(() => {
-                        this.serverMessage = '';
-                    }, 2000);
+                    this.success = true;
+                    this.inform = true;
+                    this.updateUserStatus(msnv, 0);
+                    this.resetMessage()
                 } catch (err) {
                     this.serverMessage = 'Vô hiệu tài khoản thất bại.';
+                    this.success = false;
+                    this.inform = true;
                     this.resetMessage();
                     console.log(err);
                 }
@@ -217,9 +213,13 @@
                     const reset = await Services.resetPass(msnv);
                     if (reset !== 'Success') throw err;
                     this.serverMessage = `Đặt lại mật khẩu cho tài khoản ${msnv} thành công.`;
+                    this.success = true;
+                    this.inform = true;
                     this.resetMessage();
                 } catch (err) {
                     this.serverMessage = 'Đặt lại mật khẩu thất bại.';
+                    this.success = false;
+                    this.inform = true;
                     this.resetMessage();
                     console.log(err);
                 }
@@ -238,59 +238,143 @@
 <template>
     <AppHeader />
     <main>
-        <Navigation />
+        <h1>Danh sách nhân viên</h1>
         <div id="search_bar">
             <Form class="d-flex" role="search" @submit="searchUser">
                 <Field name="key" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                <button class="btn btn-outline-success" type="submit">Search</button>
+                <button class="btn btn-outline-primary" type="submit" :style="{border: '2px solid'}">Search</button>
             </Form>
         </div>
         <div id="user">
-            <h2>Danh sách nhân viên</h2>
-            <p>{{ this.serverMessage }}</p>
             <div id="user_list">
                 <table class="table table-hover">
                     <thead>
                         <tr>
                             <th scope="col"></th>
                             <th scope="col" v-for="item in thead">{{ item }}</th>
-                            <th scope="col" class="list_action">
-                                <button @click="addForm"><font-awesome-icon :icon="['fas', 'plus']" /></button>
-                                <button @click="getUserList"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
+                            <th scope="col">
+                                <div class="list_action">
+                                    <button class="act_btn btn btn-outline-primary" @click="addForm" data-bs-toggle="modal" data-bs-target="#add_user">
+                                        <font-awesome-icon :icon="['fas', 'plus']" />
+                                    </button>
+                                    <button class="act_btn btn btn-outline-info" @click="getUserList"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
+                                </div>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="row in listshow" :key="row.msnv">
-                            <th scope="row"><img :src="row.avt_secure_url" style="height: 35px; width: 35px;"></th>
+                            <th scope="row"><img :src="row.avt_secure_url" class="list_avt"></th>
                             <td>{{ row.msnv }}</td>
                             <td>{{ row.hoten }}</td>
                             <td>{{ row.tenchinhanh }}</td>
                             <td>{{ row.tenbophan }}</td>
                             <td>{{ row.tenchucvu }}</td>
-                            <td class="list_action">
-                                <button @click="showUser(row.msnv)"><font-awesome-icon :icon="['fas', 'eye']" /></button>
-                                <button @click="editForm(row.msnv)"><font-awesome-icon :icon="['fas', 'pen']" /></button>
-                                <button @click="disableUser(row.msnv)" :style="{display : (row.trangthai_taikhoan !== 1) ? 'none' : ''}"><font-awesome-icon :icon="['fas', 'lock']" /></button>
-                                <button @click="enableUser(row.msnv)" :style="{display : (row.trangthai_taikhoan !== 0) ? 'none' : ''}"><font-awesome-icon :icon="['fas', 'lock-open']" /></button>
-                                <button @click="resetPass(row.msnv)"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
+                            <td>
+                                <div class="list_action">
+                                    <button class="act_btn btn btn-outline-success" @click="showUser(row.msnv)" data-bs-toggle="modal" data-bs-target="#show_user">
+                                        <font-awesome-icon :icon="['fas', 'eye']" />
+                                    </button>
+                                    <button class="act_btn btn btn-outline-secondary" @click="editForm(row.msnv)" data-bs-toggle="modal" data-bs-target="#edit_user">
+                                        <font-awesome-icon :icon="['fas', 'pen']" />
+                                    </button>
+                                    <button class="act_btn btn btn-outline-danger" @click="disableUser(row.msnv)" :style="{display : (row.trangthai_taikhoan !== 1) ? 'none' : ''}"><font-awesome-icon :icon="['fas', 'lock']" /></button>
+                                    <button class="act_btn btn btn-outline-danger" @click="enableUser(row.msnv)" :style="{display : (row.trangthai_taikhoan !== 0) ? 'none' : ''}"><font-awesome-icon :icon="['fas', 'lock-open']" /></button>
+                                    <button class="act_btn btn btn-outline-info" @click="resetPass(row.msnv)"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
-                    <Panigation :page="page" :current-page="curpage" @change="showPage" />
                 </table>
+                <Panigation :page="page" :current-page="curpage" @change="showPage" />
             </div>
         </div>
-        <div id="show_user" :style="{display: (showuser) ? 'block' : 'none'}">
-            <ShowUser :user="list.user" />
+        <div id="show_user" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Thông tin chi tiết nhân viên</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="showUser(list.user.msnv)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ShowUser :user="list.user" />
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="edit_user" :style="{display: (editform) ? 'block' : 'none'}">
-            <h2>Chỉnh sửa thông tin công việc</h2>
-            <EditForm :user="list.user" @edituser="editUser" />
+        <div id="edit_user" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Chỉnh sửa thông tin công việc</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <EditForm :user="list.user" @edituser="editUser" />
+                </div>
+            </div>
         </div>
-        <div id="add_user" :style="{display: (addform) ? 'block' : 'none'}">
-            <h2>Tạo nhân viên mới</h2>
-            <AddForm @adduser="addUser" />
+        <div class="modal fade" id="add_user" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Tạo nhân viên mới</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <AddForm @adduser="addUser" />
+                </div>
+            </div>
+        </div>
+        <div class="inform alert" :class="[(success) ? 'alert-success' : 'alert-danger']" :style="{display: (inform) ? 'flex' : 'none'}">
+            <div>{{ serverMessage }}</div>
         </div>
     </main>
 </template>
+
+<style>
+    @import url('@/assets/base.css');
+
+    th {
+        font-weight: bolder;
+    }
+
+    .list_action {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .act_btn {
+        padding: 5px;
+        margin: 3px;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        border: solid 2px;
+    }
+
+    .list_avt {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .modal-footer {
+        justify-content: flex-start;
+    }
+
+    .inform {
+        width: 25%;
+        height: 40px;
+        position: fixed;
+        bottom: 5px;
+        left: 100%;
+        transform: translateX(-102%);
+        justify-content: center;
+        align-items: center;
+        z-index: 100000;
+    }
+</style>

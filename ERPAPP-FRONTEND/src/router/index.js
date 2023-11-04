@@ -46,7 +46,7 @@ const routes = [
     {
         path: '/usr',
         name: 'AdminHRPage',
-        component: () => import('@/views/Admin/Accounts/HRManagementPage.vue'),
+        component: () => import('@/views/Admin/Accounts/AccountManagementPage.vue'),
     },
 
     // Cac route cho timesheets

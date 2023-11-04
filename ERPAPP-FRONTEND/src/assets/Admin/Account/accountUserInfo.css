@@ -1,0 +1,96 @@
+#user_info {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#basic_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#avt {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#avt img {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#basic_info_right {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
+
+#personal_info, #work_info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
+
+.info_row {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    margin-left: 10px;
+}
+
+.info_row_content {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: start;
+    margin-left: 18px;
+}
+
+.info_row_title {
+    font-weight: bold;
+    font-size: medium;
+    width: 100%;
+}
+
+.info_field {
+    display: grid;
+    grid-template-areas: 'title val';
+    grid-template-columns: 30% 70%;
+}
+
+.field_title {
+   grid-area: title;
+   font-weight: bold;
+}
+
+.field_val {
+    grid-area: val;
+}
+
+.large_row {
+    width: 100%;
+}
+
+.medium_row {
+    width: 45%;
+}
+
+.small_row {
+    width: 30%;
+}

@@ -8,7 +8,7 @@
 </script>
 
 <template>
-    <div id="panigation">
+    <div id="pagination">
         <nav aria-label="Page navigation example">
             <ul class="pagination">
                 <li v-for="n in page" 
@@ -24,3 +24,16 @@
         </nav>
     </div>
 </template>
+
+<style>
+    #pagination {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .page-item {
+        cursor: pointer;
+    }
+</style>

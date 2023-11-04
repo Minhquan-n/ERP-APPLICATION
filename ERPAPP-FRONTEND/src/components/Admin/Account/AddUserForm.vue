@@ -72,13 +72,13 @@
                 try {
                     const add = await Services.createUser(data);
                     if (Object.keys(add).length === 0) throw err;
-                    this.$emit('adduser', 'Tạo tài khoản thành công.');
+                    this.$emit('adduser', true);
                     resetForm();
                 } catch (err) {
                     console.log(err);
-                    this.$emit('adduser', 'Tạo tài khoản thất bại.');
+                    this.$emit('adduser', false);
                 }
-            }
+            },
         },
 
         async created () {
@@ -88,89 +88,102 @@
 </script>
 
 <template>
-    <Form name="adduserform" @submit="addUser" ref="addform" :validation-schema="formSchema">
-        <div class="form_field">
-            <label for="sdt">Số điện thoại</label>
-            <Field type="text" name="sdt" id="sdt" />
-            <ErrorMessage name="sdt" />
+        <div class="modal-body">
+            <Form name="adduserform" @submit="addUser" ref="addform" :validation-schema="formSchema">
+                <div class="form_row">
+                    <p class="row_title"><b>1. Thông tin người dùng</b></p>
+                    <div class="form_field large_field">
+                        <label class="form-label" for="hoten">Họ tên</label>
+                        <Field class="form-control" type="text" name="hoten" id="hoten" />
+                        <ErrorMessage class="text-danger" name="hoten" />
+                    </div>
+                    <div class="form_field medium_field">
+                        <label class="form-label" for="sdt">Số điện thoại</label>
+                        <Field class="form-control" type="text" name="sdt" id="sdt" placeholder="Nhập số điện thoại" />
+                        <ErrorMessage class="text-danger" name="sdt" />
+                    </div>
+                    <div class="form_field medium_field">
+                        <label class="form-label" for="email">Email</label>
+                        <Field class="form-control" type="email" name="email" id="email" />
+                        <ErrorMessage class="text-danger" name="email" />
+                    </div>
+                </div>
+                <div class="form_row">
+                    <p class="row_title"><b>2. Hợp đồng lao động (HDLD)</b></p>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="sohdld">Số HDLD</label>
+                        <Field class="form-control" type="text" name="sohdld" id="sohdld" />
+                        <ErrorMessage class="text-danger" name="sohdld" />
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="ngaykyhopdong">Ngày ký HDLD</label>
+                        <Field class="form-control" type="date" name="ngaykyhopdong" id="ngaykyhopdong" />
+                        <ErrorMessage class="text-danger" name="ngaykyhopdong" />
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="loaihopdong">Loại HDLD</label>
+                        <Field class="form-control" type="text" name="loaihopdong" v-model="contracttype" :style="{display: 'none'}" />
+                        <select class="form-select" name="loaihopdong" id="loaihopdong" v-model="contracttype">
+                            <option value="">Chọn loại hợp đồng</option>
+                            <option value="Không xác định thời hạn">Không xác định thời hạn</option>
+                            <option value="Xác định thời hạn">Xác định thời hạn</option>
+                        </select>
+                        <ErrorMessage class="text-danger" name="loaihopdong" />
+                    </div>
+                </div>
+                <div class="form_row">
+                    <p class="row_title"><b>3. Thông tin công việc</b></p>
+                    <div class="form_field medium_field">
+                        <label class="form-label" for="luongcoban">Lương cơ bản</label>
+                        <Field class="form-control" type="text" name="luongcoban" id="luongcoban" />
+                        <ErrorMessage class="text-danger" name="luongcoban" />
+                    </div>
+                    <div class="form_field medium_field">
+                        <label class="form-label" for="loaihinhcongviec">Loại hình công việc</label>
+                        <Field class="form-control" type="text" name="loaihinhcongviec" v-model="worktype" :style="{display: 'none'}" />
+                        <select class="form-select" name="loaihinhcongviec" id="loaihinhcongviec" v-model="worktype">
+                            <option value="0">Không xác định</option>
+                            <option value="1">Toàn thời gian</option>
+                            <option value="2">Bán thời gian</option>
+                        </select>
+                        <ErrorMessage class="text-danger" name="loaihinhcongviec" />
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="chinhanh">Chi nhánh</label>
+                        <Field class="form-control" type="number" name="chinhanh" v-model="branchselect" :style="{display: 'none'}" />
+                        <select class="form-select" name="chinhanh" id="chinhanh" v-model="branchselect">
+                            <option value="0">Không xác định</option>
+                            <option v-for="item in branch" :value="item.id_chinhanh">{{ item.tenchinhanh }}</option>
+                        </select>
+                        <ErrorMessage class="text-danger" name="chinhanh" />
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="bophan">Bộ phận</label>
+                        <Field class="form-control" type="number" name="bophan" v-model="departmentselect" :style="{display: 'none'}" />
+                        <select class="form-select" name="bophan" id="bophan" v-model="departmentselect">
+                            <option value="0">Không xác định</option>
+                            <option v-for="item in department" :value="item.id_bophan">{{ item.tenbophan }}</option>
+                        </select>
+                        <ErrorMessage class="text-danger" name="bophan" />
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="chucvu">Chức vụ</label>
+                        <Field class="form-control" type="number" name="chucvu" v-model="positionselect" :style="{display: 'none'}" />
+                        <select class="form-select" name="chucvu" id="chucvu" v-model="positionselect">
+                            <option value="0">Không xác định</option>
+                            <option v-for="item in position" :value="item.id_chucvu">{{ item.tenchucvu }}</option>
+                        </select>
+                        <ErrorMessage class="text-danger" name="chucvu" />
+                    </div>
+                </div>
+                <div class="form_button">
+                    <button type="reset" class="form_btn btn btn-danger">Hủy</button>
+                    <button type="submit" class="form_btn btn btn-primary">Tạo</button>
+                </div>
+            </Form>
         </div>
-        <div class="form_field">
-            <label for="email">Email</label>
-            <Field type="email" name="email" id="email" />
-            <ErrorMessage name="email" />
-        </div>
-        <div class="form_field">
-            <label for="hoten">Họ tên</label>
-            <Field type="text" name="hoten" id="hoten" />
-            <ErrorMessage name="hoten" />
-        </div>
-        <div class="form_field">
-            <label for="sohdld">Số HDLD</label>
-            <Field type="text" name="sohdld" id="sohdld" />
-            <ErrorMessage name="sohdld" />
-        </div>
-        <div class="form_field">
-            <label for="ngaykyhopdong">Ngày ký HDLD</label>
-            <Field type="date" name="ngaykyhopdong" id="ngaykyhopdong" />
-            <ErrorMessage name="ngaykyhopdong" />
-        </div>
-        <div class="form_field">
-            <label for="loaihopdong">Loại HDLD</label>
-            <Field type="text" name="loaihopdong" v-model="contracttype" :style="{display: 'none'}" />
-            <select name="loaihopdong" id="loaihopdong" v-model="contracttype">
-                <option value="">Chọn loại hợp đồng</option>
-                <option value="Không xác định thời hạn">Không xác định thời hạn</option>
-                <option value="Xác định thời hạn">Xác định thời hạn</option>
-            </select>
-            <ErrorMessage name="loaihopdong" />
-        </div>
-        <div class="form_field">
-            <label for="luongcoban">Lương cơ bản</label>
-            <Field type="text" name="luongcoban" id="luongcoban" />
-            <ErrorMessage name="luongcoban" />
-        </div>
-        <div class="form_field">
-            <label for="loaihinhcongviec">Loại hình công việc</label>
-            <Field type="text" name="loaihinhcongviec" v-model="worktype" :style="{display: 'none'}" />
-            <select name="loaihinhcongviec" id="loaihinhcongviec" v-model="worktype">
-                <option value="0">Không xác định</option>
-                <option value="1">Toàn thời gian</option>
-                <option value="2">Bán thời gian</option>
-            </select>
-            <ErrorMessage name="loaihinhcongviec" />
-        </div>
-        <div class="form_field">
-            <label for="chinhanh">Chi nhánh</label>
-            <Field type="number" name="chinhanh" v-model="branchselect" :style="{display: 'none'}" />
-            <select name="chinhanh" id="chinhanh" v-model="branchselect">
-                <option value="0">Không xác định</option>
-                <option v-for="item in branch" :value="item.id_chinhanh">{{ item.tenchinhanh }}</option>
-            </select>
-            <ErrorMessage name="chinhanh" />
-        </div>
-        <div class="form_field">
-            <label for="bophan">Bộ phận</label>
-            <Field type="number" name="bophan" v-model="departmentselect" :style="{display: 'none'}" />
-            <select name="bophan" id="bophan" v-model="departmentselect">
-                <option value="0">Không xác định</option>
-                <option v-for="item in department" :value="item.id_bophan">{{ item.tenbophan }}</option>
-            </select>
-            <ErrorMessage name="bophan" />
-        </div>
-        <div class="form_field">
-            <label for="chucvu">Chức vụ</label>
-            <Field type="number" name="chucvu" v-model="positionselect" :style="{display: 'none'}" />
-            <select name="chucvu" id="chucvu" v-model="positionselect">
-                <option value="0">Không xác định</option>
-                <option v-for="item in position" :value="item.id_chucvu">{{ item.tenchucvu }}</option>
-            </select>
-            <ErrorMessage name="chucvu" />
-        </div>
-        <button type="reset">Hủy</button>
-        <button type="submit">Tạo</button>
-    </Form>
 </template>
 
 <style>
-
+    @import url('@/assets/Admin/Account/accountForm.css');
 </style>

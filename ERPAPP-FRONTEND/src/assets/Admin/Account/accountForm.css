@@ -1,0 +1,55 @@
+.large_field {
+    width: 96%;
+}
+
+.medium_field {
+    width: 47%;
+}
+
+.small_field {
+    width: 30%;
+}
+
+.form_field {
+    margin: 10px;
+}
+
+.form_row {
+    display: flex;
+    justify-content: stretch;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.row_title {
+    margin: 0;
+    width: 100%;
+}
+
+.form_btn {
+    margin: 0 10px;
+}
+
+.form_button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-body {
+    overflow-x: hidden;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+    background-color: #F5F5F5;
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    width: 6px;
+    background-color: grey;
+    border-radius: 3px;
+}

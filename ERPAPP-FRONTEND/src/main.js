@@ -8,6 +8,7 @@ import './assets/base.css'
 
 // import bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/js/dist/modal.js'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 

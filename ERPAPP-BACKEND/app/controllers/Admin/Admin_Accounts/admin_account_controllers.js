@@ -101,7 +101,6 @@ exports.UpdateUser = async (req, res, next) => {
         if (!update_workInfo) throw new Error('Fail to update work information.');
         res.send('Success');
     } catch (err) {return next(new ApiErr(500, err));}
-        res.send('Success');
 }
 
 // Hien thi danh sach nhan vien

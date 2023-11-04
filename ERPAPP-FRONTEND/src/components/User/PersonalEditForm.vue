@@ -79,10 +79,10 @@
                 try {
                     const edit = await UserService.updateUserInfo(this.userInfo);
                     if (edit !== 'Success') throw err;
-                    this.$emit('edit', 'Cập nhật thành công.');
+                    this.$emit('edit', true);
                 } catch (err) {
                     console.log(err);
-                    this.$emit('edit', 'Cập nhật thất bại.');
+                    this.$emit('edit', false);
                 }
             },
 
@@ -110,125 +110,151 @@
 </script>
 
 <template>
-    <div id="user_avt">
-        <img width="400" id="uploadedimage" :src="userInfo.avt_secure_url" />
-        <button @click="uploadFile" id="upload_widget" class="cloudinary-button">
-            Upload files
-        </button>
+    <div class="modal-body">
+        <Form name="usereditform" @submit="editUser" :validation-schema="formSchema">
+            <div id="basic_info_row">
+                <div id="user_avt">
+                    <img id="uploadedimage" :src="userInfo.avt_secure_url" />
+                    <button type="button" @click="uploadFile" id="upload_widget" class="cloudinary-button">
+                        Upload files
+                    </button>
+                </div>
+                <div id="user_basic_info">
+                    <p class="row_title"><b>1. Thông tin cơ bản</b></p>
+                    <div class="form_field large_field">
+                        <label class="form-label" for="hoten">Họ tên</label>
+                        <Field class="form-control" type="text" name="hoten" id="hoten" v-model="userInfo.hoten" />
+                        <ErrorMessage class="text-danger" name="hoten" />
+                    </div>
+                    <div class="form_field large_field">
+                        <label class="form-label" for="sdt">Số điện thoại</label>
+                        <Field class="form-control" type="text" name="sdt" id="sdt" v-model="userInfo.sdt" />
+                        <ErrorMessage class="text-danger" name="sdt" />
+                    </div>
+                    <div class="form_field large_field">
+                        <label class="form-label" for="email">Email</label>
+                        <Field class="form-control" type="text" name="email" id="email" v-model="userInfo.email" />
+                        <ErrorMessage class="text-danger" name="email" />
+                    </div>
+                </div>
+            </div>
+            <div class="form_row">
+                <p class="row_title"><b>2. Thông tin cá nhân</b></p>
+                <div class="form_field small_field">
+                    <label class="form-label" for="gioitinh">Giới tính</label>
+                    <select class="form-select" name="gioitinh" id="gioitinh" v-model="userInfo.gioitinh">
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                    <Field class="form-control" type="text" name="gioitinh" v-model="userInfo.gioitinh" :style="{display: 'none'}" />
+                    <ErrorMessage class="text-danger" name="gioitinh" />
+                </div>
+                <div class="form_field small_field">
+                    <label class="form-label" for="ngaysinh">Ngày sinh</label>
+                    <Field class="form-control" type="date" name="ngaysinh" id="ngaysinh" v-model="userInfo.ngaysinh" />
+                    <ErrorMessage class="text-danger" name="ngaysinh" />
+                </div>
+                <div class="form_field small_field">
+                    <label class="form-label" for="dantoc">Dân tộc</label>
+                    <select class="form-select" name="dantoc" id="dantoc" v-model="userInfo.dantoc">
+                        <option v-for="item in nationlist" :value="item.id_dantoc">{{ item.tendantoc }}</option>
+                    </select>
+                    <Field class="form-control" type="number" name="dantoc" v-model="userInfo.dantoc" :style="{display: 'none'}" />
+                    <ErrorMessage class="text-danger" name="dantoc" />
+                </div>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="cccd">CCCD</label>
+                    <Field class="form-control" type="text" name="cccd" id="cccd" v-model="userInfo.cccd" />
+                    <ErrorMessage class="text-danger" name="cccd" />
+                </div>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="ngaycap_cccd">Ngày cấp CCCD</label>
+                    <Field class="form-control" type="date" name="ngaycap_cccd" id="ngaycap_cccd" v-model="userInfo.ngaycap_cccd" />
+                    <ErrorMessage class="text-danger" name="ngaycap_cccd" />
+                </div>
+                <div class="form_field large_field">
+                    <label class="form-label" for="noicap_cccd">Nơi cấp CCCD</label>
+                    <Field class="form-control" type="text" name="noicap_cccd" id="noicap_cccd" v-model="userInfo.noicap_cccd" />
+                    <ErrorMessage class="text-danger" name="noicap_cccd" />
+                </div>
+                <div class="form_field small_field">
+                    <label class="form-label" for="trinhdo">Trình độ</label>
+                    <Field class="form-control" type="text" name="trinhdo" id="trinhdo" v-model="userInfo.trinhdo" />
+                </div>
+            </div>
+            <div class="form_row">
+                <p class="row_title"><b>3. Thông tin số tài khoản</b></p>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="stk">Số tài khoản</label>
+                    <Field class="form-control" type="text" name="stk" id="stk" v-model="userInfo.stk" />
+                    <ErrorMessage class="text-danger" name="stk" />
+                </div>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="tentk">Tên tài khoản</label>
+                    <Field class="form-control" type="text" name="tentk" id="tentk" v-model="userInfo.tentk" />
+                    <ErrorMessage class="text-danger" name="tentk" />
+                </div>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="tenNH">Tên ngân hàng</label>
+                    <Field class="form-control" type="text" name="tenNH" id="tenNH" v-model="userInfo.tenNH" />
+                    <ErrorMessage class="text-danger" name="tenNH" />
+                </div>
+            </div>
+            <div class="form_row">
+                <p class="row_title"><b>4. Địa chỉ liên hệ</b></p>
+                <div class="form_field large_field">
+                    <label class="form-label" for="dclh_sonha">Số nhà</label>
+                    <Field class="form-control" type="text" name="dclh_sonha" id="dclh_sonha" v-model="userInfo.dclh_sonha" />
+                    <ErrorMessage class="text-danger" name="dclh_sonha" />
+                </div>
+                <div class="form_field small_field">
+                    <label class="form-label" for="dclh_tinhthanh">Tỉnh, thành</label>
+                    <select class="form-select" name="dclh_tinhthanh" id="dclh_tinhthanh" v-model="userInfo.dclh_tinhthanh" @change="getDistrict">
+                        <option v-for="item in provincelist" :value="item.id_tinhthanh">{{ item.tentinhthanh }}</option>
+                    </select>
+                    <Field class="form-control" type="text" name="dclh_tinhthanh" v-model="userInfo.dclh_tinhthanh" :style="{display: 'none'}" />
+                    <ErrorMessage class="text-danger" name="dclh_tinhthanh" />
+                </div>
+                <div class="form_field small_field">
+                    <label class="form-label" for="dclh_quanhuyen">Quận, huyện</label>
+                    <select class="form-select" name="dclh_quanhuyen" id="dclh_quanhuyen" v-model="userInfo.dclh_quanhuyen" @change="getWard">
+                        <option v-for="item in districtlist" :value="item.id_quanhuyen">{{ item.tenquanhuyen }}</option>
+                    </select>
+                    <Field class="form-control" type="text" name="dclh_quanhuyen" v-model="userInfo.dclh_quanhuyen" :style="{display: 'none'}" />
+                    <ErrorMessage class="text-danger" name="dclh_quanhuyen" />
+                </div>
+                <div class="form_field small_field">
+                    <label class="form-label" for="dclh_phuongxa">Phường, xã</label>
+                    <select class="form-select" name="dclh_phuongxa" id="dclh_phuongxa" v-model="userInfo.dclh_phuongxa">
+                        <option v-for="item in wardlist" :value="item.id_phuongxa">{{ item.tenphuongxa }}</option>
+                    </select>
+                    <Field class="form-control" type="text" name="dclh_phuongxa" v-model="userInfo.dclh_phuongxa" :style="{display: 'none'}" />
+                    <ErrorMessage class="text-danger" name="dclh_phuongxa" />
+                </div>
+            </div>
+            <div class="form_row">
+                <p class="row_title"><b>5. Thông tin người thân</b></p>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="hoten_nguoithan">Họ tên người thân</label>
+                    <Field class="form-control" type="text" name="hoten_nguoithan" id="hoten_nguoithan" v-model="userInfo.hoten_nguoithan" />
+                </div>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="sdt_nguoithan">Số điện thoại</label>
+                    <Field class="form-control" type="text" name="sdt_nguoithan" id="sdt_nguoithan" v-model="userInfo.sdt_nguoithan" />
+                </div>
+                <div class="form_field medium_field">
+                    <label class="form-label" for="mqh_nguoithan">Mối quan hệ</label>
+                    <Field class="form-control" type="text" name="mqh_nguoithan" id="mqh_nguoithan" v-model="userInfo.mqh_nguoithan" />
+                </div>
+            </div>
+            <div class="form_button">
+                <button type="button" class="form_btn btn btn-danger" data-bs-dismiss="modal">Hủy</button>
+                <button type="submit" class="form_btn btn btn-primary">Cập nhật</button>
+            </div>
+        </Form>
     </div>
-    <Form name="usereditform" @submit="editUser" :validation-schema="formSchema">
-        <div class="form_field">
-            <label for="hoten">Họ tên</label>
-            <Field type="text" name="hoten" id="hoten" v-model="userInfo.hoten" />
-            <ErrorMessage name="hoten" />
-        </div>
-        <div class="form_field">
-            <label for="sdt">Số điện thoại</label>
-            <Field type="text" name="sdt" id="sdt" v-model="userInfo.sdt" />
-            <ErrorMessage name="sdt" />
-        </div>
-        <div class="form_field">
-            <label for="email">Email</label>
-            <Field type="text" name="email" id="email" v-model="userInfo.email" />
-            <ErrorMessage name="email" />
-        </div>
-        <div class="form_field">
-            <label for="gioitinh">Giới tính</label>
-            <select name="gioitinh" id="gioitinh" v-model="userInfo.gioitinh">
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-            </select>
-            <Field type="text" name="gioitinh" v-model="userInfo.gioitinh" :style="{display: 'none'}" />
-            <ErrorMessage name="gioitinh" />
-        </div>
-        <div class="form_field">
-            <label for="ngaysinh">Ngày sinh</label>
-            <Field type="date" name="ngaysinh" id="ngaysinh" v-model="userInfo.ngaysinh" />
-            <ErrorMessage name="ngaysinh" />
-        </div>
-        <div class="form_field">
-            <label for="dantoc">Dân tộc</label>
-            <select name="dantoc" id="dantoc" v-model="userInfo.dantoc">
-                <option v-for="item in nationlist" :value="item.id_dantoc">{{ item.tendantoc }}</option>
-            </select>
-            <Field type="number" name="dantoc" v-model="userInfo.dantoc" :style="{display: 'none'}" />
-            <ErrorMessage name="dantoc" />
-        </div>
-        <div class="form_field">
-            <label for="cccd">CCCD</label>
-            <Field type="text" name="cccd" id="cccd" v-model="userInfo.cccd" />
-            <ErrorMessage name="cccd" />
-        </div>
-        <div class="form_field">
-            <label for="ngaycap_cccd">Ngày cấp CCCD</label>
-            <Field type="date" name="ngaycap_cccd" id="ngaycap_cccd" v-model="userInfo.ngaycap_cccd" />
-            <ErrorMessage name="ngaycap_cccd" />
-        </div>
-        <div class="form_field">
-            <label for="noicap_cccd">Nơi cấp CCCD</label>
-            <Field type="text" name="noicap_cccd" id="noicap_cccd" v-model="userInfo.noicap_cccd" />
-            <ErrorMessage name="noicap_cccd" />
-        </div>
-        <div class="form_field">
-            <label for="trinhdo">Trình độ</label>
-            <Field type="text" name="trinhdo" id="trinhdo" v-model="userInfo.trinhdo" />
-        </div>
-        <div class="form_field">
-            <label for="stk">Số tài khoản</label>
-            <Field type="text" name="stk" id="stk" v-model="userInfo.stk" />
-            <ErrorMessage name="stk" />
-        </div>
-        <div class="form_field">
-            <label for="tentk">Tên tài khoản</label>
-            <Field type="text" name="tentk" id="tentk" v-model="userInfo.tentk" />
-            <ErrorMessage name="tentk" />
-        </div>
-        <div class="form_field">
-            <label for="tenNH">Tên ngân hàng</label>
-            <Field type="text" name="tenNH" id="tenNH" v-model="userInfo.tenNH" />
-            <ErrorMessage name="tenNH" />
-        </div>
-        <div class="form_field">
-            <label for="dclh_sonha">Số nhà</label>
-            <Field type="text" name="dclh_sonha" id="dclh_sonha" v-model="userInfo.dclh_sonha" />
-            <ErrorMessage name="dclh_sonha" />
-        </div>
-        <div class="form_field">
-            <label for="dclh_tinhthanh">Tỉnh, thành</label>
-            <select name="dclh_tinhthanh" id="dclh_tinhthanh" v-model="userInfo.dclh_tinhthanh" @change="getDistrict">
-                <option v-for="item in provincelist" :value="item.id_tinhthanh">{{ item.tentinhthanh }}</option>
-            </select>
-            <Field type="text" name="dclh_tinhthanh" v-model="userInfo.dclh_tinhthanh" :style="{display: 'none'}" />
-            <ErrorMessage name="dclh_tinhthanh" />
-        </div>
-        <div class="form_field">
-            <label for="dclh_quanhuyen">Quận, huyện</label>
-            <select name="dclh_quanhuyen" id="dclh_quanhuyen" v-model="userInfo.dclh_quanhuyen" @change="getWard">
-                <option v-for="item in districtlist" :value="item.id_quanhuyen">{{ item.tenquanhuyen }}</option>
-            </select>
-            <Field type="text" name="dclh_quanhuyen" v-model="userInfo.dclh_quanhuyen" :style="{display: 'none'}" />
-            <ErrorMessage name="dclh_quanhuyen" />
-        </div>
-        <div class="form_field">
-            <label for="dclh_phuongxa">Phường, xã</label>
-            <select name="dclh_phuongxa" id="dclh_phuongxa" v-model="userInfo.dclh_phuongxa">
-                <option v-for="item in wardlist" :value="item.id_phuongxa">{{ item.tenphuongxa }}</option>
-            </select>
-            <Field type="text" name="dclh_phuongxa" v-model="userInfo.dclh_phuongxa" :style="{display: 'none'}" />
-            <ErrorMessage name="dclh_phuongxa" />
-        </div>
-        <div class="form_field">
-            <label for="hoten_nguoithan">Họ tên người thân</label>
-            <Field type="text" name="hoten_nguoithan" id="hoten_nguoithan" v-model="userInfo.hoten_nguoithan" />
-        </div>
-        <div class="form_field">
-            <label for="sdt_nguoithan">Số điện thoại</label>
-            <Field type="text" name="sdt_nguoithan" id="sdt_nguoithan" v-model="userInfo.sdt_nguoithan" />
-        </div>
-        <div class="form_field">
-            <label for="mqh_nguoithan">Mối quan hệ</label>
-            <Field type="text" name="mqh_nguoithan" id="mqh_nguoithan" v-model="userInfo.mqh_nguoithan" />
-        </div>
-        <button type="submit">Cập nhật</button>
-    </Form>
 </template>
+
+<style>
+    @import url('@/assets/User/Profile/profileForm.css');
+</style>

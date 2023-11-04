@@ -24,6 +24,8 @@
             return {
                 formSchema,
                 serverMessage: '',
+                inform: false,
+                success: false,
             }
         },
 
@@ -35,8 +37,9 @@
 
             resetMessage () {
                 setTimeout(() => {
+                    this.inform = false;
                     this.serverMessage = '';
-                }, 2000);
+                }, 5000);
             },
 
             async changePass (data) {
@@ -44,7 +47,9 @@
                     if (data.matkhaumoi !== data.nhaplaimatkhau) throw 'Mật khẩu không trùng khớp.';
                     const change = await Services.changePass(data);
                     if (change !== 'Success') throw 'Đã xảy ra lỗi, vui lòng thử lại sau.'
-                    this.serverMessage = 'Cập nhât thành công. Bạn hãy đăng nhập lại vào tài khoản.'
+                    this.serverMessage = 'Cập nhât thành công. Bạn hãy đăng nhập lại vào tài khoản.';
+                    this.inform = true;
+                    this.success = true;
                     setTimeout(async () => {
                         this.serverMessage = '';
                         const logout = await Services.logout();
@@ -55,6 +60,8 @@
                 } catch (err) {
                     if ((err === 'Mật khẩu không trùng khớp.') || (err === 'Đã xảy ra lỗi, vui lòng thử lại sau.')) {
                         this.serverMessage = err;
+                        this.inform = true;
+                        this.success = false;
                         this.resetMessage();
                     }
                     console.log(err);
@@ -72,25 +79,40 @@
     <AppHeader />
     <main>
         <Navigation />
-        <h2>Đổi Mật Khẩu</h2>
-        <p>{{ serverMessage }}</p>
-        <Form name="changepass_form" @submit="changePass" :validation-schema="formSchema">
-            <div class="form_field">
-                <label for="matkhau">Mật khẩu</label>
-                <Field type="password" name="matkhau" id="matkhau" />
-                <ErrorMessage name="matkhau" />
+        <div class="main_content">
+            <h1>Đổi Mật Khẩu</h1>
+            <Form name="changepass_form" @submit="changePass" :validation-schema="formSchema">
+                <div class="form_field">
+                    <label class="form-label" for="matkhau">Mật khẩu</label>
+                    <Field class="form-control" type="password" name="matkhau" id="matkhau" />
+                    <ErrorMessage class="text-danger" name="matkhau" />
+                </div>
+                <div class="form_field">
+                    <label class="form-label" for="matkhaumoi">Mật khẩu mới</label>
+                    <Field class="form-control" type="password" name="matkhaumoi" id="matkhaumoi" />
+                    <ErrorMessage class="text-danger" name="matkhaumoi" />
+                </div>
+                <div class="form_field">
+                    <label class="form-label" for="nhaplaimatkhau">Nhập lại mật khẩu</label>
+                    <Field class="form-control" type="password" name="nhaplaimatkhau" id="nhaplaimatkhau" />
+                    <ErrorMessage class="text-danger" name="nhaplaimatkhau" />
+                </div>
+                <div class="form_button">
+                    <button type="reset" class="form_btn btn btn-danger">Hủy</button>
+                    <button type="submit" class="form_btn btn btn-primary">Cập nhật</button>
+                </div>
+            </Form>
+            <div class="inform alert" :class="[(success) ? 'alert-success' : 'alert-danger']" :style="{display: (inform) ? 'flex' : 'none'}">
+                <div>{{ serverMessage }}</div>
             </div>
-            <div class="form_field">
-                <label for="matkhaumoi">Mật khẩu mới</label>
-                <Field type="password" name="matkhaumoi" id="matkhaumoi" />
-                <ErrorMessage name="matkhaumoi" />
-            </div>
-            <div class="form_field">
-                <label for="nhaplaimatkhau">Nhập lại mật khẩu</label>
-                <Field type="password" name="nhaplaimatkhau" id="nhaplaimatkhau" />
-                <ErrorMessage name="nhaplaimatkhau" />
-            </div>
-            <button type="submit">Cập nhật</button>
-        </Form>
+        </div>
     </main>
 </template>
+
+<style>
+    @import url('@/assets/User/Profile/profilePage.css');
+
+    form {
+        width: 35%;
+    }
+</style>

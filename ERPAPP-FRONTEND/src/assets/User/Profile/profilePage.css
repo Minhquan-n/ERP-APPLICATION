@@ -1,0 +1,23 @@
+@import url('@/assets/base.css');
+@import url('@/assets/Admin/Account/accountUserInfo.css');
+@import url('@/assets/Admin/Account/accountPage.css');
+
+.main_content {
+    margin: 0;
+    width: 100%;
+    height: fit-content;
+    background-color: var(--color-white);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#edit_act {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding-right: 40px;
+}

@@ -69,32 +69,55 @@
         async created () {
             await this.getProvince();
             await this.getDistrict();
-            await this.getWard();            
+            await this.getWard();
         }
     }
 </script>
 
 <template>
     <Form name="branchForm" @submit="submitForm" :validation-schema="formSchema">
-        <Field name="tenchinhanh" type="text" v-model="branch.tenchinhanh" />
-        <ErrorMessage name="tenchinhanh" />
-        <Field name="tinhthanh" v-model="branch.tinhthanh" :style="{display: 'none'}" />
-        <select name="tinhthanh" v-model="branch.tinhthanh" @change="getDistrict">
-            <option v-for="tinh in form.formProvince" :value=tinh.id_tinhthanh :selected="(branch.tinhthanh === tinh.id_tinhthanh) ? 'selected' : ''">{{ tinh.tentinhthanh }}</option>
-        </select>
-        <ErrorMessage name="tinhthanh" />
-        <Field name="quanhuyen" v-model="branch.quanhuyen" :style="{display: 'none'}" />
-        <select name="quanhuyen" v-model="branch.quanhuyen" @change="getWard">
-            <option v-for="quan in form.formDistrict" :value=quan.id_quanhuyen :selected="(branch.quanhuyen === quan.id_quanhuyen) ? 'selected' : ''">{{ quan.tenquanhuyen }}</option>
-        </select>
-        <ErrorMessage name="quanhuyen" />
-        <Field name="phuongxa" v-model="branch.phuongxa" :style="{display: 'none'}" />
-        <select name="phuongxa" v-model="branch.phuongxa">
-            <option v-for="phuong in form.formWard" :value=phuong.id_phuongxa :selected="(branch.phuongxa === phuong.id_phuongxa) ? 'selected' : ''">{{ phuong.tenphuongxa }}</option>
-        </select>
-        <ErrorMessage name="phuongxa" />
-        <Field name="sonha" type="text" v-model="branch.sonha" />
-        <ErrorMessage name="sonha" />
-        <button type="submit">Submit</button>
+        <div class="form_row">
+            <div class="form_field large_field">
+                <label class="form-label" for="tenchinhanh">Tên chi nhánh</label>
+                <Field class="form-control" type="text" name="tenchinhanh" id="tenchinhanh" v-model="branch.tenchinhanh" />
+                <ErrorMessage class="text-danger" name="tenchinhanh" />
+            </div>
+            <div class="form_field large_field">
+                <label class="form-label" for="sonha">Số nhà</label>
+                <Field class="form-control" type="text" name="sonha" id="sonha" v-model="branch.sonha" />
+                <ErrorMessage class="text-danger" name="sonha" />
+            </div>
+            <div class="form_field small_field">
+                <label class="form-label" for="tinhthanh">Tỉnh thành</label>
+                <Field name="tinhthanh" v-model="branch.tinhthanh" :style="{display: 'none'}" />
+                <select class="form-select" name="tinhthanh" id="tinhthanh" v-model="branch.tinhthanh" @change="getDistrict">
+                    <option v-for="tinh in form.formProvince" :value=tinh.id_tinhthanh :selected="(branch.tinhthanh === tinh.id_tinhthanh) ? 'selected' : ''">{{ tinh.tentinhthanh }}</option>
+                </select>
+                <ErrorMessage class="text-danger" name="tinhthanh" />
+            </div>
+            <div class="form_field small_field">
+                <label class="form-label" for="tinhthanh">Quận huyện</label>
+                <Field name="quanhuyen" v-model="branch.quanhuyen" :style="{display: 'none'}" />
+                <select class="form-select" name="quanhuyen" id="quanhuyen" v-model="branch.quanhuyen" @change="getWard">
+                    <option v-for="quan in form.formDistrict" :value=quan.id_quanhuyen :selected="(branch.quanhuyen === quan.id_quanhuyen) ? 'selected' : ''">{{ quan.tenquanhuyen }}</option>
+                </select>
+                <ErrorMessage class="text-danger" name="quanhuyen" />
+            </div>
+            <div class="form_field small_field">
+                <label class="form-label" for="tinhthanh">Phường xã</label>
+                <Field name="phuongxa" v-model="branch.phuongxa" :style="{display: 'none'}" />
+                <select class="form-select" name="phuongxa" id="phuongxa" v-model="branch.phuongxa">
+                    <option v-for="phuong in form.formWard" :value=phuong.id_phuongxa :selected="(branch.phuongxa === phuong.id_phuongxa) ? 'selected' : ''">{{ phuong.tenphuongxa }}</option>
+                </select>
+                <ErrorMessage class="text-danger" name="phuongxa" />
+            </div>
+        </div>
+        <div class="form_button">
+            <button type="submit" class="form_btn btn btn-primary">Cập nhật</button>
+        </div>
     </Form>
 </template>
+
+<style>
+    @import url('@/assets/Admin/Account/accountForm.css');
+</style>

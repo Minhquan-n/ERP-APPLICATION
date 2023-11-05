@@ -6,13 +6,11 @@
     //components
     import AppHeader from '@/components/Layout/AppHeader.vue';
     import DataListPanigation from '@/components/Admin/DataCatalogues/DataListPanigation.vue';
-    import DataList from '@/components/Admin/DataCatalogues/Department/DepartmentList.vue';
 
     export default {
         components: {
             AppHeader,
             DataListPanigation,
-            DataList,
             Form,
             Field,
             ErrorMessage,
@@ -44,7 +42,8 @@
                 key: '',
                 form,
                 serverMessage: '',
-                errorMessage: false,
+                inform: false,
+                success: false,
             }
         },
 
@@ -52,6 +51,14 @@
             // Kiem tra dang nhap
             checkLogin () {
                 if($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
+            },
+
+            // Ham khoi thong bao tu server
+            resetMessage () {
+                setTimeout(() => {
+                    this.inform = false;
+                    this.serverMessage = '';
+                }, 5000);
             },
 
             // Kiem tra quyen truy cap
@@ -105,16 +112,25 @@
                         const update = await Services.updateDepartment(data);
                         if (update !== 'Success') throw err;
                         this.serverMessage = 'Chỉnh sửa thành công.';
+                        this.success = true;
+                        this.inform = true;
+                        this.resetMessage();
                     } else {
                         const newdepartment = {tenbophan: data.tenbophan};
                         const add = await Services.addDepartment(newdepartment);
                         if (add !== 'Success') throw err;
-                        this.serverMessage = 'Thêm bộ phận mới thành công.'
+                        this.serverMessage = 'Thêm bộ phận mới thành công.';
+                        this.success = true;
+                        this.inform = true;
+                        this.resetMessage();
                         this.getDepartmentList();
                     }
                 } catch (err) {
                     console.log(err);
                     this.serverMessage = 'Đã xảy ra lỗi. Vui lòng thử lại.';
+                    this.success = false;
+                    this.inform = true;
+                    this.resetMessage();
                 }
             },
 
@@ -170,37 +186,73 @@
                         </ul>
                         <Form class="d-flex" role="search" @submit="searchDepartment">
                             <Field name="key" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                            <button class="btn btn-outline-success" type="submit">Search</button>
+                            <button class="btn btn-outline-primary" type="submit">Search</button>
                         </Form>
                     </div>
                 </div>
             </nav>
         </div>
-        <div id="data_list">
-            <h2>Danh sách bộ phận</h2>
+        <div id="data_list" class="main_content">
+            <h1>Danh sách bộ phận</h1>
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th scope="col" v-for="item in listtitle">{{ item }}</th>
                         <th scope="col" class="list_action">
-                            <button><font-awesome-icon :icon="['fas', 'plus']" @click="formAdd" /></button>
-                            <button @click="getDepartmentList"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
+                            <button class="act_btn btn btn-outline-primary" @click="formAdd" data-bs-toggle="modal" data-bs-target="#department_form">
+                                <font-awesome-icon :icon="['fas', 'plus']" />
+                            </button>
+                            <button class="act_btn btn btn-outline-info" @click="getDepartmentList"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
                         </th>
                     </tr>
                 </thead>
-                <DataList :list-data="listshow" @update="formEdit" />
-                <DataListPanigation :page="page" :current-page="currpage" @change="showPage" />
+                <tbody>
+                    <tr v-for="row in listshow" :key="row.id_bophan">
+                        <th scope="row">{{ row.id_bophan }}</th>
+                        <td>{{ row.tenbophan }}</td>
+                        <td class="list_action">
+                            <button class="act_btn btn btn-outline-secondary" @click="formEdit(row.id_bophan)" data-bs-toggle="modal" data-bs-target="#department_form">
+                                <font-awesome-icon :icon=row.act_icon />
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
+            <DataListPanigation :page="page" :current-page="currpage" @change="showPage" />
         </div>
-        <div id="department_form" v-show="form.formStatus">
-            <h3>{{ form.formTitle }}</h3>
-            <p>{{ serverMessage }}</p>
-            <Form name="departmentForm" @submit="submitForm" :validation-schema="formSchema">
-                <Field name="id" v-model="form.department.id_bophan" :style="{display: 'none'}" />
-                <Field name="tenbophan" v-model="form.department.tenbophan" />
-                <ErrorMessage name="tenbophan" />
-                <button type="submit">Lưu</button>
-            </Form>
+        <div id="department_form" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">{{ form.formTitle }}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <Form name="departmentForm" @submit="submitForm" :validation-schema="formSchema">
+                            <div class="form_row">
+                                <Field class="form-control" name="id" v-model="form.department.id_bophan" :style="{display: 'none'}" />
+                                <div class="form_field large_field">
+                                    <label class="form-label" for="tenchucvu">Tên chức vụ</label>
+                                    <Field class="form-control" name="tenbophan" id="tenbophan" v-model="form.department.tenbophan" />
+                                    <ErrorMessage class="text-danger" name="tenbophan" />
+                                </div>
+                            </div>
+                            <div class="form_button">
+                                <button type="button" class="form_btn btn btn-danger" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="form_btn btn btn-primary" data-bs-dismiss="modal">Cập nhật</button>
+                            </div>
+                        </Form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="inform alert" :class="[(success) ? 'alert-success' : 'alert-danger']" :style="{display: (inform) ? 'flex' : 'none'}">
+            <div>{{ serverMessage }}</div>
         </div>
     </main>
 </template>
+
+<style>
+    @import url('@/assets/User/Profile/profilePage.css');
+    @import url('@/assets/Admin/Account/accountForm.css');
+</style>

@@ -21,15 +21,14 @@
                 payrolls: [],
                 payrollshow: [],
                 payrolllength: 0,
-
                 limit: 10,
                 page: 1,
                 curpage: 1,
-
                 payrolldetail: false,
                 userpayroll: {},
-
                 serverMessage: '',
+                inform: false,
+                success: false,
             }
         },
 
@@ -55,11 +54,12 @@
                 if (checkPermission === -1) this.$router.push({name: 'UserProfilePage'});
             },
 
-            // Ham reset server message
+            // Ham khoi thong bao tu server
             resetMessage () {
                 setTimeout(() => {
+                    this.inform = false;
                     this.serverMessage = '';
-                }, 2000);
+                }, 5000);
             },
 
             // Lay danh sach cac dot luong
@@ -105,6 +105,8 @@
                 } catch (err) {
                     console.log(err);
                     this.serverMessage = `Không có dữ liệu về bảng lương đợt ${this.payrollid}`;
+                    this.success = false;
+                    this.inform = true;
                     this.resetMessage();
                 }
             },
@@ -127,10 +129,11 @@
             },
 
             // Ham nhan trang thai chinh sua bang luong
-            async editPayroll (message) {
+            async editPayroll (status) {
                 await this.getPayrolls();
-                this.payrolldetail = false;
-                this.serverMessage = message;
+                this.serverMessage = (status) ? `Cập nhật bảng lương ${this.userpayroll.hoten} thành công` : `Cập nhật bảng lương ${this.userpayroll.hoten} thất bại`;
+                this.success = (status) ? true : false;
+                this.inform = true;
                 this.resetMessage();
             },
 
@@ -141,10 +144,14 @@
                     if (create !== 'Success') throw err;
                     this.setUpPage();
                     this.serverMessage = 'Tạo đợt lương mới thành công.';
+                    this.success - true;
+                    this.inform = true;
                     this.resetMessage();
                 } catch (err) {
                     console.log(err);
                     this.serverMessage = 'Tạo đợt lương mới thất bại.';
+                    this.success = false;
+                    this.inform = true;
                     this.resetMessage();
                 }
             },
@@ -158,12 +165,16 @@
                         if (block !== 'Success') throw err;
                         this.setUpPage();
                         this.serverMessage = `Đã khóa bảng lương đợt lương ${this.payrollid}.`;
+                        this.success = true;
+                        this.inform = true;
                         this.resetMessage();
                     }
                 } catch (err) {
                     console.log(err);
                     this.serverMessage = 'Khóa bảng lương thất bại.'
-                    thí.resetMessage();
+                    this.success = false;
+                    this.inform = true;
+                    this.resetMessage();
                 }
             }
         },
@@ -179,37 +190,40 @@
 <template>
     <AppHeader />
     <main>
-        <h2>Bảng Lương</h2>
+        <h1>Bảng Lương Nhân Viên</h1>
         <div id="heading">
-            <div class="form_select_field">
-                <label for="form_payroll_id">Đợt lương</label>
-                <select name="payroll_id" id="form_payroll_id" v-model="payrollid">
-                    <option v-for="item in payrollsid" :value="item.id_dotluong">{{ item.id_dotluong }}</option>
-                </select>
+            <div id="select_side">
+                <div class="form_row">
+                    <div class="form_field small_field">
+                        <label class="form-label" for="form_payroll_id">Đợt lương</label>
+                        <select class="form-select" name="payroll_id" id="form_payroll_id" v-model="payrollid">
+                            <option v-for="item in payrollsid" :value="item.id_dotluong">{{ item.id_dotluong }}</option>
+                        </select>
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="form_payroll_branch">Chi nhánh</label>
+                        <select class="form-select" name="payroll_branch" id="form_payroll_branch" v-model="branch">
+                            <option value="0">Tất cả</option>
+                            <option v-for="item in payrollsbranch" :value="item.id_chinhanh">{{ item.tenchinhanh }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form_field large_row">
+                    <button class="form_btn btn btn-primary" @click="getPayrolls">Liệt kê</button>
+                </div>
             </div>
-            <div class="form_select_field">
-                <label for="form_payroll_branch">Chi nhánh</label>
-                <select name="payroll_branch" id="form_payroll_branch" v-model="branch">
-                    <option value="0">Tất cả</option>
-                    <option v-for="item in payrollsbranch" :value="item.id_chinhanh">{{ item.tenchinhanh }}</option>
-                </select>
+            <div id="mode_button">
+                <button type="button" class="btn btn-outline-primary" @click="createPayroll"><font-awesome-icon :icon="['fas', 'plus']" /> Tạo bảng lương</button>
+                <button type="button" class="btn btn-primary" @click="blockPaysheets">Khóa bảng lương</button>
             </div>
-            <button @click="getPayrolls">Liệt kê</button>
         </div>
-        <div>
-            <button @click="createPayroll">Tạo bảng lương</button>
-        </div>
-        <div>
-            <button @click="blockPaysheets">Khóa bảng lương</button>
-        </div>
-        <p>{{ serverMessage }}</p>
         <div id="paysheet">
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th scope="col" v-for="item in thead">{{ item }}</th>
                         <th scope="col" class="list_action">
-                            <button @click="getPayrolls"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
+                            <button class="act_btn btn btn-outline-info" @click="getPayrolls"><font-awesome-icon :icon="['fas', 'rotate']" /></button>
                         </th>
                     </tr>
                 </thead>
@@ -222,20 +236,33 @@
                         <td>{{ Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(row.thuclanh) }}</td>
                         <td>{{ row.id_dotluong }}</td>
                         <td class="list_action">
-                            <button @click="payrollDetail(row.id_bangluong)" :disabled="(row.trangthai === 1)"><font-awesome-icon :icon="['fas', 'pen']" /></button>
+                            <button class="act_btn btn btn-outline-secondary" @click="payrollDetail(row.id_bangluong)" :disabled="(row.trangthai === 1)" data-bs-toggle="modal" data-bs-target="#payroll_detail">
+                                <font-awesome-icon :icon="['fas', 'pen']" />
+                            </button>
                         </td>
                     </tr>
                     <tr v-else :style="{width: '100%'}"><p>Không có dữ liệu.</p></tr>
                 </tbody>
-                <Panigation :page="page" :current-page="curpage" @change="showPage" />
             </table>
+            <Panigation :page="page" :current-page="curpage" @change="showPage" />
         </div>
-        <div id="payroll_detail" :style="{display: (payrolldetail) ? 'block' : 'none'}" >
-            <PayrollDetail :user-payroll="userpayroll" @update-payroll="editPayroll" />
+        <div id="payroll_detail" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Thông tin bảng lương nhân viên {{ userpayroll.hoten }}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <PayrollDetail :user-payroll="userpayroll" @update-payroll="editPayroll" />
+                </div>
+            </div>
+        </div>
+        <div class="inform alert" :class="[(success) ? 'alert-success' : 'alert-danger']" :style="{display: (inform) ? 'flex' : 'none'}">
+            <div>{{ serverMessage }}</div>
         </div>
     </main>
 </template>
 
 <style>
-    
+    @import url('@/assets/Admin/TimesheetPayroll/timesheet.css');
 </style>

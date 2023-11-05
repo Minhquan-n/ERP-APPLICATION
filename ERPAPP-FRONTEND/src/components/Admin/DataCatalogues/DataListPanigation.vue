@@ -24,3 +24,16 @@
         </nav>
     </div>
 </template>
+
+<style>
+    #pagination {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .page-item {
+        cursor: pointer;
+    }
+</style>

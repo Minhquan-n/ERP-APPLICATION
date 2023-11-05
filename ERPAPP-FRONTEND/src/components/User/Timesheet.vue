@@ -1,5 +1,6 @@
 <script>
     import UserServices from '@/services/user.services';
+    import $cookie from 'vue-cookies';
 
     export default {
         components: {
@@ -8,6 +9,7 @@
 
         data () {
             return {
+                name: '',
                 header: [],
                 timesheet: {},
                 month: 0,
@@ -16,6 +18,7 @@
                 curryear: 0,
                 timesheetmonth: [],
                 timesheetyear: [],
+                row: 0,
             }
         },
 
@@ -60,44 +63,88 @@
             },
 
             async setUpPage () {
+                this.name = $cookie.get('hoten');
                 const today = new Date();
                 this.month = this.currmonth = today.getMonth() + 1;
                 this.year = this.curryear = today.getFullYear();
                 this.setUpTimesheetMonth();
                 this.setUpTimesheetYear();
                 await this.showTimesheet();
+                this.row = (((this.month - (this.month % 10)) / 10));
             }
         },
 
         created () {
             this.setUpPage();
+            console.log()
         },
     }
 </script>
 
 <template>
-    <div id="timesheet">
-        <h2>Bảng chấm công</h2>
-        <div>
-            <div class="form_field">
-                <label for="thang">Tháng</label>
-                <select name="thang" id="thang" v-model="month">
-                    <option v-for="item in timesheetmonth" :value="item">{{ item }}</option>
-                </select>
-            </div>
-            <div class="form_field">
-                <label for="nam">Năm</label>
-                <select name="nam" id="nam" v-model="year" @change="setUpTimesheetMonth">
-                    <option v-for="item in timesheetyear" :value="item">{{ item }}</option>
-                </select>
-            </div>
-            <button @click="showTimesheet">Liệt kê</button>
-        </div>
+    <div id="timesheets">
+        <h1>Bảng chấm công nhân viên {{ name }}</h1>
         <div id="timesheet">
-            <div class="timesheet_day" v-for="item in header">
-                <p class="day">{{ item }}</p>
-                <p class="day_status">{{ timesheet[`${item}`] }}</p>
+            <div id="timesheet_select" class="form_row">
+                <div class="form_field small_row">
+                    <label class="form-label" for="thang">Tháng</label>
+                    <select class="form-select" name="thang" id="thang" v-model="month">
+                        <option v-for="item in timesheetmonth" :value="item">{{ item }}</option>
+                    </select>
+                </div>
+                <div class="form_field small_row">
+                    <label class="form-label" for="nam">Năm</label>
+                    <select class="form-select" name="nam" id="nam" v-model="year" @change="setUpTimesheetMonth">
+                        <option v-for="item in timesheetyear" :value="item">{{ item }}</option>
+                    </select>
+                </div>
+                <div class="form_field large_row">
+                    <button class="form_btn btn btn-primary" @click="showTimesheet">Liệt kê</button>
+                </div>
+            </div>
+            <div id="timesheet_table">
+                <table class="table table-hover table-bordered w-100 m-0" v-for="n in 3">
+                    <thead>
+                        <tr>
+                            <th class="table-primary" v-for="i in 12" style="width: 50px; padding: 10px 0; text-align: center;">{{ header[((n * 12) + (i - 1)) - 12] }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td v-for="i in 12" 
+                                style="width: 50px; padding: 10px 0; text-align: center;"
+                                :class="[((timesheet[`${header[((n * 12) + (i - 1)) - 12]}`]) === 'v' || (timesheet[`${header[((n * 12) + (i - 1)) - 12]}`]) === 'p') ? 'table-danger' : '']"
+                            >
+                                {{ timesheet[`${header[((n * 12) + (i - 1)) - 12]}`] }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </template>
+
+<style>
+    @import url('@/assets/User/Profile/profileForm.css');
+
+    #timesheets {
+        width: 95%;
+        margin: 20px 0;
+    }
+
+    #timesheet {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #timesheet_select {
+        width: 30%;
+    }
+
+    #timesheet_table {
+        width: 70%;
+    }
+</style>

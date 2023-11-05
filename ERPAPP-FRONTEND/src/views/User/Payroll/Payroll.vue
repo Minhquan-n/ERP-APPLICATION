@@ -30,9 +30,13 @@
     <AppHeader />
     <main>
         <Navigation />
-        <div class="payroll_container">
+        <div class="main_content">
             <Payroll />
             <Timesheet />
         </div>
     </main>
 </template>
+
+<style>
+    @import url('@/assets/User/Profile/profilePage.css');
+</style>

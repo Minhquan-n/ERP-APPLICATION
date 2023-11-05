@@ -220,8 +220,8 @@ class Staff_Servieces {
     // Lay bang luong hien tai
     async getPaysheet (msnv, id_dotluong) {
         const db = this.connection();
-        const select = 'blnv.id_bangluong, blnv.msnv, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, blnv.luongtangca, blnv.thuong, blnv.ghichu, blnv.id_dotluong, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu';
-        const table = 'bangluongnhanvien blnv JOIN (((thongtincanhan ttcn JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON cn.msnv = ttcn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON ttcn.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON ttcn.msnv = cv.msnv) ON blnv.msnv = ttcn.msnv';
+        const select = 'blnv.msnv, blnv.id_bangluong, blnv.id_dotluong, blnv.trangthai, blnv.sogiolam, blnv.sogiotangca, blnv.BHXH, blnv.BHYT, blnv.BHTN, blnv.luongtangca, blnv.thuong, blnv.thuclanh, blnv.ghichu, ttcv.luongcoban, ttcn.hoten, lhcv.sogiolamviec';
+        const table = '((bangluongnhanvien blnv JOIN thongtincanhan ttcn ON blnv.msnv = ttcn.msnv) JOIN thongtincongviec ttcv ON blnv.msnv = ttcv.msnv) JOIN loaihinhcongviec lhcv ON ttcv.loaihinhcongviec = lhcv.id_loaihinhcongviec';
         const query = `SELECT ${select} FROM ${table} WHERE blnv.msnv = '${msnv}' AND blnv.id_dotluong = '${id_dotluong}'`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0][0]});

@@ -163,6 +163,7 @@
                 });
             },
 
+            // Ham khoi thong bao tu server
             resetMessage () {
                 setTimeout(() => {
                     this.inform = false;

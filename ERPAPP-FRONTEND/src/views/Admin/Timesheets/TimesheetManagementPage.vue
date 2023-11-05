@@ -26,6 +26,8 @@
                 branch: '0',
                 serverMessage: '',
                 timekeeping: false,
+                inform: false,
+                success: false,
             }
         },
 
@@ -40,6 +42,14 @@
             // Kiem tra dang nhap
             checkLogin () {
                 if($cookie.get('loggedin') !== 'true') this.$router.push({name: 'LoginPage'});
+            },
+
+            // Ham khoi thong bao tu server
+            resetMessage () {
+                setTimeout(() => {
+                    this.inform = false;
+                    this.serverMessage = '';
+                }, 5000);
             },
 
             // Kiem tra quyen truy cap
@@ -92,6 +102,11 @@
                 };
                 await this.getTimesheet(data);
                 this.setUpThead();
+                if (this.timesheet.length === 0) {
+                    this.success = false;
+                    this.serverMessage = 'Bảng chấm công chưa được khởi tạo.';
+                    this.inform = true;
+                }
             },
 
             // Khoi tao page voi bang cham cong thang hien tai
@@ -117,6 +132,10 @@
             // Ham chuyen che do chinh sua
             changeMode () {
                 this.timekeeping = (this.timekeeping) ? false : true;
+                this.serverMessage = (this.timekeeping) ? 'Hiển thị chế độ chỉnh sửa.' : 'Hiển thị chế độ chỉ đọc';
+                this.success = true;
+                this.inform = true;
+                this.resetMessage();
             },
 
             // Ham tao bang cham cong moi
@@ -127,15 +146,15 @@
                     else {
                         this.setUpPage();
                         this.serverMessage = 'Tạo bảng chấm công thành công.';
-                        setTimeout(() => {
-                            this.serverMessage = '';
-                        }, 2000);
+                        this.success = true;
+                        this.inform = true;
+                        this.resetMessage();
                     }
                 } catch (err) {
                     this.serverMessage = 'Tạo bảng chấm công thất bại.';
-                    setTimeout(() => {
-                        this.serverMessage = '';
-                    }, 2000);
+                    this.success = false;
+                    this.inform = true;
+                    this.resetMessage();
                 }
             },
 
@@ -146,14 +165,14 @@
                     if (timekeeping !== 'Success') throw err;
                     this.setUpPage();
                     this.serverMessage = 'Bảng chấm công đã được cập nhật.';
-                    setTimeout(() => {
-                        this.serverMessage = '';
-                    }, 2000);
+                    this.success = true;
+                    this.inform = true;
+                    this.resetMessage();
                 } catch (err) {
                     this.serverMessage = 'Đã xảy ra lỗi, không thể cập nhật bảng chấm công.';
-                    setTimeout(() => {
-                        this.serverMessage = '';
-                    }, 2000);
+                    this.success = false;
+                    this.inform = true;
+                    this.resetMessage();
                 }
             }
         },
@@ -169,45 +188,52 @@
 <template>
     <AppHeader />
     <main>
-        <h2>Timesheet Page</h2>
+        <h1>Bảng chấm công</h1>
         <div id="heading">
-            <div class="form_select_field">
-                <label for="form_month">Tháng</label>
-                <select name="month" id="form_month" v-model="month">
-                    <option v-for="item in timesheetmonth" :value="item">{{ item }}</option>
-                </select>
+            <div id="select_side">
+                <div class="form_row">
+                    <div class="form_field small_field">
+                        <label class="form-label" for="form_month">Tháng</label>
+                        <select class="form-select" name="month" id="form_month" v-model="month">
+                            <option v-for="item in timesheetmonth" :value="item">{{ item }}</option>
+                        </select>
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="form_year">Năm</label>
+                        <select class="form-select" name="year" id="form_year" v-model="year" @change="setUpTimesheetMonth">
+                            <option v-for="item in timesheetyear" :value="item">{{ item }}</option>
+                        </select>
+                    </div>
+                    <div class="form_field small_field">
+                        <label class="form-label" for="form_branch">Chi nhánh</label>
+                        <select class="form-select" name="branch" id="form_branch" v-model="branch">
+                            <option value="0">Tất cả</option>
+                            <option v-for="item in timesheetbranch" :value="item.tenchinhanh">{{ item.tenchinhanh }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form_field large_row">
+                    <button class="form_btn btn btn-primary" @click="getByDate">Liệt kê</button>
+                </div>
             </div>
-            <div class="form_select_field">
-                <label for="form_year">Năm</label>
-                <select name="year" id="form_year" v-model="year" @change="setUpTimesheetMonth">
-                    <option v-for="item in timesheetyear" :value="item">{{ item }}</option>
-                </select>
+            <div id="mode_button">
+                <button type="button" class="btn btn-outline-primary" :disabled="timekeeping" @click="createTimesheet"><font-awesome-icon :icon="['fas', 'plus']" /> Tạo mới</button>
+                <button type="button" class="btn" :class="timekeeping ? 'btn-primary' : 'btn-outline-primary'" @click="changeMode" :disabled="month !== currmonth">Chế độ: {{ timekeeping ? 'Chỉnh sửa' : 'Chỉ đọc' }}</button>
+                <button type="button" class="btn btn-primary" :disabled="!timekeeping" @click="timeKeeping">Chấm công</button>
             </div>
-            <div class="form_select_field">
-                <label for="form_branch">Chi nhánh</label>
-                <select name="branch" id="form_branch" v-model="branch">
-                    <option value="0">Tất cả</option>
-                    <option v-for="item in timesheetbranch" :value="item.tenchinhanh">{{ item.tenchinhanh }}</option>
-                </select>
-            </div>
-            <button @click="getByDate">Liệt kê</button>
         </div>
-        <p>{{ serverMessage }}</p>
-        <button type="button" class="btn btn-outline-primary" :disabled="timekeeping" @click="createTimesheet"><font-awesome-icon :icon="['fas', 'plus']" /> Tạo mới</button>
-        <button type="button" class="btn" :class="timekeeping ? 'btn-primary' : 'btn-outline-primary'" @click="changeMode" :disabled="month !== currmonth">Chế độ: {{ timekeeping ? 'Chỉnh sửa' : 'Chỉ đọc' }}</button>
-        <button type="button" class="btn btn-primary" :disabled="!timekeeping" @click="timeKeeping">Chấm công</button>
         <div id="timesheet">
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th class="fixed_col" scope="col" v-for="item in theadfix">{{ item }}</th>
+                        <th class="fixed_col" :class="[(item === 'MSNV') ? ' fixed_msnv' : 'fixed_name']" scope="col" v-for="item in theadfix">{{ item }}</th>
                         <th v-for="item in thead">{{ item }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-if="timesheet.length !== 0" v-for="(row, index) in timesheet" :key="row.STT">
-                        <td>{{ row.MSNV }}</td>
-                        <td>{{ row.Name }}</td>
+                        <td class="fixed_col fixed_msnv">{{ row.MSNV }}</td>
+                        <td class="fixed_col fixed_name">{{ row.Name }}</td>
                         <td v-for="item in thead">
                             <input 
                                 type="text" 
@@ -217,14 +243,19 @@
                             >
                         </td>
                     </tr>
-                    <tr v-else :style="{width: '100%'}"><p>Không có dữ liệu.</p></tr>
                 </tbody>
             </table>
+        </div>
+        <div class="inform alert" :class="[(success) ? 'alert-success' : 'alert-danger']" :style="{display: (inform) ? 'flex' : 'none'}">
+            <div>{{ serverMessage }}</div>
         </div>
     </main>
 </template>
 
 <style>
+    @import url('@/assets/Admin/Account/accountPage.css');
+    @import url('@/assets/User/Profile/profileForm.css');
+
     #timesheet {
         overflow-x: scroll;
     }
@@ -249,11 +280,46 @@
         position: sticky;
     }
 
+    .fixed_msnv {
+        width: 60px;
+        left: 0;
+    }
+
+    .fixed_name {
+        left: 62.5px;
+    }
+
     td input {
         outline: none;
         border-radius: 5px;
         background-color: transparent;
         width: 40px;
         padding: 1px 6px;
+    }
+
+    #heading {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #select_side {
+        width: 50%;
+
+    }
+
+    #mode_button {
+        width: 50%;
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        align-items: end;
+        padding: 20px;
+    }
+
+    #mode_button button {
+        margin: 5px;
     }
 </style>

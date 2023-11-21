@@ -102,6 +102,7 @@
                     this.payrolllength = this.payrolls.length;
                     this.page = ((this.payrolllength % this.limit) === 0) ? (this.payrolllength / this.limit) : (((this.payrolllength - (this.payrolllength % this.limit)) / this.limit) + 1);
                     this.showPage(1);
+                    console.log(this.payrolls)
                 } catch (err) {
                     console.log(err);
                     this.serverMessage = `Không có dữ liệu về bảng lương đợt ${this.payrollid}`;
@@ -144,7 +145,7 @@
                     if (create !== 'Success') throw err;
                     this.setUpPage();
                     this.serverMessage = 'Tạo đợt lương mới thành công.';
-                    this.success - true;
+                    this.success = true;
                     this.inform = true;
                     this.resetMessage();
                 } catch (err) {

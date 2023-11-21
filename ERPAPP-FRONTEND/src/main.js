@@ -15,10 +15,16 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 // import fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faHouse, faList, faRightFromBracket, faUser, faUsers, faXmark, faBars, faAnglesRight, faAnglesLeft, faPlus, faRotate, faPen, faEye, faLock, faLockOpen, faCalendar, faCoins, faUserClock, faSackDollar } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faList, faRightFromBracket, 
+        faUser, faUsers, faXmark, faBars, faAnglesRight, 
+        faAnglesLeft, faPlus, faRotate, faPen, faEye, faLock, 
+        faLockOpen, faCalendar, faCoins, faUserClock, faSackDollar } from '@fortawesome/free-solid-svg-icons'
 
 /* add icons to the library */
-library.add( faHouse, faList, faUser, faUsers, faRightFromBracket, faXmark, faBars, faAnglesRight, faAnglesLeft, faPlus, faRotate, faPen, faEye, faLock, faLockOpen, faCalendar, faCoins, faUserClock, faSackDollar )
+library.add( faHouse, faList, faUser, faUsers, 
+            faRightFromBracket, faXmark, faBars, faAnglesRight, faAnglesLeft, 
+            faPlus, faRotate, faPen, faEye, faLock, faLockOpen, faCalendar, 
+            faCoins, faUserClock, faSackDollar )
 
 createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)

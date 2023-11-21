@@ -1,19 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const cookie = require('cookie-parser');
-const cron = require('node-cron');
-
 const app = express();
-
 const ApiError = require('./app/api-error');
-
 const AdminRouter = require('./app/routes/Admin/Admin_Accounts/admin_accounts_route');
 const AdminCatalogueRouter = require('./app/routes/Admin/Admin_Catalogues/admin_catalogues_route');
 const AdminPaySheetRouter = require('./app/routes/Admin/Admin_Paysheets/admin_paysheets_route');
 const AdminUserDashboard = require('./app/routes/Admin/Admin_Dashboard/admin_dashboard_user_routes');
-
 const UserRouter = require('./app/routes/User/User_Accounts/user_accounts_route');
-
 
 app.use(cors());
 app.use(express.json());
@@ -29,7 +23,6 @@ app.use('/api/erpapp', AdminUserDashboard);
 // Cac route cua user
 app.use('/api/erpapp', UserRouter);
 
-
 // Bat loi truy cap duong dan khong ton tai
 app.use((req, res, next) => {
     return next(new ApiError(404, "Resource not found"));
@@ -40,12 +33,5 @@ app.use((err, req, res, next) => {
         message: err.message || "Interal Server Error",
     });
 });
-
-// cron.schedule('* * * * * *', () => {
-//     console.log('cron job');
-// }, {
-//     scheduled: true,
-//     timezone: "America/Sao_Paulo"
-// });
 
 module.exports = app;

@@ -92,7 +92,10 @@ class Admin_Services {
     async getUserList () {
         const db = this.connection();
         const select = 'tk.msnv, ttcn.hoten, dscn.tenchinhanh, dsbp.tenbophan, dscv.tenchucvu, avt.avt_secure_url, tk.trangthai_taikhoan';
-        const table = '((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv) JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv) JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv) JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) JOIN anhdaidien avt ON tk.msnv = avt.msnv';
+        const table = '((((taikhoan tk JOIN thongtincanhan ttcn ON tk.msnv = ttcn.msnv)'
+                        + 'JOIN (chinhanh cn JOIN danhsachchinhanh dscn ON cn.id_chinhanh = dscn.id_chinhanh) ON tk.msnv = cn.msnv)'
+                        + 'JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON tk.msnv = bp.msnv)'
+                        + 'JOIN (chucvu cv JOIN danhsachchucvu dscv ON cv.id_chucvu = dscv.id_chucvu) ON tk.msnv = cv.msnv) JOIN anhdaidien avt ON tk.msnv = avt.msnv';
         const query = `SELECT ${select} FROM ${table} WHERE cn.trangthai = 1 AND avt.avt_status = 1 AND bp.trangthai = 1 AND cv.trangthai = 1 ORDER BY tk.stt`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});

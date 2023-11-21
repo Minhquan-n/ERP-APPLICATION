@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const config = {
     app: {
-        port: process.env.PORT,  
+        port: process.env.PORT, //PORT = 3000 
     },
     db: {
         host: process.env.MYSQL_HOST,

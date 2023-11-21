@@ -174,7 +174,6 @@ class PaySheet {
         // Tinh tong so gio lam viec
         data.forEach((e, i) => {
             const item = Object.values(e);
-            console.log(item);
             var count = 0;
             var dayoff = 0;
             for (var j = 5; j < item.length; j++) {
@@ -246,7 +245,6 @@ class PaySheet {
         const staffList = await this.getStaffList();
         try {
             const working_hour = await this.workingdayCaculate(month, timesheetpath);
-            console.log(working_hour);
             working_hour.forEach(async (e) => {
                 const userindex = staffList.findIndex((element) => {
                     return element.msnv === e.msnv

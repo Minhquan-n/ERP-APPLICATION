@@ -45,16 +45,10 @@ exports.ShowUserInfo = async (req, res, next) => {
         const area_info = await Staff_account_services.getUserArea(req.params.id);
         const position_info = await Staff_account_services.getUserPosition(req.params.id);
         const avt = await Staff_account_services.getUserAvt(req.params.id);
-
+        
         const user = {
-            taikhoan: acc,
-            ttcn: usr_info,
-            ttcv: work_info,
-            hdld: laborcontract_info,
-            chinhanh: office_info,
-            bophan: area_info,
-            chucvu: position_info,
-            avt: avt,
+            taikhoan: acc, ttcn: usr_info, ttcv: work_info, hdld: laborcontract_info,
+            chinhanh: office_info,bophan: area_info,chucvu: position_info,avt: avt,
         }
 
         const ngaysinh = new Date(`${user.ttcn.ngaysinh} UTC+0`);
@@ -62,7 +56,6 @@ exports.ShowUserInfo = async (req, res, next) => {
         const ngaybatdau = new Date (`${user.ttcv.ngaybatdau} UTC+0`);
         const ngaykyhopdong = new Date(`${user.hdld.ngaykyhopdong} UTC+0`);
         const luongcoban1h = parseInt(user.ttcv.luongcoban1h);
-
         user.ttcv.ngaybatdau = ngaybatdau.toLocaleDateString('en-GB');
         user.hdld.ngaykyhopdong = ngaykyhopdong.toLocaleDateString('en-GB');
         user.ttcn.ngaysinh = (user.ttcn.ngaysinh) ? ngaysinh.toLocaleDateString('en-GB') : null;

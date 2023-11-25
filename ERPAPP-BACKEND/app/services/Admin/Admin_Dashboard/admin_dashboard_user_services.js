@@ -44,7 +44,7 @@ class Admin_User_Dashboard {
         const dotluong = month + '/' + year;
         const select = 'SUM(blnv.thuclanh) AS luong, dsbp.tenbophan';
         const table = 'bangluongnhanvien blnv JOIN (bophan bp JOIN danhsachbophan dsbp ON bp.id_bophan = dsbp.id_bophan) ON blnv.msnv = bp.msnv';
-        const condition = `blnv.id_dotluong = '${dotluong}' AND bp.trangthai = 1 AND blnv.trangthai = 1`;
+        const condition = `blnv.id_dotluong = '${dotluong}' AND bp.trangthai = 1`;
         const query = `SELECT ${select} FROM ${table} WHERE ${condition} GROUP BY bp.id_bophan`;
         const data = (await db).execute(query);
         return data.then((data) => {return data[0]});

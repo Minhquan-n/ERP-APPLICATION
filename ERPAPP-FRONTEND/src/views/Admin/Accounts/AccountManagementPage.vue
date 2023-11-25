@@ -307,7 +307,7 @@
             <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Chỉnh sửa thông tin công việc</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Chỉnh sửa thông tin công việc nhân viên {{ list.user.ttcn.hoten }}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <EditForm :user="list.user" @edituser="editUser" />

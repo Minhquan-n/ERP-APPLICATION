@@ -133,12 +133,17 @@
             },
 
             // Cac ham them nhan vien
-            async addUser (status) {
+            async addUser (res) {
                 this.getUserList();
-                this.success = (status) ? true : false;
-                this.serverMessage = (status) ? 'Tạo người dùng mới thành công.' : 'Tạo người dùng mới thất bại';
+                if (Object.keys(res).length !== 0) {
+                    this.success = true;
+                    this.serverMessage = `Tạo người dùng mới thành công. Mã số nhân viên ${res.msnv}`;
+                } else {
+                    this.success = false;
+                    this.serverMessage = `Tạo người dùng mới thất bại.`;
+                }
                 this.inform = true;
-                this.resetMessage();
+                this.resetMessage();               
             },
 
             // Cac ham sua thong tin cong viec nhan vien

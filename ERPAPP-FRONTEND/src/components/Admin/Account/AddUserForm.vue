@@ -72,11 +72,11 @@
                 try {
                     const add = await Services.createUser(data);
                     if (Object.keys(add).length === 0) throw err;
-                    this.$emit('adduser', true);
+                    this.$emit('adduser', add);
                     resetForm();
                 } catch (err) {
                     console.log(err);
-                    this.$emit('adduser', false);
+                    this.$emit('adduser', {});
                 }
             },
         },
